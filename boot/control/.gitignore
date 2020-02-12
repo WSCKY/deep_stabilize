@@ -1,0 +1,11 @@
+Build/
+Output/
+
+#eclipse project files
+.project
+.cproject
+.settings
+
+#vscode project files
+.vscode/
+
