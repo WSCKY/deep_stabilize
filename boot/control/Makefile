@@ -21,10 +21,6 @@ INCS = -I$(TopPath)/startup \
        -I$(TopPath)/driver/cmsis/device \
        -I$(TopPath)/driver/cmsis/core \
        -I$(TopPath)/driver/stdriver/inc \
-       -I$(TopPath)/driver/usb/app \
-       -I$(TopPath)/driver/usb/drv \
-       -I$(TopPath)/driver/usb/lib/core \
-       -I$(TopPath)/driver/usb/lib/class \
        -I$(TopPath)/middleware/kylink
 
 LD_INCS = -I$(TopPath)/sysconfig
@@ -146,6 +142,8 @@ monitor:
 	@./../tools/monitor/Debug/monitor
 
 post-build:
+	$(ECHO) ' Generate disassembled listing for checking ...'
+	$(OBJDUMP) -S $(OutPath)/$(ProjName).elf > $(OutPath)/disasm.txt
 	-@echo ' Generating binary and Printing size information:'
 	$(OBJCOPY) -O binary $(OutPath)/$(ProjName).elf $(OutPath)/$(ProjName).bin
 	$(SIZE) $(OutPath)/$(ProjName).elf
