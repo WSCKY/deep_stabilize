@@ -2,12 +2,12 @@
 ******************************************************************************
 **  File        : LinkerScript.ld.S
 **  Author		: kyChu
-**  Date        : 2019/2/27
-**  Abstract    : Linker script for STM32F042G6Ux Device from STM32F0 series
-**                FLASH: 32Kbytes mapped at address 0x08000000
+**  Date        : 2019/2/10
+**  Abstract    : Linker script for STM32F072CBTx Device from STM32F0 series
+**                FLASH: 128Kbytes mapped at address 0x08000000
 **                SRAM : 6Kbytes mapped at address 0x20000000
 **
-**  Target      : STMicroelectronics STM32F042G6Ux
+**  Target      : STMicroelectronics STM32F072CBTx
 **
 *****************************************************************************
 */
