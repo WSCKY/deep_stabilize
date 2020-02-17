@@ -1,29 +1,30 @@
-# IMU Attitude Estimator
+# Gimbal controller
 
 #### MCU:
-```STM32F042G6U6, Cortex-M0, Freq(48MHz), ROM(32K), RAM(6K), UFQFPN28```
+```STM32F072CBT6, Cortex-M0, Freq(48MHz), ROM(128K), RAM(6K), LQFP48```
 #### IMU:
-```MPU9250, 3-Axis gyroscope, 3-Axis accelerometer, 3-Axis magnetometer(AK8963), QFN3x3x1mm package```
-#### Compiler:
+```ICMM20602, 3-Axis gyroscope, 3-Axis accelerometer, QFN3x3x0.75mm package```
+#### GCC:
 ```arm-none-eabi-gcc version 6.3.1 20170620 (release)```
 #### CONNECTION:
 ```
-     SPI11    -> MPU9250 IMU Sensor
-     USART2   -> Communication Port
-     USB(CDC) -> Communication Port
-     I2C1     -> External EEPROM(AT24C64D-SSHM-T)
-     TIM2_CH2 -> Heater circuit control
+     SPI11    -> ICM20602 IMU Sensor
+     USART2   -> Communicate with upper
+     USB(CDC) -> Communicate with upper
+     USART1   -> RS485 Port 1
+     USART4   -> RS485 Port 2
+     USART3   -> External Sensor
+     CAN      -> External dirver
+     TIM3_CH3 -> Heater circuit control
 ```
 
 #### Hardware Resources:
 ```
-    9-Dof IMU Sensor <MPU9250>:
-        the MPU9250 is a 9-axis MotionTracking device that combines a 3-axis gyroscope, 3-axis accelerometer, 3-axis magnetometer and a Digital Motion Processor (DMP) all in a small 3x3x1mm package available as a pin-compatible upgrade from the MPU6515.
-    EEPROM Mass Storage <AT24C64>:
-        Stores the gyroscope stable zero offset data, temperature calibration data(gyroscope zero offset), accelerometer calibration data and compass calibration data.
+    6-Dof IMU Sensor <ICM20602>:
+        The ICM-20602 is a 6-axis MotionTracking device that combines a 3-axis gyroscope, 3-axis accelerometer, in a small 3 mm x 3 mm x 0.75 mm (16-pin LGA) package.
     A Heater circuit:
         provides a constant temperature envrionment for the IMU sensor.
 ```
 
-                                                               kyChu@2019/02/20
+                                                       kyChu@2020/02/20
 
