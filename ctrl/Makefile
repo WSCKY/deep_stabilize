@@ -1,10 +1,10 @@
 ################################################################################
 # Project Makefile
-# kyChu@2019-2-20
+# kyChu@2020-2-20
 ################################################################################
 
 # Project Name
-ProjName = AttEstimator
+ProjName = AttCtrl
 
 # TOP path
 TopPath = $(shell pwd)
@@ -31,7 +31,7 @@ INCS = -I$(TopPath)/startup \
 LD_INCS = -I$(TopPath)/sysconfig
 
 # Global definitions
-DEFS = -DSTM32 -DSTM32F0 -DSTM32F042G6Ux -DSTM32F042 -DUSE_STDPERIPH_DRIVER
+DEFS = -DSTM32 -DSTM32F0 -DSTM32F072CBTx -DSTM32F072 -DUSE_STDPERIPH_DRIVER
 
 # Other configuration
 CFGS = -mthumb -Dprintf=iprintf -fno-exceptions
