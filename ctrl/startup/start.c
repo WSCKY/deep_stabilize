@@ -31,7 +31,7 @@
   */
 int main_app(void)
 {
-	memcpy((void *)SYS_SRAM_ORIGIN, (void*)SYS_TEXT_ORIGIN, SYS_VECTOR_SIZE);
+    memcpy((void *)SYS_SRAM_ORIGIN, (void*)SYS_TEXT_ORIGIN, SYS_VECTOR_SIZE);
     SYSCFG_MemoryRemapConfig(SYSCFG_MemoryRemap_SRAM);
   /*!< At this stage the microcontroller clock setting is already configured, 
        this is done through SystemInit() function which is called from startup
