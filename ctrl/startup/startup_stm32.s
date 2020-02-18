@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
-  * @file      startup_stm32f042x6.s
-  * @author    MCD Application Team
-  * @brief     STM32F042x4/STM32F042x6 devices vector table for GCC toolchain.
+  * @file      startup_stm32f072xx.s
+  * @author    kyChu<kychu@qq.com>
+  * @brief     STM32F072x8/STM32F072xB devices vector table for GCC toolchain.
   *            This module performs:
   *                - Set the initial SP
   *                - Set the initial PC == Reset_Handler,
   *                - Set the vector table entries with the exceptions ISR address
   *                - Branches to main in the C library (which eventually
-  *                  calls main()).
+  *                  calls main_app()).
   *            After Reset the Cortex-M0 processor is in Thread mode,
   *            priority is Privileged, and the Stack is set to Main.
   ******************************************************************************
@@ -167,25 +167,25 @@ g_pfnVectors:
   .word  TSC_IRQHandler                    /* TSC                          */
   .word  DMA1_Channel1_IRQHandler          /* DMA1 Channel 1               */
   .word  DMA1_Channel2_3_IRQHandler        /* DMA1 Channel 2 and Channel 3 */
-  .word  DMA1_Channel4_5_6_7_IRQHandler    /* DMA1 Channel 4 and Channel 5 */
-  .word  ADC1_IRQHandler                   /* ADC1                         */
+  .word  DMA1_Channel4_5_6_7_IRQHandler    /* DMA1 Channel 4, Channel 5, Channel 6 and Channel 7*/
+  .word  ADC1_COMP_IRQHandler              /* ADC1, COMP1 and COMP2         */
   .word  TIM1_BRK_UP_TRG_COM_IRQHandler    /* TIM1 Break, Update, Trigger and Commutation */
   .word  TIM1_CC_IRQHandler                /* TIM1 Capture Compare         */
   .word  TIM2_IRQHandler                   /* TIM2                         */
   .word  TIM3_IRQHandler                   /* TIM3                         */
-  .word  0                                 /* Reserved                     */
-  .word  0                                 /* Reserved                     */
+  .word  TIM6_DAC_IRQHandler               /* TIM6 and DAC                 */
+  .word  TIM7_IRQHandler                   /* TIM7                         */
   .word  TIM14_IRQHandler                  /* TIM14                        */
-  .word  0                                 /* Reserved                     */
+  .word  TIM15_IRQHandler                  /* TIM15                        */
   .word  TIM16_IRQHandler                  /* TIM16                        */
   .word  TIM17_IRQHandler                  /* TIM17                        */
   .word  I2C1_IRQHandler                   /* I2C1                         */
-  .word  0                                 /* Reserved                     */
+  .word  I2C2_IRQHandler                   /* I2C2                         */
   .word  SPI1_IRQHandler                   /* SPI1                         */
   .word  SPI2_IRQHandler                   /* SPI2                         */
   .word  USART1_IRQHandler                 /* USART1                       */
   .word  USART2_IRQHandler                 /* USART2                       */
-  .word  0                                 /* Reserved                     */
+  .word  USART3_4_IRQHandler               /* USART3 and USART4            */
   .word  CEC_CAN_IRQHandler                /* CEC and CAN                  */
   .word  USB_IRQHandler                    /* USB                          */
 
@@ -248,8 +248,8 @@ g_pfnVectors:
   .weak      DMA1_Channel4_5_6_7_IRQHandler
   .thumb_set DMA1_Channel4_5_6_7_IRQHandler,Default_Handler
 
-  .weak      ADC1_IRQHandler
-  .thumb_set ADC1_IRQHandler,Default_Handler
+  .weak      ADC1_COMP_IRQHandler
+  .thumb_set ADC1_COMP_IRQHandler,Default_Handler
 
   .weak      TIM1_BRK_UP_TRG_COM_IRQHandler
   .thumb_set TIM1_BRK_UP_TRG_COM_IRQHandler,Default_Handler
@@ -263,8 +263,17 @@ g_pfnVectors:
   .weak      TIM3_IRQHandler
   .thumb_set TIM3_IRQHandler,Default_Handler
 
+  .weak      TIM6_DAC_IRQHandler
+  .thumb_set TIM6_DAC_IRQHandler,Default_Handler
+
+  .weak      TIM7_IRQHandler
+  .thumb_set TIM7_IRQHandler,Default_Handler
+
   .weak      TIM14_IRQHandler
   .thumb_set TIM14_IRQHandler,Default_Handler
+
+  .weak      TIM15_IRQHandler
+  .thumb_set TIM15_IRQHandler,Default_Handler
 
   .weak      TIM16_IRQHandler
   .thumb_set TIM16_IRQHandler,Default_Handler
@@ -274,6 +283,9 @@ g_pfnVectors:
 
   .weak      I2C1_IRQHandler
   .thumb_set I2C1_IRQHandler,Default_Handler
+
+  .weak      I2C2_IRQHandler
+  .thumb_set I2C2_IRQHandler,Default_Handler
 
   .weak      SPI1_IRQHandler
   .thumb_set SPI1_IRQHandler,Default_Handler
@@ -287,10 +299,14 @@ g_pfnVectors:
   .weak      USART2_IRQHandler
   .thumb_set USART2_IRQHandler,Default_Handler
 
+  .weak      USART3_4_IRQHandler
+  .thumb_set USART3_4_IRQHandler,Default_Handler
+
   .weak      CEC_CAN_IRQHandler
   .thumb_set CEC_CAN_IRQHandler,Default_Handler
 
   .weak      USB_IRQHandler
   .thumb_set USB_IRQHandler,Default_Handler
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/******************** kyChu<kyChu@qq.com> **** END OF FILE ********************/
+
