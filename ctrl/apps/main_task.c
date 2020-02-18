@@ -16,7 +16,7 @@ USB_CORE_HANDLE USB_Device_dev;
   */
 void StartThread(void const * arg)
 {
-	user_io_init();
+	board_gpio_init();
 	pwm_init(0);
 	uart2_init();
 	_delay_ms(50);
