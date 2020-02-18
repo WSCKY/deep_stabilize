@@ -20,10 +20,29 @@
 
 #### Hardware Resources:
 ```
-    6-Dof IMU Sensor <ICM20602>:
-        The ICM-20602 is a 6-axis MotionTracking device that combines a 3-axis gyroscope, 3-axis accelerometer, in a small 3 mm x 3 mm x 0.75 mm (16-pin LGA) package.
-    A Heater circuit:
-        provides a constant temperature envrionment for the IMU sensor.
+    6-Dof IMU Sensor <ICM20602>: SPI_CS(PA4) SPI_MOSI(PA7) SPI_MISO(PA6) SPI_SCLK(PA5) INT(PC13)
+    A Heater circuit: (PB0)
+    LED Indicator: GREEN(PB12)
+    CAN BUS: RX(PB8) TX(PB9)
+    RS232 BUS: RX(PA3) TX(PA2)
+    RS485 BUS 1: RX(PB7) TX(PB6) DE(PB1)
+    RS485 BUS 2: RX(PA1) TX(PA0) DE(PB2)
+    USB Device: DM(PA11) DP(PA12)
+    Output/Input GPIOs:
+        OUTPUT1   -> PB13
+        OUTPUT2   -> PB14
+        OUTPUT3   -> PB15
+        OUTPUT4   -> PA8
+        OUTPUT5   -> PA9
+        OUTPUT6   -> PA10
+
+        INPUT1    -> PA15
+        INPUT2    -> PB3
+        INPUT3    -> PB4
+        INPUT4    -> PB5
+    RESERVED GPIOs:
+        REV_GPIO1 -> PC15
+        REV_GPIO2 -> PC14
 ```
 
                                                        kyChu@2020/02/20
