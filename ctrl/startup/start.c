@@ -31,33 +31,33 @@
   */
 int main_app(void)
 {
-    memcpy((void *)SYS_SRAM_ORIGIN, (void*)SYS_TEXT_ORIGIN, SYS_VECTOR_SIZE);
-    SYSCFG_MemoryRemapConfig(SYSCFG_MemoryRemap_SRAM);
+  memcpy((void *)SYS_SRAM_ORIGIN, (void*)SYS_TEXT_ORIGIN, SYS_VECTOR_SIZE);
+  SYSCFG_MemoryRemapConfig(SYSCFG_MemoryRemap_SRAM);
   /*!< At this stage the microcontroller clock setting is already configured, 
        this is done through SystemInit() function which is called from startup
        file (startup_stm32f0xx.s) before to branch to application main.
        To reconfigure the default setting of SystemInit() function, refer to
        system_stm32f0xx.c file
-     */
-	SystemCoreClockUpdate();
+   */
+  SystemCoreClockUpdate();
 #if SYSTICK_ENABLE
-	SysTick_Config(SystemCoreClock / 1000);
+  SysTick_Config(SystemCoreClock / 1000);
 #endif /* SYSTICK_ENABLE */
-	/* Enable Syscfg */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+  /* Enable Syscfg */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 
-	_TimeTicksInit();
+  _TimeTicksInit();
 #if FREERTOS_ENABLED
-	osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
-	osThreadCreate (osThread(Start), NULL);
-	/* Start scheduler */
-	osKernelStart();
+  osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+  osThreadCreate (osThread(Start), NULL);
+  /* Start scheduler */
+  osKernelStart();
 #else
-	StartThread(0);
+  StartThread(0);
 #endif /* FREERTOS_ENABLED */
-	/* We should never get here as control is now taken by the scheduler */
-	for( ;; );
-	return 0;
+  /* We should never get here as control is now taken by the scheduler */
+  for( ;; );
+  return 0;
 }
 
 #ifdef  USE_FULL_ASSERT
