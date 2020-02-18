@@ -13,6 +13,9 @@ BuildPath = $(TopPath)/build
 # Output path
 OutPath = $(TopPath)/output
 
+#Platform
+PLATFORM = -mcpu=cortex-m0 -mthumb -mfloat-abi=soft
+
 # Include Dirs
 INCS = -I$(TopPath)/startup \
        -I$(TopPath)/sysconfig \
