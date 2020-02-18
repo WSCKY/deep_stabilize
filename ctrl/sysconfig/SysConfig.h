@@ -10,6 +10,8 @@
 
 #include "stm32f0xx.h"
 
+#include "sys_def.h"
+
 #include "boardconfig.h"
 #include "SysDataTypes.h"
 

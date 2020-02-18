@@ -8,6 +8,7 @@
 #ifndef LINKIF_CONF_H_
 #define LINKIF_CONF_H_
 
+#include "sys_def.h"
 #include "SysDataTypes.h"
 #include "boardconfig.h"
 
