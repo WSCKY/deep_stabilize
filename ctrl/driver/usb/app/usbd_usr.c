@@ -42,7 +42,7 @@ USBD_Usr_cb_TypeDef USR_cb =
   USBD_NONE_cb,
 };
 
-extern KYLINK_CORE_HANDLE CDC_PortHandle;
+//extern KYLINK_CORE_HANDLE CDC_PortHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -78,7 +78,7 @@ void USBD_USR_DeviceReset(uint8_t speed )
 */
 void USBD_USR_DeviceConfigured (void)
 {
-	kyLinkTxEnable(&CDC_PortHandle);
+//	kyLinkTxEnable(&CDC_PortHandle);
 }
 
 /**
@@ -88,7 +88,7 @@ void USBD_USR_DeviceConfigured (void)
   */
 void USBD_USR_DeviceSuspended(void)
 {
-	kyLinkTxDisable(&CDC_PortHandle);
+//	kyLinkTxDisable(&CDC_PortHandle);
 }
 
 
