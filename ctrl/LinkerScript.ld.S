@@ -113,7 +113,7 @@ SECTIONS
   .com_uart_cache (NOLOAD) :
   {
     . = ALIGN(4);
-    UART_RX_CACHE = .;
+    COM_UART_RX_CACHE = .;
     . = . + UART_RX_CACHE_SIZE;
   } >SYS_MAIN_MEMORY
 
