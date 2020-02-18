@@ -15,7 +15,6 @@
 #include "mpu9250.h"
 
 #include "kyLink.h"
-#include "com_task.h"
 
 #include "usbd_cdc_core.h"
 #include "usbd_usr.h"

@@ -39,7 +39,6 @@
 "build/middleware/kylink/kyLink.o"
 "build/apps/main_task.o"
 "build/apps/AttEst.o"
-"build/apps/com_task.o"
 "build/apps/printHardFault.o"
 "build/startup/start.o"
 "build/startup/TimerCounter.o"

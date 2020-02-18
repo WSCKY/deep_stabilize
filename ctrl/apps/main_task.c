@@ -28,9 +28,8 @@ void StartThread(void const * arg)
 
 	mpu9250_init();
 	_delay_ms(10);
-	com_task_init();
 	for(;;) {
-		com_task();
+//		com_task();
 //		uart2_TxBytesDMA((uint8_t *)"kyChu\n", 6);
 //		if(USBD_isEnabled()) {
 //			USB_CDC_SendBufferFast((uint8_t *)"kyChu\n", 6);
