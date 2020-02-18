@@ -17,7 +17,7 @@ USB_CORE_HANDLE USB_Device_dev;
 void StartThread(void const * arg)
 {
 	board_gpio_init();
-	pwm_init(0);
+	pwm_init();
 	uart2_init();
 	_delay_ms(50);
 	/* The Application layer has only to call USBD_Init to
