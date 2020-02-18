@@ -12,7 +12,6 @@
 
 #include "ifconfig.h"
 
-#include "eeprom.h"
 #include "mpu9250.h"
 
 #include "kyLink.h"
