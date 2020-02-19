@@ -9,7 +9,7 @@
 #### CONNECTION:
 ```
      SPI11    -> ICM20602 IMU Sensor
-     USART2   -> Communicate with upper
+     USART2   -> RS232 Port
      USB(CDC) -> Communicate with upper
      USART1   -> RS485 Port 1
      USART4   -> RS485 Port 2
@@ -43,6 +43,15 @@
     RESERVED GPIOs:
         REV_GPIO1 -> PC15
         REV_GPIO2 -> PC14
+```
+
+#### DMA requests for each channel:
+```
+    +-------+---------+---------+-------+-------+-------+-------+
+    | CHAN1 |  CHAN2  |  CHAN3  | CHAN4 | CHAN5 | CHAN6 | CHAN7 |
+    +-------+---------+---------+-------+-------+-------+-------+
+    |  REV  | SPI1_RX | SPI1_TX | U2_TX | U2_RX | U3_RX | U3_TX |
+    +-------+---------+---------+-------+-------+-------+-------+
 ```
 
                                                        kyChu@2020/02/20
