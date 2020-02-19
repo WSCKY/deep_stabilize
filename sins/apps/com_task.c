@@ -5,8 +5,10 @@ static kyLinkPackageDef TxPacket;
 KYLINK_CORE_HANDLE UartPortHandle;
 KYLINK_CORE_HANDLE CDC_PortHandle;
 static IMU_UNIT imu_unit;
+static Quat_T AttQ = {1, 0, 0, 0};
+static Euler_T AttE = {0, 0, 0};
 
-static uint8_t tx_cnt = 0;
+//static uint8_t tx_cnt = 0;
 static uint32_t tx_stamp = 0;
 
 void com_task_init(void)
@@ -25,9 +27,9 @@ static uint8_t read_len;
 static uint8_t read_buf[8];
 void com_task(void)
 {
-	if(_Get_Millis() - tx_stamp > 10) {
+	if(_Get_Millis() - tx_stamp >= 5) {
 		tx_stamp = _Get_Millis();
-		tx_cnt ++;
+/*		tx_cnt ++;
 		if(tx_cnt % 2 == 0) {
 			TxPacket.FormatData.msg_id = TYPE_ATT_QUAT_Resp;
 			TxPacket.FormatData.length = sizeof(Quat_T);
@@ -46,9 +48,17 @@ void com_task(void)
 //			TxPacket.FormatData.msg_id = TYPE_DEBUG_DATA_Resp;
 //			TxPacket.FormatData.length = sizeof(DebugFloatDef);
 //			TxPacket.FormatData.PacketData.TypeData.DebugData = DBGDATA;
-		}
+		}*/
+		AttQ = get_est_q();
+		Quat2Euler(&AttQ, &AttE);
+		imu_unit = get_imu_unit();
+
+		TxPacket.FormatData.msg_id = TYPE_PITCH_DATA_Resp;
+		TxPacket.FormatData.length = sizeof(PitchInfoDef);
+		TxPacket.FormatData.PacketData.TypeData.PitchInfoData.Pitch = AttE.roll;
+		TxPacket.FormatData.PacketData.TypeData.PitchInfoData.PitchRate = imu_unit.GyrData.gyrX;
 		SendTxPacket(&UartPortHandle, &TxPacket);
-		SendTxPacket(&CDC_PortHandle, &TxPacket);
+//		SendTxPacket(&CDC_PortHandle, &TxPacket);
 	}
 
 	while((read_len = uart2_pullBytes(read_buf, 8)) > 0) {
