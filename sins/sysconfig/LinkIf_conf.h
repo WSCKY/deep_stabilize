@@ -11,14 +11,20 @@
 #include "SysDataTypes.h"
 #include "boardconfig.h"
 
+__PACK_BEGIN typedef struct {
+	float PitchRate, Pitch;
+} __PACK_END PitchInfoDef;
+
 #define HARD_DEV_ID                    (0x5) /* for IMU Attitude Estimator board */
 
 #define KYLINK_USER_TYPE               TYPE_IMU_INFO_Resp = 0x11, \
                                        TYPE_ATT_QUAT_Resp = 0x12, \
+									   TYPE_PITCH_DATA_Resp = 0x17, \
 									   TYPE_UPGRADE_REQUEST = 0x80, \
 									   TYPE_DEBUG_DATA_Resp = 0xDC,
 
 #define KYLINK_USER_TYPE_DATA          IMU_INFO_DEF IMU_InfoData; \
+                                       PitchInfoDef PitchInfoData; \
                                        Quat_T AttitudeQuat; \
                                        FWInfoDef FileInfo; \
                                        DebugFloatDef DebugData;
