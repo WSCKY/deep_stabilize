@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet file="IMU.pdesc" type="text/xsl"?>
+
+<Packages MaxSize="80Bytes">
+  <!--Package type catalog-->
+  <fType name="Pitch Data" id="0x17">
+    <member type="float">rate</member>
+    <member type="float">angle</member>
+  </fType>
+</Packages>
