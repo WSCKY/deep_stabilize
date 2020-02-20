@@ -29,7 +29,8 @@ INCS = -I$(TopPath)/startup \
        -I$(TopPath)/driver/usb/lib/core \
        -I$(TopPath)/driver/usb/lib/class \
        -I$(TopPath)/middleware/maths \
-       -I$(TopPath)/middleware/kylink
+       -I$(TopPath)/middleware/kylink \
+       -I$(TopPath)/middleware/freertos/inc
 
 LD_INCS = -I$(TopPath)/sysconfig
 
@@ -104,6 +105,7 @@ all: $(ProjName).elf | $(BuildPath)
 -include driver/stdriver/src/subdir.mk
 -include middleware/maths/subdir.mk
 -include middleware/kylink/subdir.mk
+-include middleware/freertos/subdir.mk
 -include subdir.mk
 -include objects.mk
 
