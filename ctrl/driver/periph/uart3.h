@@ -22,7 +22,7 @@
 #define UART3_TxPin                         GPIO_Pin_10
 #define UART3_RxPin_AF                      GPIO_PinSource11
 #define UART3_TxPin_AF                      GPIO_PinSource10
-#define UART3_IRQn                          USART3_4_IRQn
+/* #define UART3_IRQn                          USART3_4_IRQn */
 
 #if UART3_DMA_ENABLE
 #define UART3_TX_DMA                        DMA1_Channel7
@@ -32,7 +32,7 @@
 #define UART3_TX_DMA_IT_TC_FLAG             DMA1_IT_TC7
 #define UART3_RX_DMA_IT_HT_FLAG             DMA1_IT_HT6
 #define UART3_RX_DMA_IT_TC_FLAG             DMA1_IT_TC7
-#define UART3_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn   /*!< DMA1 Channel 6, Channel 7 Interrupts */
+/* #define UART3_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn */ /*!< DMA1 Channel 6, Channel 7 Interrupts */
 
 #endif /* UART3_DMA_ENABLE */
 

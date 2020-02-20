@@ -20,7 +20,7 @@
 #define UART4_TxPin                         GPIO_Pin_0
 #define UART4_RxPin_AF                      GPIO_PinSource1
 #define UART4_TxPin_AF                      GPIO_PinSource0
-#define UART4_IRQn                          USART3_4_IRQn
+/* #define UART4_IRQn                          USART3_4_IRQn */
 
 void uart4_init(void);
 

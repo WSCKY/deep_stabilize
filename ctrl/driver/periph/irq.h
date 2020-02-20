@@ -22,17 +22,24 @@
 #include "uart1.h"
 #include "uart2.h"
 #include "uart3.h"
+#include "uart4.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+void irq_initialize(void);
 
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void SVC_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
+
+void USART1_IRQHandler(void);
+void USART2_IRQHandler(void);
+void USART3_4_IRQHandler(void);
+void DMA1_Channel4_5_6_7_IRQHandler(void);
 
 #ifdef __cplusplus
 }

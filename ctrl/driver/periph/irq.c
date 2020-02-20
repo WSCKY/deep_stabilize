@@ -19,6 +19,34 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
+void irq_initialize(void)
+{
+  NVIC_InitTypeDef NVIC_InitStructure;
+  /* Enable the USART1 Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = USART1_RX_INT_PRIORITY;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
+  /* Enable the USART2 Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = USART2_RX_INT_PRIORITY;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
+  /* Enable the USART3 and USART4 Interrupts */
+  NVIC_InitStructure.NVIC_IRQChannel = USART3_4_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = USART3_4_RX_INT_PRIORITY;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
+  /* Enable the DMA1 Channel 4, 5, 6, 7 Interrupts */
+  NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel4_5_6_7_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = DMA_CHAN4_5_6_7_INT_PRIORITY;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+}
+
 /******************************************************************************/
 /*            Cortex-M0 Processor Exceptions Handlers                         */
 /******************************************************************************/
@@ -83,17 +111,6 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief  This function handles DMA Channel 4, 5, 6, 7 interrupt request.
-  * @param  None
-  * @retval None
-  */
-void DMA1_Channel4_5_6_7_IRQHandler(void)
-{
-  uart3_dma_irq_handler();
-  uart2_dma_irq_handler();
-}
-
-/**
   * @brief  This function handles USART1 interrupt request.
   * @param  None
   * @retval None
@@ -121,6 +138,18 @@ void USART2_IRQHandler(void)
 void USART3_4_IRQHandler(void)
 {
   uart3_irq_handler();
+  uart4_irq_handler();
+}
+
+/**
+  * @brief  This function handles DMA Channel 4, 5, 6, 7 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA1_Channel4_5_6_7_IRQHandler(void)
+{
+  uart3_dma_irq_handler();
+  uart2_dma_irq_handler();
 }
 
 /******************** kyChu<kyChu@qq.com> **** END OF FILE ********************/

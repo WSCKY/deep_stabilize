@@ -16,7 +16,7 @@ void uart4_init(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
   USART_InitTypeDef USART_InitStructure;
-  NVIC_InitTypeDef NVIC_InitStructure;
+/*  NVIC_InitTypeDef NVIC_InitStructure; */
 
   if(_uart4_init_flag == 1) return; // already init.
 
@@ -61,11 +61,12 @@ void uart4_init(void)
   /* Configure UART4 */
   USART_Init(UART4, &USART_InitStructure);
 
+  /* ##### ALREADY INITIALIZED IN irq.c ##### */
   /* Enable the UART4 Interrupt */
-  NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
+/*  NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = UART4_RX_INT_PRIORITY;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
+  NVIC_Init(&NVIC_InitStructure); */
 
   /* Enable the UART4 Receive Interrupt */
   USART_ITConfig(UART4, USART_IT_RXNE, ENABLE);

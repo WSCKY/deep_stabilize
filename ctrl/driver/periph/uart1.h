@@ -20,7 +20,7 @@
 #define UART1_TxPin                         GPIO_Pin_6
 #define UART1_RxPin_AF                      GPIO_PinSource7
 #define UART1_TxPin_AF                      GPIO_PinSource6
-#define UART1_IRQn                          USART1_IRQn
+/* #define UART1_IRQn                          USART1_IRQn */
 
 void uart1_init(void);
 

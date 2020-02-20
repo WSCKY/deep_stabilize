@@ -22,7 +22,7 @@
 #define UART2_TxPin                         GPIO_Pin_2
 #define UART2_RxPin_AF                      GPIO_PinSource3
 #define UART2_TxPin_AF                      GPIO_PinSource2
-#define UART2_IRQn                          USART2_IRQn
+/* #define UART2_IRQn                          USART2_IRQn */
 
 #if UART2_DMA_ENABLE
 #define UART2_TX_DMA                        DMA1_Channel4
@@ -32,7 +32,7 @@
 #define UART2_TX_DMA_IT_TC_FLAG             DMA1_IT_TC4
 #define UART2_RX_DMA_IT_HT_FLAG             DMA1_IT_HT5
 #define UART2_RX_DMA_IT_TC_FLAG             DMA1_IT_TC5
-#define UART2_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn   /*!< DMA1 Channel 4, Channel 5 Interrupts */
+/* #define UART2_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn */ /*!< DMA1 Channel 4, Channel 5 Interrupts */
 
 #endif /* UART2_DMA_ENABLE */
 

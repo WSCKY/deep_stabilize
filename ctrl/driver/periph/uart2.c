@@ -30,7 +30,7 @@ void uart2_init(
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
+/*	NVIC_InitTypeDef NVIC_InitStructure; */
 
 	if(_uart2_init_flag == 1) return; // already init.
 #if !UART2_DMA_ENABLE
@@ -82,11 +82,12 @@ void uart2_init(
 	/* Configure UART2 */
 	USART_Init(UART2, &USART_InitStructure);
 
+	/* ##### ALREADY INITIALIZED IN irq.c ##### */
 	/* Enable the UART2 Interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = UART2_IRQn;
+/*	NVIC_InitStructure.NVIC_IRQChannel = UART2_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPriority = UART2_RX_INT_PRIORITY;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
+	NVIC_Init(&NVIC_InitStructure); */
 
 #if UART2_DMA_ENABLE
 	/* Enable the UART2 Idle line detection interrupt. */
@@ -105,7 +106,7 @@ void uart2_init(
 #if UART2_DMA_ENABLE
 static void dma_config(void)
 {
-	NVIC_InitTypeDef NVIC_InitStructure;
+/*	NVIC_InitTypeDef NVIC_InitStructure; */
 
 	/* Enable UART2_DMA Clock */
 	UART2_DMA_CLK_CMD(UART2_DMA_CLK, ENABLE);
@@ -145,10 +146,10 @@ static void dma_config(void)
 	DMA_ITConfig(UART2_RX_DMA, DMA_IT_HT, ENABLE);
 	DMA_ITConfig(UART2_RX_DMA, DMA_IT_TC, ENABLE);
 
-	NVIC_InitStructure.NVIC_IRQChannel = UART2_DMA_IRQn;
+/*	NVIC_InitStructure.NVIC_IRQChannel = UART2_DMA_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPriority = UART2_DMA_INT_PRIORITY;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
+	NVIC_Init(&NVIC_InitStructure); */
 
 	/* Enable the UART2_TX_DMA channels */
 //	DMA_Cmd(UART2_TX_DMA, ENABLE);

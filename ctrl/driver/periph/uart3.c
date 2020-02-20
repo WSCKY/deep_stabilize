@@ -30,7 +30,7 @@ void uart3_init(
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
+/*	NVIC_InitTypeDef NVIC_InitStructure; */
 
 	if(_uart3_init_flag == 1) return; // already init.
 #if !UART3_DMA_ENABLE
@@ -82,11 +82,12 @@ void uart3_init(
 	/* Configure UART3 */
 	USART_Init(UART3, &USART_InitStructure);
 
+	/* ##### ALREADY INITIALIZED IN irq.c ##### */
 	/* Enable the UART3 Interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = UART3_IRQn;
+/*	NVIC_InitStructure.NVIC_IRQChannel = UART3_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPriority = UART3_RX_INT_PRIORITY;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
+	NVIC_Init(&NVIC_InitStructure); */
 
 #if UART3_DMA_ENABLE
 	/* Enable the UART3 Idle line detection interrupt. */
@@ -105,7 +106,7 @@ void uart3_init(
 #if UART3_DMA_ENABLE
 static void dma_config(void)
 {
-	NVIC_InitTypeDef NVIC_InitStructure;
+/*	NVIC_InitTypeDef NVIC_InitStructure; */
 
 	/* Enable UART3_DMA Clock */
 	UART3_DMA_CLK_CMD(UART3_DMA_CLK, ENABLE);
@@ -145,10 +146,10 @@ static void dma_config(void)
 	DMA_ITConfig(UART3_RX_DMA, DMA_IT_HT, ENABLE);
 	DMA_ITConfig(UART3_RX_DMA, DMA_IT_TC, ENABLE);
 
-	NVIC_InitStructure.NVIC_IRQChannel = UART3_DMA_IRQn;
+/*	NVIC_InitStructure.NVIC_IRQChannel = UART3_DMA_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPriority = UART3_DMA_INT_PRIORITY;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
+	NVIC_Init(&NVIC_InitStructure); */
 
 	/* Enable the UART3_TX_DMA channels */
 //	DMA_Cmd(UART3_TX_DMA, ENABLE);

@@ -30,12 +30,10 @@
 #define USB_DEVICE_INT_PRIORITY        (3)
 #define IMU_SPI_DMA_INT_PRIORITY       (0)
 #define IMU_UPDATE_INT_PRIORITY        (1)
-#define UART1_RX_INT_PRIORITY          (1)
-#define UART2_RX_INT_PRIORITY          (2)
-#define UART2_DMA_INT_PRIORITY         (2)
-#define UART3_RX_INT_PRIORITY          (0)
-#define UART3_DMA_INT_PRIORITY         (0)
-#define UART4_RX_INT_PRIORITY          (0)
+#define USART1_RX_INT_PRIORITY         (1)
+#define USART2_RX_INT_PRIORITY         (2)
+#define USART3_4_RX_INT_PRIORITY       (0)
+#define DMA_CHAN4_5_6_7_INT_PRIORITY   (0)
 #if SYSTICK_ENABLE
 #define SYSTICK_INT_PRIORITY           (3)
 #endif /* SYSTICK_ENABLE */
