@@ -10,6 +10,8 @@
 
 #include "kyLinkMacros.h"
 
+typedef void (*PortRecvByteCallback)(uint8_t Data);
+
 __PACK_BEGIN typedef struct {
 	int16_t accX, accY, accZ;
 	int16_t temp;
