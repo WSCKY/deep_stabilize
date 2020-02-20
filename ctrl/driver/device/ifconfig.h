@@ -10,7 +10,9 @@
 
 #include "spi1.h"
 #include "intio.h"
+#include "uart1.h"
 #include "uart2.h"
+#include "uart3.h"
 #include "pwm.h"
 #include "gpio.h"
 
