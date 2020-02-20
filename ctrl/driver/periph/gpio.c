@@ -20,7 +20,7 @@ static const USER_IO_LIST INPUT_IOS[INPUT_IO_NUMBER] = {
   {GPIOB, GPIO_Pin_5},
 };
 
-#define OUTPUT_IO_NUMBER       7
+#define OUTPUT_IO_NUMBER       9
 static const USER_IO_LIST OUTPUT_IOS[OUTPUT_IO_NUMBER] = {
   {GPIOB, GPIO_Pin_13},
   {GPIOB, GPIO_Pin_14},
@@ -29,6 +29,8 @@ static const USER_IO_LIST OUTPUT_IOS[OUTPUT_IO_NUMBER] = {
   {GPIOA, GPIO_Pin_9},
   {GPIOA, GPIO_Pin_10},
   {GPIOB, GPIO_Pin_12}, // GREEN LED
+  {GPIOB, GPIO_Pin_1}, // RS485 1
+  {GPIOB, GPIO_Pin_2}, // RS485 2
 };
 
 void board_gpio_init(void)

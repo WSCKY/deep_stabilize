@@ -29,6 +29,8 @@ typedef enum {
   IO_OUTPUT5 = 4,
   IO_OUTPUT6 = 5,
   LED_GREEN = 6,
+  RS485_CTRL1 = 7,
+  RS485_CTRL2 = 8,
 } OUTPUT_IO_ID;
 
 void board_gpio_init(void);
