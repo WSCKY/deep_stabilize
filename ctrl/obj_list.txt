@@ -45,6 +45,7 @@
 "build/startup/syscalls.o"
 "build/startup/system_stm32f0xx.o"
 "build/driver/periph/pwm.o"
+"build/driver/periph/uart1.o"
 "build/driver/periph/uart2.o"
 "build/driver/periph/uart3.o"
 "build/driver/periph/spi1.o"
