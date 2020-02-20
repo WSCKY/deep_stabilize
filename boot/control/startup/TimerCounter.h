@@ -20,6 +20,7 @@
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void _TimeTicksInit(void);
+void _TimeTicksDeInit(void);
 
 uint16_t _Get_Ticks(void);
 uint32_t _Get_Micros(void);

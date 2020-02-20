@@ -45,14 +45,24 @@ void _TimeTicksInit(void)
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
-	/* Clear TIM3 Counter */
-	TIM_SetCounter(TIM3, 0);
+  /* Clear TIM3 Counter */
+  TIM3->CNT = 0;
 
-	/* TIM Interrupts enable */
-	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+  /* Enable the Interrupt sources */
+  TIM3->DIER |= TIM_IT_Update;
 
-	/* TIM3 counter enable */
-	TIM_Cmd(TIM3, ENABLE);
+  /* Enable the TIM3 Counter */
+  TIM3->CR1 |= TIM_CR1_CEN;
+}
+
+void _TimeTicksDeInit(void)
+{
+  /* Disable the Interrupt sources */
+  TIM3->DIER &= (uint16_t)~TIM_IT_Update;
+  /* Disable the TIM Counter */
+  TIM3->CR1 &= (uint16_t)(~((uint16_t)TIM_CR1_CEN));
+  /* Disable the TIM3_IRQn IRQ Channels -------------------------------------*/
+  NVIC->ICER[0] = (uint32_t)0x01 << (TIM3_IRQn & (uint8_t)0x1F);
 }
 
 /*
