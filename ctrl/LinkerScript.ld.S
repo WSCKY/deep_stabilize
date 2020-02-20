@@ -110,11 +110,18 @@ SECTIONS
     . = . + APP_RX_DATA_SIZE;
   } >SYS_MAIN_MEMORY
 
-  .com_uart_cache (NOLOAD) :
+  .uart2_rx_cache (NOLOAD) :
   {
     . = ALIGN(4);
-    COM_UART_RX_CACHE = .;
-    . = . + UART_RX_CACHE_SIZE;
+    UART2_RX_CACHE = .;
+    . = . + UART2_RX_CACHE_SIZE;
+  } >SYS_MAIN_MEMORY
+
+  .uart3_rx_cache (NOLOAD) :
+  {
+    . = ALIGN(4);
+    UART3_RX_CACHE = .;
+    . = . + UART3_RX_CACHE_SIZE;
   } >SYS_MAIN_MEMORY
 
   /* Initialized data sections goes into RAM, load LMA copy after code */
