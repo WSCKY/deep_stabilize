@@ -37,6 +37,16 @@
 
 "build/middleware/maths/maths.o"
 "build/middleware/kylink/kyLink.o"
+
+"build/middleware/freertos/list.o"
+"build/middleware/freertos/port.o"
+"build/middleware/freertos/tasks.o"
+"build/middleware/freertos/queue.o"
+"build/middleware/freertos/timers.o"
+"build/middleware/freertos/heap_4.o"
+"build/middleware/freertos/croutine.o"
+"build/middleware/freertos/cmsis_os.o"
+
 "build/apps/main_task.o"
 "build/apps/AttEst.o"
 "build/apps/printHardFault.o"
