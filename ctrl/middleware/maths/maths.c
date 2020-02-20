@@ -10,6 +10,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "maths.h"
+#if FREERTOS_ENABLED
+#include "cmsis_os.h"
+#endif /* FREERTOS_ENABLED */
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
