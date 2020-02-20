@@ -12,7 +12,7 @@
 
 #define UART1                               USART1
 #define UART1_GPIO                          GPIOB
-#define UART1_AF                            GPIO_AF_1
+#define UART1_AF                            GPIO_AF_0
 #define UART1_GPIO_CLK                      RCC_AHBPeriph_GPIOB
 #define UART1_CLK                           RCC_APB2Periph_USART1
 #define UART1_CLK_CMD                       RCC_APB2PeriphClockCmd

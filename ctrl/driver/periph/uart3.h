@@ -14,7 +14,7 @@
 
 #define UART3                               USART3
 #define UART3_GPIO                          GPIOB
-#define UART3_AF                            GPIO_AF_1
+#define UART3_AF                            GPIO_AF_4
 #define UART3_GPIO_CLK                      RCC_AHBPeriph_GPIOB
 #define UART3_CLK                           RCC_APB1Periph_USART3
 #define UART3_CLK_CMD                       RCC_APB1PeriphClockCmd
