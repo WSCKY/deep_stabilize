@@ -23,6 +23,7 @@
     6-Dof IMU Sensor <ICM20602>: SPI_CS(PA4) SPI_MOSI(PA7) SPI_MISO(PA6) SPI_SCLK(PA5) INT(PC13)
     A Heater circuit: (PB0)
     LED Indicator: GREEN(PB12)
+    External sensor: RX(PB11) TX(PB10)
     CAN BUS: RX(PB8) TX(PB9)
     RS232 BUS: RX(PA3) TX(PA2)
     RS485 BUS 1: RX(PB7) TX(PB6) DE(PB1)
