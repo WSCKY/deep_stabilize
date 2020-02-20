@@ -11,7 +11,7 @@
 CommPackageDef *pRx;
 CommPackageDef TxPacket;
 uint8_t upgrade_flag = 0;
-uint32_t NbrOfPage = (FLASH_END_ADDRESS - APPLICATION_ADDRESS) / FLASH_PAGE_SIZE;
+uint32_t NbrOfPage = 0;//(FLASH_END_ADDRESS - APPLICATION_ADDRESS) / FLASH_PAGE_SIZE;
 
 uint32_t PackageNbr = 0, PackageRecNbr = 0;
 
@@ -48,7 +48,9 @@ void StartThread(void const * arg)
 			if(pRx->Packet.msg_id == TYPE_UPGRADE_REQUEST && pRx->Packet.length == 16 &&
 			   pRx->Packet.PacketData.FileInfo.Enc_Type == ENC_TYPE_PLAIN) {
 				PackageNbr = pRx->Packet.PacketData.FileInfo.PacketNum;
-				upgrade_flag = 1;
+				NbrOfPage = (PackageNbr * FILE_DATA_CACHE) / FLASH_PAGE_SIZE + 1;
+				if(NbrOfPage < (FLASH_END_ADDRESS - APPLICATION_ADDRESS) / FLASH_PAGE_SIZE)
+				  upgrade_flag = 1;
 				break;
 			}
 		}
