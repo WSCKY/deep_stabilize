@@ -21,6 +21,7 @@ void StartThread(void const * arg)
 	uart1_init();
 	uart2_init();
 	uart3_init();
+	uart4_init();
 	_delay_ms(50);
 	/* The Application layer has only to call USBD_Init to
 	initialize the USB low level driver, the USB device library, the USB clock
