@@ -131,6 +131,13 @@ SECTIONS
     . = . + UART3_RX_CACHE_SIZE;
   } >SYS_MAIN_MEMORY
 
+  .uart4_rx_cache (NOLOAD) :
+  {
+    . = ALIGN(4);
+    UART4_RX_CACHE = .;
+    . = . + UART4_RX_CACHE_SIZE;
+  } >SYS_MAIN_MEMORY
+
   /* Initialized data sections goes into RAM, load LMA copy after code */
   .data : 
   {
