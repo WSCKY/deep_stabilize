@@ -16,27 +16,28 @@ USB_CORE_HANDLE USB_Device_dev;
   */
 void StartThread(void const * arg)
 {
-	board_gpio_init();
-	pwm_init();
-	uart1_init();
-	uart2_init();
-	uart3_init();
-	uart4_init();
-	_delay_ms(50);
-	/* The Application layer has only to call USBD_Init to
-	initialize the USB low level driver, the USB device library, the USB clock
-	,pins and interrupt service routine (BSP) to start the Library*/
-	USBD_Init(&USB_Device_dev, &USR_desc, &USBD_CDC_cb, &USR_cb);
-	_delay_ms(50);
+  irq_initialize();
+  board_gpio_init();
+/*  pwm_init(); */
+  uart1_init();
+  uart2_init();
+  uart3_init();
+  uart4_init();
+  _delay_ms(50);
+  /* The Application layer has only to call USBD_Init to
+     initialize the USB low level driver, the USB device library, the USB clock,
+     pins and interrupt service routine (BSP) to start the Library*/
+  USBD_Init(&USB_Device_dev, &USR_desc, &USBD_CDC_cb, &USR_cb);
+  _delay_ms(50);
 
-	mpu9250_init();
-	_delay_ms(10);
-	for(;;) {
-//		com_task();
-//		uart2_TxBytesDMA((uint8_t *)"kyChu\n", 6);
-//		if(USBD_isEnabled()) {
-//			USB_CDC_SendBufferFast((uint8_t *)"kyChu\n", 6);
-//		}
-//		_delay_ms(200);
-	}
+/*  mpu9250_init();
+  _delay_ms(10); */
+  for(;;) {
+//    com_task();
+//    uart2_TxBytesDMA((uint8_t *)"kyChu\n", 6);
+//    if(USBD_isEnabled()) {
+//      USB_CDC_SendBufferFast((uint8_t *)"kyChu\n", 6);
+//    }
+//    _delay_ms(200);
+  }
 }
