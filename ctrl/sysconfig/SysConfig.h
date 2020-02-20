@@ -32,6 +32,8 @@
 #define IMU_UPDATE_INT_PRIORITY        (1)
 #define UART2_RX_INT_PRIORITY          (0)
 #define UART2_DMA_INT_PRIORITY         (0)
+#define UART3_RX_INT_PRIORITY          (0)
+#define UART3_DMA_INT_PRIORITY         (0)
 #if SYSTICK_ENABLE
 #define SYSTICK_INT_PRIORITY           (3)
 #endif /* SYSTICK_ENABLE */
