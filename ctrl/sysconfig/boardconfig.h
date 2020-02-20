@@ -31,6 +31,7 @@
 #define UART1_RX_CACHE_SIZE                 88
 #define UART2_RX_CACHE_SIZE                 88
 #define UART3_RX_CACHE_SIZE                 88
+#define UART4_RX_CACHE_SIZE                 88
 
 #define SYS_MAIN_FLASH                      FLASH_TEXT
 #define SYS_MAIN_MEMORY                     SRAM

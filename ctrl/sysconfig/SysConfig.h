@@ -35,6 +35,7 @@
 #define UART2_DMA_INT_PRIORITY         (2)
 #define UART3_RX_INT_PRIORITY          (0)
 #define UART3_DMA_INT_PRIORITY         (0)
+#define UART4_RX_INT_PRIORITY          (0)
 #if SYSTICK_ENABLE
 #define SYSTICK_INT_PRIORITY           (3)
 #endif /* SYSTICK_ENABLE */
