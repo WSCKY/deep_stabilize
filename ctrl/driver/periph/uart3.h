@@ -31,7 +31,7 @@
 #define UART3_DMA_CLK_CMD                   RCC_AHBPeriphClockCmd
 #define UART3_TX_DMA_IT_TC_FLAG             DMA1_IT_TC7
 #define UART3_RX_DMA_IT_HT_FLAG             DMA1_IT_HT6
-#define UART3_RX_DMA_IT_TC_FLAG             DMA1_IT_TC7
+#define UART3_RX_DMA_IT_TC_FLAG             DMA1_IT_TC6
 /* #define UART3_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn */ /*!< DMA1 Channel 6, Channel 7 Interrupts */
 
 #endif /* UART3_DMA_ENABLE */
