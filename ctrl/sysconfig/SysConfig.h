@@ -21,7 +21,11 @@
 
 #define BOARD_IMU_ENABLE               (0)
 
+#if FREERTOS_ENABLED
+#define SYSTICK_ENABLE                 (1)
+#else
 #define SYSTICK_ENABLE                 (0)
+#endif /* FREERTOS_ENABLED */
 
 /* Interrupt Priority Table */
 #define SYSTEM_TIMER_INT_PRIORITY      (0)
