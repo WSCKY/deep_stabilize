@@ -13,7 +13,7 @@ static uint32_t _tx_comp_flag = 1;
 static DMA_InitTypeDef DMA_InitStructure;
 
 static uint32_t in_ptr = 0, out_ptr = 0;
-extern uint8_t COM_UART_RX_CACHE[UART_RX_CACHE_SIZE];
+extern uint8_t UART2_RX_CACHE[UART2_RX_CACHE_SIZE];
 
 static void dma_config(void);
 #else
@@ -122,9 +122,9 @@ static void dma_config(void)
 	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
 
-	DMA_InitStructure.DMA_BufferSize = UART_RX_CACHE_SIZE;
+	DMA_InitStructure.DMA_BufferSize = UART2_RX_CACHE_SIZE;
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)COM_UART_RX_CACHE;
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)UART2_RX_CACHE;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
 	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(UART2->RDR);
@@ -185,8 +185,8 @@ void uart2_TxBytesDMA(uint8_t *p, uint32_t l)
 uint8_t uart2_pullByte(uint8_t *p)
 {
 	if(out_ptr != in_ptr) {
-		*p = COM_UART_RX_CACHE[out_ptr];
-		if(++ out_ptr == UART_RX_CACHE_SIZE) {
+		*p = UART2_RX_CACHE[out_ptr];
+		if(++ out_ptr == UART2_RX_CACHE_SIZE) {
 			out_ptr = 0;
 		}
 		return 1;
@@ -201,14 +201,14 @@ uint32_t uart2_pullBytes(uint8_t *p, uint32_t l)
 	if(in_ptr > out_ptr) {
 		len = in_ptr - out_ptr;
 	} else {
-		len = UART_RX_CACHE_SIZE - out_ptr + in_ptr;
+		len = UART2_RX_CACHE_SIZE - out_ptr + in_ptr;
 	}
 	if(len > l) len = l;
 	cnt = len;
 	while(cnt --) {
-		*p = COM_UART_RX_CACHE[out_ptr];
+		*p = UART2_RX_CACHE[out_ptr];
 		p ++;
-		if(++ out_ptr == UART_RX_CACHE_SIZE) {
+		if(++ out_ptr == UART2_RX_CACHE_SIZE) {
 			out_ptr = 0;
 		}
 	}
@@ -218,7 +218,7 @@ uint32_t uart2_pullBytes(uint8_t *p, uint32_t l)
 static void uart2_pushBytes(void)
 {
 	/* Calculate current position in buffer */
-	in_ptr = UART_RX_CACHE_SIZE - UART2_RX_DMA->CNDTR;
+	in_ptr = UART2_RX_CACHE_SIZE - UART2_RX_DMA->CNDTR;
 }
 #else
 void uart2_set_callback(PortRecvByteCallback p)
@@ -230,42 +230,45 @@ void uart2_set_callback(PortRecvByteCallback p)
 #endif /* UART2_DMA_ENABLE */
 
 #if UART2_DMA_ENABLE
-void UART2_DMA_IRQHandler(void)
+void uart2_dma_irq_handler(void)
 {
-	/* check if transfer complete flag is set. */
-	if(DMA_GetITStatus(UART2_TX_DMA_IT_TC_FLAG)) {
-		DMA_Cmd(UART2_TX_DMA, DISABLE);
-		_tx_comp_flag = 1;
-		DMA_ClearITPendingBit(UART2_TX_DMA_IT_TC_FLAG);
-	}
-	/* check if receive half complete flag is set. */
-	if(DMA_GetITStatus(UART2_RX_DMA_IT_HT_FLAG)) {
-		uart2_pushBytes();
-		DMA_ClearITPendingBit(UART2_RX_DMA_IT_HT_FLAG);
-	}
-	/* check if receive complete flag is set. */
-	if(DMA_GetITStatus(UART2_RX_DMA_IT_TC_FLAG)) {
-		uart2_pushBytes();
-		DMA_ClearITPendingBit(UART2_RX_DMA_IT_TC_FLAG);
-	}
+  if(_uart2_init_flag == 0) return;
+  /* check if transfer complete flag is set. */
+  if(DMA_GetITStatus(UART2_TX_DMA_IT_TC_FLAG)) {
+    DMA_Cmd(UART2_TX_DMA, DISABLE);
+    _tx_comp_flag = 1;
+    DMA_ClearITPendingBit(UART2_TX_DMA_IT_TC_FLAG);
+  }
+  /* check if receive half complete flag is set. */
+  if(DMA_GetITStatus(UART2_RX_DMA_IT_HT_FLAG)) {
+    uart2_pushBytes();
+    DMA_ClearITPendingBit(UART2_RX_DMA_IT_HT_FLAG);
+  }
+  /* check if receive complete flag is set. */
+  if(DMA_GetITStatus(UART2_RX_DMA_IT_TC_FLAG)) {
+    uart2_pushBytes();
+    DMA_ClearITPendingBit(UART2_RX_DMA_IT_TC_FLAG);
+  }
 }
 #endif /* UART2_DMA_ENABLE */
-void UART2_IRQHandler(void)
+
+void uart2_irq_handler(void)
 {
+  if(_uart2_init_flag == 0) return;
 #if UART2_DMA_ENABLE
-	if(USART_GetITStatus(UART2, USART_IT_IDLE) != RESET) {
-		uart2_pushBytes();
-		USART_ClearFlag(UART2, USART_FLAG_IDLE);
-		USART_ClearITPendingBit(UART2, USART_IT_IDLE);
-	}
+  if(USART_GetITStatus(UART2, USART_IT_IDLE) != RESET) {
+    uart2_pushBytes();
+    USART_ClearFlag(UART2, USART_FLAG_IDLE);
+    USART_ClearITPendingBit(UART2, USART_IT_IDLE);
+  }
 #else
-	USART_ClearFlag(UART2, USART_FLAG_ORE | USART_FLAG_PE);
-	if(USART_GetITStatus(UART2, USART_IT_RXNE) != RESET) {
-		if(pCallback != 0) {
-			pCallback(UART2->RDR & 0xFF);
-		}
-		USART_ClearFlag(UART2, USART_FLAG_RXNE);
-		USART_ClearITPendingBit(UART2, USART_IT_RXNE);
-	}
+  USART_ClearFlag(UART2, USART_FLAG_ORE | USART_FLAG_PE);
+  if(USART_GetITStatus(UART2, USART_IT_RXNE) != RESET) {
+    if(pCallback != 0) {
+      pCallback(UART2->RDR & 0xFF);
+    }
+    USART_ClearFlag(UART2, USART_FLAG_RXNE);
+    USART_ClearITPendingBit(UART2, USART_IT_RXNE);
+  }
 #endif /* UART2_DMA_ENABLE */
 }

@@ -10,7 +10,6 @@
 
 #include "SysConfig.h"
 
-/* Not available on STM32F04x devices ??? */
 #define UART2_DMA_ENABLE                    (1)
 
 #define UART2                               USART2
@@ -24,7 +23,6 @@
 #define UART2_RxPin_AF                      GPIO_PinSource3
 #define UART2_TxPin_AF                      GPIO_PinSource2
 #define UART2_IRQn                          USART2_IRQn
-#define UART2_IRQHandler                    USART2_IRQHandler
 
 #if UART2_DMA_ENABLE
 #define UART2_TX_DMA                        DMA1_Channel4
@@ -34,11 +32,9 @@
 #define UART2_TX_DMA_IT_TC_FLAG             DMA1_IT_TC4
 #define UART2_RX_DMA_IT_HT_FLAG             DMA1_IT_HT5
 #define UART2_RX_DMA_IT_TC_FLAG             DMA1_IT_TC5
-#define UART2_DMA_IRQn                      DMA1_Channel4_5_IRQn   /*!< DMA1 Channel 4, Channel 5 Interrupts */
-#define UART2_DMA_IRQHandler                DMA1_Channel4_5_IRQHandler
-#endif /* UART2_DMA_ENABLE */
+#define UART2_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn   /*!< DMA1 Channel 4, Channel 5 Interrupts */
 
-typedef void (*PortRecvByteCallback)(uint8_t Data);
+#endif /* UART2_DMA_ENABLE */
 
 void uart2_init(
 #if UART2_DMA_ENABLE
@@ -58,5 +54,9 @@ uint32_t uart2_pullBytes(uint8_t *p, uint32_t l);
 #define uart2_TxBytesDMA uart2_TxBytes
 void uart2_set_callback(PortRecvByteCallback p);
 #endif /* UART2_DMA_ENABLE */
+
+/* interrupt handler */
+void uart2_irq_handler(void);
+void uart2_dma_irq_handler(void);
 
 #endif /* UART2_H_ */
