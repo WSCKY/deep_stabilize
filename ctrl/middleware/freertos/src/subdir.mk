@@ -39,4 +39,4 @@ OBJ_DIRS = $(sort $(dir $(OBJS)))
 # Each subdirectory must supply rules for building sources it contributes
 $(BuildPath)/middleware/freertos/%.o: ./middleware/freertos/src/%.c | $(OBJ_DIRS)
 	@echo ' CC $<'
-	$(CC) -mcpu=cortex-m0 -mthumb -mfloat-abi=soft $(DEFS) $(INCS) $(CFGS) -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	$(CC) $(PLATFORM) $(DEFS) $(INCS) $(CFGS) -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
