@@ -14,7 +14,7 @@
 #include "kyLink.h"
 
 #define FLASH_PAGE_SIZE                ((uint32_t)0x00000400)   /* FLASH Page Size */
-#define FLASH_END_ADDRESS              ((uint32_t)0x08008000)
+#define FLASH_END_ADDRESS              ((uint32_t)0x08020000)
 
 #define APPLICATION_ADDRESS            ((uint32_t)SYS_TEXT_ORIGIN)   /* Start @ of user Flash area */
 
