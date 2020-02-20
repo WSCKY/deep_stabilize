@@ -83,12 +83,34 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief  This function handles PPP interrupt request.
+  * @brief  This function handles DMA Channel 4, 5, 6, 7 interrupt request.
   * @param  None
   * @retval None
   */
-/*void PPP_IRQHandler(void)
+void DMA1_Channel4_5_6_7_IRQHandler(void)
 {
-}*/
+  uart3_dma_irq_handler();
+  uart2_dma_irq_handler();
+}
+
+/**
+  * @brief  This function handles USART2 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void USART2_IRQHandler(void)
+{
+  uart2_irq_handler();
+}
+
+/**
+  * @brief  This function handles USART3 & USART4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void USART3_4_IRQHandler(void)
+{
+  uart3_irq_handler();
+}
 
 /******************** kyChu<kyChu@qq.com> **** END OF FILE ********************/
