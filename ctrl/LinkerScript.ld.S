@@ -110,6 +110,13 @@ SECTIONS
     . = . + APP_RX_DATA_SIZE;
   } >SYS_MAIN_MEMORY
 
+  .uart1_rx_cache (NOLOAD) :
+  {
+    . = ALIGN(4);
+    UART1_RX_CACHE = .;
+    . = . + UART1_RX_CACHE_SIZE;
+  }
+
   .uart2_rx_cache (NOLOAD) :
   {
     . = ALIGN(4);
