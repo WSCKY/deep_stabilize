@@ -27,7 +27,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_desc.h"
-//#include "uart2.h"
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define USBD_VID                        0x0483
@@ -36,14 +36,13 @@
 #define USBD_LANGID_STRING              0x409
 #define USBD_MANUFACTURER_STRING        "kyChu"
 
-#define USBD_PRODUCT_FS_STRING          "imu vcp"
+#define USBD_PRODUCT_FS_STRING          "ctrl board"
 
 #define USBD_CONFIGURATION_FS_STRING    "vcp cfg"
 #define USBD_INTERFACE_FS_STRING        "vcp if"
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-char USBD_SERIALNUMBER_FS_STRING[26];
 
 USBD_DEVICE USR_desc =
 {
