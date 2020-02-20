@@ -7,6 +7,8 @@
 
 #include "AttEst.h"
 
+#if BOARD_IMU_ENABLE
+
 #if MPU_DATA_UPDATE_HOOK_ENABLE
 
 static Quat_T AttQ = {1, 0, 0, 0};
@@ -104,3 +106,5 @@ static void calib_loop(IMU_RAW *raw)
 #else
 #error "MPU_DATA_UPDATE_HOOK_ENABLE UNSET"
 #endif /* MPU_DATA_UPDATE_HOOK_ENABLE */
+
+#endif /* BOARD_IMU_ENABLE */

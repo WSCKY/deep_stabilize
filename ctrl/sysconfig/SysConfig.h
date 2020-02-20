@@ -17,10 +17,12 @@
 
 #include "TimerCounter.h"
 
-#define FREERTOS_ENABLED               (0)
+#define FREERTOS_ENABLED               (1)
 #if FREERTOS_ENABLED
 #include "cmsis_os.h"
 #endif /* FREERTOS_ENABLED */
+
+#define BOARD_IMU_ENABLE               (0)
 
 #define SYSTICK_ENABLE                 (0)
 

@@ -10,6 +10,8 @@
 
 #include "ifconfig.h"
 
+#if BOARD_IMU_ENABLE
+
 #if FREERTOS_ENABLED
 #define mpu_delay                      osDelay
 #else
@@ -46,5 +48,7 @@ uint8_t mpu_pull_new(IMU_RAW *pRaw);
 #endif /* FREERTOS_ENABLED */
 void mpu_raw2unit(IMU_RAW *raw, IMU_UNIT *unit);
 void mpu_set_gyr_off(int16_t x, int16_t y, int16_t z);
+
+#endif /* BOARD_IMU_ENABLE */
 
 #endif /* __MPU9250_H */

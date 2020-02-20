@@ -12,7 +12,11 @@
 
 #include "maths.h"
 
+#if BOARD_IMU_ENABLE
+
 Quat_T get_est_q(void);
 IMU_UNIT get_imu_unit(void);
+
+#endif /* BOARD_IMU_ENABLE */
 
 #endif /* __ATTEST_H */

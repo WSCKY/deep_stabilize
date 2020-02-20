@@ -7,6 +7,8 @@
 
 #include "mpu9250.h"
 
+#if BOARD_IMU_ENABLE
+
 static uint8_t mpu9250_configured = 0;
 
 #if FREERTOS_ENABLED
@@ -252,3 +254,5 @@ static void mpu_read_reg_dma_util(uint8_t reg, uint8_t num, uint8_t *r)
 	mpu_tx_buffer[0] = reg | 0x80;
 	spi_rx_tx_dma_util(mpu_tx_buffer, r, num + 1);//ignore the first byte.
 }
+
+#endif /* BOARD_IMU_ENABLE */
