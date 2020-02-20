@@ -121,6 +121,7 @@ void StartThread(void const * arg)
 	}
 
 	uart2_deinit();
+	_TimeTicksDeInit();
 
 	/* Check Vector Table: Test if user code is programmed starting from address
 		"APPLICATION_ADDRESS" */
