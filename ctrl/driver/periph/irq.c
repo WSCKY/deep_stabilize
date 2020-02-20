@@ -94,6 +94,16 @@ void DMA1_Channel4_5_6_7_IRQHandler(void)
 }
 
 /**
+  * @brief  This function handles USART1 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void USART1_IRQHandler(void)
+{
+  uart1_irq_handler();
+}
+
+/**
   * @brief  This function handles USART2 interrupt request.
   * @param  None
   * @retval None
