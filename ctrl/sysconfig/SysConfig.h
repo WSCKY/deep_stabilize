@@ -28,8 +28,8 @@
 #endif /* FREERTOS_ENABLED */
 
 #if FREERTOS_ENABLED
-#define kmm_alloc                                pvPortMalloc
-#define kmm_free                                 vPortFree
+#define kmm_alloc                      pvPortMalloc
+#define kmm_free                       vPortFree
 #else
 #include <stdlib.h>
 
