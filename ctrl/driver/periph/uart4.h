@@ -22,13 +22,17 @@
 #define UART4_TxPin_AF                      GPIO_PinSource0
 /* #define UART4_IRQn                          USART3_4_IRQn */
 
-void uart4_init(void);
+#define UART4_RX_CACHE_SIZE                 88
+
+status_t uart4_init(void);
 
 void uart4_TxByte(uint8_t c);
 void uart4_TxBytes(uint8_t *p, uint32_t l);
 
 uint8_t uart4_pullByte(uint8_t *p);
 uint32_t uart4_pullBytes(uint8_t *p, uint32_t l);
+
+status_t uart4_waitBytes(uint32_t size, uint32_t timeout);
 
 void uart4_irq_handler(void);
 

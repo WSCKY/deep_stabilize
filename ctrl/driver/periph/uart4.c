@@ -7,18 +7,41 @@
 
 #include "uart4.h"
 
+#if FREERTOS_ENABLED
+#include "cmsis_os.h"
+#endif /* FREERTOS_ENABLED */
+
 static uint8_t _uart4_init_flag = 0;
 
-static uint32_t in_ptr = 0, out_ptr = 0;
-extern uint8_t UART4_RX_CACHE[UART4_RX_CACHE_SIZE];
+static uint32_t subscribe_number = 0;
+#if FREERTOS_ENABLED
+static osSemaphoreId u4_semaphore;
+#endif /* FREERTOS_ENABLED */
 
-void uart4_init(void)
+static uint32_t in_ptr = 0, out_ptr = 0;
+#if FREERTOS_ENABLED
+uint8_t *UART4_RX_CACHE;
+#else
+uint8_t UART4_RX_CACHE[UART4_RX_CACHE_SIZE];
+#endif /* FREERTOS_ENABLED */
+
+status_t uart4_init(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
   USART_InitTypeDef USART_InitStructure;
 /*  NVIC_InitTypeDef NVIC_InitStructure; */
 
-  if(_uart4_init_flag == 1) return; // already init.
+  if(_uart4_init_flag == 1) return status_ok; // already initialized.
+
+#if FREERTOS_ENABLED
+  UART4_RX_CACHE = kmm_alloc(UART4_RX_CACHE_SIZE);
+  if(UART4_RX_CACHE == NULL) return status_nomem;
+  /* Define used semaphore */
+  osSemaphoreDef(U4_SEM);
+  /* Create the semaphore */
+  u4_semaphore = osSemaphoreCreate(osSemaphore(U4_SEM) , 1);
+  if(u4_semaphore == NULL) return status_error;
+#endif /* FREERTOS_ENABLED */
 
   /* Enable GPIO clock */
   RCC_AHBPeriphClockCmd(UART4_GPIO_CLK, ENABLE);
@@ -75,6 +98,7 @@ void uart4_init(void)
   USART_Cmd(UART4, ENABLE);
 
   _uart4_init_flag = 1;
+  return status_ok;
 }
 
 void uart4_TxByte(uint8_t c)
@@ -90,6 +114,23 @@ void uart4_TxBytes(uint8_t *p, uint32_t l)
     while(USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET) {}
     p ++;
   }
+}
+
+status_t uart4_waitBytes(uint32_t size, uint32_t timeout)
+{
+  if(UART4_RX_CACHE_SIZE < size)
+    subscribe_number = UART4_RX_CACHE_SIZE;
+  else
+    subscribe_number = size;
+#if FREERTOS_ENABLED
+  if(osSemaphoreWait(u4_semaphore , timeout) == osOK) {
+    return status_ok;
+  }
+  return status_timeout;
+#else
+  // maybe we can do something here ...
+  return status_ok;
+#endif /* FREERTOS_ENABLED */
 }
 
 uint8_t uart4_pullByte(uint8_t *p)
@@ -127,10 +168,25 @@ uint32_t uart4_pullBytes(uint8_t *p, uint32_t l)
 
 static void uart4_pushByte(uint8_t byte)
 {
+  uint32_t len;
   UART4_RX_CACHE[in_ptr] = byte;
   /* Calculate current position in buffer */
   if(++ in_ptr == UART4_RX_CACHE_SIZE) {
     in_ptr = 0;
+  }
+  if(subscribe_number != 0) {
+    if(in_ptr > out_ptr) {
+      len = in_ptr - out_ptr;
+    } else {
+      len = UART4_RX_CACHE_SIZE - out_ptr + in_ptr;
+    }
+    if(len >= subscribe_number) {
+#if FREERTOS_ENABLED
+      osSemaphoreRelease(u4_semaphore);
+#else
+      // callback
+#endif /* FREERTOS_ENABLED */
+    }
   }
 }
 

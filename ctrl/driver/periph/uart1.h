@@ -22,13 +22,17 @@
 #define UART1_TxPin_AF                      GPIO_PinSource6
 /* #define UART1_IRQn                          USART1_IRQn */
 
-void uart1_init(void);
+#define UART1_RX_CACHE_SIZE                 80
+
+status_t uart1_init(void);
 
 void uart1_TxByte(uint8_t c);
 void uart1_TxBytes(uint8_t *p, uint32_t l);
 
 uint8_t uart1_pullByte(uint8_t *p);
 uint32_t uart1_pullBytes(uint8_t *p, uint32_t l);
+
+status_t uart1_waitBytes(uint32_t size, uint32_t timeout);
 
 void uart1_irq_handler(void);
 
