@@ -23,4 +23,6 @@
 #include "usbd_usr.h"
 #include "usbd_cdc_vcp.h"
 
+void sins_task(void const *arg);
+
 #endif /* APPS_MAIN_TASK_H_ */
