@@ -35,6 +35,7 @@
 "build/driver/usb/lib/core/usbd_ioreq.o"
 "build/driver/usb/lib/class/usbd_cdc_core.o"
 
+"build/middleware/rtu/rtu.o"
 "build/middleware/maths/maths.o"
 "build/middleware/kylink/kyLink.o"
 

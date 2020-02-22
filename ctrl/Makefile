@@ -28,6 +28,7 @@ INCS = -I$(TopPath)/startup \
        -I$(TopPath)/driver/usb/drv \
        -I$(TopPath)/driver/usb/lib/core \
        -I$(TopPath)/driver/usb/lib/class \
+       -I$(TopPath)/middleware/rtu \
        -I$(TopPath)/middleware/maths \
        -I$(TopPath)/middleware/kylink \
        -I$(TopPath)/middleware/freertos/inc
@@ -103,6 +104,7 @@ all: $(ProjName).elf | $(BuildPath)
 -include driver/periph/subdir.mk
 -include driver/device/subdir.mk
 -include driver/stdriver/src/subdir.mk
+-include middleware/rtu/subdir.mk
 -include middleware/maths/subdir.mk
 -include middleware/kylink/subdir.mk
 -include middleware/freertos/subdir.mk
