@@ -12,6 +12,7 @@
 
 #include "ifconfig.h"
 
+#include "rs485.h"
 #include "mpu9250.h"
 
 #include "kyLink.h"
