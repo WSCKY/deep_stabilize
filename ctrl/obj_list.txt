@@ -49,6 +49,7 @@
 "build/middleware/freertos/cmsis_os.o"
 
 "build/apps/main_task.o"
+"build/apps/sins_task.o"
 "build/apps/AttEst.o"
 "build/apps/printHardFault.o"
 "build/startup/start.o"
