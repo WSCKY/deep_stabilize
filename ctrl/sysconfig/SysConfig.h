@@ -27,6 +27,16 @@
 #define SYSTICK_ENABLE                 (0)
 #endif /* FREERTOS_ENABLED */
 
+#if FREERTOS_ENABLED
+#define kmm_alloc                                pvPortMalloc
+#define kmm_free                                 vPortFree
+#else
+#include <stdlib.h>
+
+#define kmm_alloc                                malloc
+#define kmm_free                                 free
+#endif /* FREERTOS_ENABLED */
+
 /* Interrupt Priority Table */
 #define SYSTEM_TIMER_INT_PRIORITY      (0)
 
