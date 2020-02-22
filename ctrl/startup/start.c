@@ -48,7 +48,7 @@ int main_app(void)
 
   _TimeTicksInit();
 #if FREERTOS_ENABLED
-  osThreadDef(Start, StartThread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+  osThreadDef(Start, StartThread, osPriorityNormal, 0, START_TASK_STACK_SIZE);
   osThreadCreate (osThread(Start), NULL);
   /* Start scheduler */
   osKernelStart();
