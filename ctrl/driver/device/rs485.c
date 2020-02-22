@@ -37,14 +37,14 @@ status_t rs485_init(void)
   rtu_rs485_1.cache = kmm_alloc(RS485_RTU_CACHE_SIZE);
   if(rtu_rs485_1.cache == NULL)
     return status_nomem;
-  rtu_rs485_1.cache_size = 120;
+  rtu_rs485_1.cache_size = RS485_RTU_CACHE_SIZE;
 
   rtu_rs485_2.tx_bytes = rs485_2_tx;
   rtu_rs485_2.rx_bytes = rs485_2_rx;
   rtu_rs485_2.cache = kmm_alloc(RS485_RTU_CACHE_SIZE);
   if(rtu_rs485_2.cache == NULL)
     return status_nomem;
-  rtu_rs485_2.cache_size = 120;
+  rtu_rs485_2.cache_size = RS485_RTU_CACHE_SIZE;
 
   return ret;
 }
