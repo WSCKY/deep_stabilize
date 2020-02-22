@@ -64,5 +64,6 @@
 "build/driver/periph/intio.o"
 "build/driver/periph/gpio.o"
 "build/driver/periph/irq.o"
+"build/driver/device/rs485.o"
 "build/driver/device/mpu9250.o"
 "build/startup/startup_stm32.o"
