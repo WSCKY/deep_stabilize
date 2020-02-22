@@ -10,7 +10,7 @@
 USB_CORE_HANDLE USB_Device_dev;
 
 void led_task(void const *arg);
-static void error_handler(void);
+static void error_handler(int code);
 
 /**
   * @brief  Start Thread
@@ -26,7 +26,7 @@ void StartThread(void const * arg)
   uart3_init();
 
   if(rs485_init() != status_ok) {
-    error_handler();
+    error_handler(1);
   }
   delay(50);
   /* The Application layer has only to call USBD_Init to
@@ -36,7 +36,11 @@ void StartThread(void const * arg)
   delay(50);
 
   osThreadDef(T_LED, led_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
-  osThreadCreate (osThread(T_LED), NULL);
+  if(osThreadCreate (osThread(T_LED), NULL) == NULL) {
+    error_handler(3);
+  }
+
+  error_handler(5);
 
 /*  mpu9250_init();
   _delay_ms(10); */
@@ -59,14 +63,22 @@ void led_task(void const *arg)
 {
   for(;;) {
     delay(200);
-    USER_LED_TOG();
+//    USER_LED_TOG();
   }
 }
 
-static void error_handler(void)
+static void error_handler(int code)
 {
+  int i;
+  USER_LED_OFF();
+  delay(200);
   for(;;) {
-    delay(50);
-    USER_LED_TOG();
+    for(i = 0; i < code; i ++) {
+      USER_LED_ON();
+      delay(100);
+      USER_LED_OFF();
+      delay(400);
+    }
+    delay(500);
   }
 }
