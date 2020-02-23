@@ -51,6 +51,7 @@
 #define USART2_RX_INT_PRIORITY         (2)
 #define USART3_4_RX_INT_PRIORITY       (0)
 #define DMA_CHAN4_5_6_7_INT_PRIORITY   (0)
+#define CONTROL_TIMER_INT_PRIORITY     (1)
 #if SYSTICK_ENABLE
 #define SYSTICK_INT_PRIORITY           (3)
 #endif /* SYSTICK_ENABLE */
