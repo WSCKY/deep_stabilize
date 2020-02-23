@@ -7,6 +7,7 @@
 C_SRCS += \
 ./apps/main_task.c \
 ./apps/sins_task.c \
+./apps/ctrl_task.c \
 ./apps/AttEst.c \
 ./apps/printHardFault.c
 
@@ -14,6 +15,7 @@ C_SRCS += \
 OBJS += \
 $(BuildPath)/apps/main_task.o \
 $(BuildPath)/apps/sins_task.o \
+$(BuildPath)/apps/ctrl_task.o \
 $(BuildPath)/apps/AttEst.o \
 $(BuildPath)/apps/printHardFault.o
 
@@ -21,6 +23,7 @@ $(BuildPath)/apps/printHardFault.o
 C_DEPS += \
 $(BuildPath)/apps/main_task.d \
 $(BuildPath)/apps/sins_task.d \
+$(BuildPath)/apps/ctrl_task.d \
 $(BuildPath)/apps/AttEst.d \
 $(BuildPath)/apps/printHardFault.d
 
