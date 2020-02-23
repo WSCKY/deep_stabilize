@@ -9,6 +9,7 @@
 #define DRIVER_DEVICE_IFCONFIG_H_
 
 #include "spi1.h"
+#include "tim7.h"
 #include "intio.h"
 #include "uart1.h"
 #include "uart2.h"
