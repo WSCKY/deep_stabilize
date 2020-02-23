@@ -41,6 +41,28 @@ exit:
   return ret;
 }
 
+status_t servo_speed_up_time(servo_handle_t *hsrv, uint16_t time)
+{
+  status_t ret;
+  if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
+  ret = rtu_write_single(hsrv->hrtu, hsrv->addr, 0x0098, time);
+  if(ret != status_ok) goto exit;
+exit:
+  rtu_rel_grant(hsrv->hrtu);
+  return ret;
+}
+
+status_t servo_speed_down_time(servo_handle_t *hsrv, uint16_t time)
+{
+  status_t ret;
+  if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
+  ret = rtu_write_single(hsrv->hrtu, hsrv->addr, 0x0099, time);
+  if(ret != status_ok) goto exit;
+exit:
+  rtu_rel_grant(hsrv->hrtu);
+  return ret;
+}
+
 status_t servo_set_speed(servo_handle_t *hsrv, uint16_t val) // default speed is 300r/min
 {
   status_t ret;
