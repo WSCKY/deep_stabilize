@@ -32,8 +32,14 @@ status_t rs485_init(void)
   rtu_rs485_1.cache_size = 0;
   rtu_rs485_2.cache_size = 0;
 
+  osSemaphoreDef(RTU_SEM_1);
+  osSemaphoreDef(RTU_SEM_2);
+
   rtu_rs485_1.tx_bytes = rs485_1_tx;
   rtu_rs485_1.rx_bytes = rs485_1_rx;
+  rtu_rs485_1.sync_obj = osSemaphoreCreate(osSemaphore(RTU_SEM_1), 1);
+  if(rtu_rs485_1.sync_obj == NULL)
+    return status_error;
   rtu_rs485_1.cache = kmm_alloc(RS485_RTU_CACHE_SIZE);
   if(rtu_rs485_1.cache == NULL)
     return status_nomem;
@@ -41,6 +47,9 @@ status_t rs485_init(void)
 
   rtu_rs485_2.tx_bytes = rs485_2_tx;
   rtu_rs485_2.rx_bytes = rs485_2_rx;
+  rtu_rs485_2.sync_obj = osSemaphoreCreate(osSemaphore(RTU_SEM_2), 1);
+  if(rtu_rs485_2.sync_obj == NULL)
+    return status_error;
   rtu_rs485_2.cache = kmm_alloc(RS485_RTU_CACHE_SIZE);
   if(rtu_rs485_2.cache == NULL)
     return status_nomem;
