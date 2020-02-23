@@ -45,6 +45,12 @@ void irq_initialize(void)
   NVIC_InitStructure.NVIC_IRQChannelPriority = DMA_CHAN4_5_6_7_INT_PRIORITY;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+
+  /* NVIC configuration *******************************************************/
+  NVIC_InitStructure.NVIC_IRQChannel = TIM7_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = CONTROL_TIMER_INT_PRIORITY;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
 }
 
 /******************************************************************************/
