@@ -62,6 +62,7 @@
 "build/driver/periph/uart3.o"
 "build/driver/periph/uart4.o"
 "build/driver/periph/spi1.o"
+"build/driver/periph/tim7.o"
 "build/driver/periph/intio.o"
 "build/driver/periph/gpio.o"
 "build/driver/periph/irq.o"
