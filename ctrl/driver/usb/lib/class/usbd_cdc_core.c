@@ -97,7 +97,7 @@ static uint8_t  *USBD_cdc_GetCfgDesc (uint8_t speed, uint16_t *length);
 extern CDC_IF_Prop_TypeDef  APP_FOPS;
 //extern uint8_t USBD_DeviceDesc   [USB_SIZ_DEVICE_DESC];
 
-uint8_t usbd_cdc_OtherCfgDesc  [USB_CDC_CONFIG_DESC_SIZ] ;
+//uint8_t usbd_cdc_OtherCfgDesc  [USB_CDC_CONFIG_DESC_SIZ] ;
 
 static __IO uint32_t  usbd_cdc_AltSet  = 0;
 
