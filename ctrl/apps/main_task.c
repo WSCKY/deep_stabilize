@@ -39,9 +39,14 @@ void StartThread(void const * arg)
     error_handler(2);
   }
 
+  osThreadDef(T_CTRL, ctrl_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+  if(osThreadCreate (osThread(T_CTRL), NULL) == NULL) {
+    error_handler(3);
+  }
+
   osThreadDef(T_LED, led_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
   if(osThreadCreate (osThread(T_LED), NULL) == NULL) {
-    error_handler(3);
+    error_handler(5);
   }
 
 /*  mpu9250_init();
@@ -50,7 +55,7 @@ void StartThread(void const * arg)
     delay(1000);
 //    uart1_TxBytes((uint8_t *)"uart1\n", 6);
 //    uart4_TxBytes((uint8_t *)"uart4\n", 6);
-    uart2_TxBytesDMA((uint8_t *)"uart2\n", 6);
+//    uart2_TxBytesDMA((uint8_t *)"uart2\n", 6);
 //    uart3_TxBytesDMA((uint8_t *)"uart3\n", 6);
 //    com_task();
 //    uart2_TxBytesDMA((uint8_t *)"kyChu\n", 6);
