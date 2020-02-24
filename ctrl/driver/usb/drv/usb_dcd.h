@@ -157,9 +157,9 @@ typedef struct _DCD
   uint8_t        setup_packet [8];
   USB_EP     in_ep   [EP_NUM];
   USB_EP     out_ep  [EP_NUM];
-  USBD_Class_cb_TypeDef         *class_cb;
-  USBD_Usr_cb_TypeDef           *usr_cb;
-  USBD_DEVICE                   *usr_device;  
+  const USBD_Class_cb_TypeDef         *class_cb;
+  const USBD_Usr_cb_TypeDef           *usr_cb;
+  const USBD_DEVICE                   *usr_device;
   uint8_t        *pConfig_descriptor;
  }
 DCD_DEV , *DCD_PDEV;

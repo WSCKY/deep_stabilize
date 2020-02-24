@@ -36,7 +36,7 @@
 /* Exported types ------------------------------------------------------------*/
 /* Exported macros -----------------------------------------------------------*/
 /* Exported variables --------------------------------------------------------*/
-extern  USBD_Usr_cb_TypeDef USR_cb;
+extern const USBD_Usr_cb_TypeDef USR_cb;
 
 /* Exported functions ------------------------------------------------------- */ 
 void     USBD_NONE_cb(void);

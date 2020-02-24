@@ -69,9 +69,9 @@ USBD_DCD_INT_cb_TypeDef  *USBD_DCD_INT_fops = &USBD_DCD_INT_cb;
   * @retval None
   */
 void USBD_Init(USB_CORE_HANDLE *pdev,
-               USBD_DEVICE *pDevice,                  
-               USBD_Class_cb_TypeDef *class_cb, 
-               USBD_Usr_cb_TypeDef *usr_cb)
+               const USBD_DEVICE *pDevice,
+               const USBD_Class_cb_TypeDef *class_cb,
+               const USBD_Usr_cb_TypeDef *usr_cb)
 {
   /* Hardware Init */
   USB_BSP_Init(pdev);  

@@ -44,7 +44,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-USBD_DEVICE USR_desc =
+const USBD_DEVICE USR_desc =
 {
   USBD_USR_DeviceDescriptor,
   USBD_USR_LangIDStrDescriptor, 

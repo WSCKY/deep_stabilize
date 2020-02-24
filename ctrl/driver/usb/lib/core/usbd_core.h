@@ -44,9 +44,9 @@ typedef enum {
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */ 
 void USBD_Init(USB_CORE_HANDLE *pdev, 
-               USBD_DEVICE *pDevice,                  
-               USBD_Class_cb_TypeDef *class_cb, 
-               USBD_Usr_cb_TypeDef *usr_cb);
+               const USBD_DEVICE *pDevice,
+               const USBD_Class_cb_TypeDef *class_cb,
+               const USBD_Usr_cb_TypeDef *usr_cb);
 
 USBD_Status USBD_DeInit(USB_CORE_HANDLE *pdev);
 

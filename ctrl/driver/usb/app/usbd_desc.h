@@ -51,7 +51,7 @@
 /* Exported variables --------------------------------------------------------*/
 extern  uint8_t USBD_StrDesc[USB_MAX_STR_DESC_SIZ];
 //extern  uint8_t USBD_OtherSpeedCfgDesc[USB_LEN_CFG_DESC];
-extern  USBD_DEVICE USR_desc; 
+extern const USBD_DEVICE USR_desc;
 extern  uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL];
 
 

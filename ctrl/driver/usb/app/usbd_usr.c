@@ -33,7 +33,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-USBD_Usr_cb_TypeDef USR_cb =
+const USBD_Usr_cb_TypeDef USR_cb =
 {
   USBD_NONE_cb,
   USBD_USR_DeviceReset,
