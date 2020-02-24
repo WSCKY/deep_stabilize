@@ -98,7 +98,7 @@
 #define configMAX_PRIORITIES			(  7 )
 #define configMINIMAL_STACK_SIZE		( ( uint16_t ) 64 )
 #if defined(__GNUC__)
- #define configTOTAL_HEAP_SIZE			( ( size_t ) ( 3 * 1024 ) )
+ #define configTOTAL_HEAP_SIZE			( ( size_t ) ( 4 * 1024 ) )
 #else
  #define configTOTAL_HEAP_SIZE			( ( size_t ) ( 2 * 1024 ) )
 #endif
