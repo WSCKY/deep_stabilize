@@ -52,7 +52,6 @@ typedef enum _RESUME_STATE
 
 /* Exported macros -----------------------------------------------------------*/
 /* Exported variables --------------------------------------------------------*/
-extern USB_CORE_HANDLE USB_Device_dev;
 
 /* Exported functions ------------------------------------------------------- */ 
 void Suspend(void);
