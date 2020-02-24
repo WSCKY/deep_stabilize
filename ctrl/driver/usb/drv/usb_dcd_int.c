@@ -32,7 +32,6 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern USB_CORE_HANDLE  USB_Device_dev;
 extern uint32_t wInterrupt_Mask;
 #ifdef LPM_ENABLED
 __IO uint32_t  L1_remote_wakeup =0;
@@ -40,6 +39,7 @@ __IO uint32_t BESL = 0;
 #endif
 
 /* Private function prototypes -----------------------------------------------*/
+static void CTR(USB_CORE_HANDLE *pdev);
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -47,7 +47,7 @@ __IO uint32_t BESL = 0;
   * @param  None
   * @retval None
   */
-void CTR(void)
+static void CTR(USB_CORE_HANDLE *pdev)
 {
   USB_EP *ep;
   uint16_t count=0;
@@ -72,13 +72,13 @@ void CTR(void)
         /* DIR = 0      => IN  int */
         /* DIR = 0 implies that (EP_CTR_TX = 1) always  */
         _ClearEP_CTR_TX(ENDP0);
-        ep = &((&USB_Device_dev)->dev.in_ep[0]);
+        ep = &((pdev)->dev.in_ep[0]);
         
         ep->xfer_count = GetEPTxCount(ep->num);
         ep->xfer_buff += ep->xfer_count;
  
         /* TX COMPLETE */
-        USBD_DCD_INT_fops->DataInStage(&USB_Device_dev, 0x00);
+        USBD_DCD_INT_fops->DataInStage(pdev, 0x00);
       }
       else
       {
@@ -86,19 +86,19 @@ void CTR(void)
         
         /* DIR = 1 & CTR_RX       => SETUP or OUT int */
         /* DIR = 1 & (CTR_TX | CTR_RX) => 2 int pending */
-        ep = &((&USB_Device_dev)->dev.out_ep[0]);
+        ep = &((pdev)->dev.out_ep[0]);
         wEPVal = _GetENDPOINT(ENDP0);
         
         if ((wEPVal &EP_SETUP) != 0)
         {
           /* Get SETUP Packet*/
           ep->xfer_count = GetEPRxCount(ep->num);
-          PMAToUserBufferCopy(&((&USB_Device_dev)->dev.setup_packet[0]),ep->pmaadress , ep->xfer_count);       
+          PMAToUserBufferCopy(&((pdev)->dev.setup_packet[0]),ep->pmaadress , ep->xfer_count);
           /* SETUP bit kept frozen while CTR_RX = 1*/ 
           _ClearEP_CTR_RX(ENDP0); 
           
           /* Process SETUP Packet*/
-          USBD_DCD_INT_fops->SetupStage(&USB_Device_dev);
+          USBD_DCD_INT_fops->SetupStage(pdev);
         }
         
         else if ((wEPVal & EP_CTR_RX) != 0)
@@ -114,7 +114,7 @@ void CTR(void)
           }
           
           /* Process Control Data OUT Packet*/
-          USBD_DCD_INT_fops->DataOutStage(&USB_Device_dev, 0x00);
+          USBD_DCD_INT_fops->DataOutStage(pdev, 0x00);
           
           _SetEPRxCount(ENDP0, ep->maxpacket);
           _SetEPRxStatus(ENDP0,EP_RX_VALID);
@@ -132,7 +132,7 @@ void CTR(void)
       {  
         /* clear int flag */
         _ClearEP_CTR_RX(EPindex);
-        ep = &((&USB_Device_dev)->dev.out_ep[EPindex]);
+        ep = &((pdev)->dev.out_ep[EPindex]);
         
         /* OUT double Buffering*/
         if (ep->doublebuffer == 0)
@@ -172,18 +172,18 @@ void CTR(void)
         if ((ep->xfer_len == 0) || (count < ep->maxpacket))
         {
           /* RX COMPLETE */
-          USBD_DCD_INT_fops->DataOutStage(&USB_Device_dev, ep->num);
+          USBD_DCD_INT_fops->DataOutStage(pdev, ep->num);
         }
         else
         {
-          DCD_EP_PrepareRx (&USB_Device_dev,ep->num, ep->xfer_buff, ep->xfer_len);
+          DCD_EP_PrepareRx (pdev,ep->num, ep->xfer_buff, ep->xfer_len);
         }
         
       } /* if((wEPVal & EP_CTR_RX) */
       
       if ((wEPVal & EP_CTR_TX) != 0)
       {
-        ep = &((&USB_Device_dev)->dev.in_ep[EPindex]);
+        ep = &((pdev)->dev.in_ep[EPindex]);
         
         /* clear int flag */
         _ClearEP_CTR_TX(EPindex);
@@ -227,11 +227,11 @@ void CTR(void)
         if (ep->xfer_len == 0)
         {
           /* TX COMPLETE */
-          USBD_DCD_INT_fops->DataInStage(&USB_Device_dev, ep->num);
+          USBD_DCD_INT_fops->DataInStage(pdev, ep->num);
         }
         else
         {
-          DCD_EP_Tx  (&USB_Device_dev,ep->num, ep->xfer_buff, ep->xfer_len);
+          DCD_EP_Tx  (pdev,ep->num, ep->xfer_buff, ep->xfer_len);
         }
         
       } /* if((wEPVal & EP_CTR_TX) != 0) */
@@ -246,7 +246,7 @@ void CTR(void)
   * @param  None
   * @retval None
   */
-void USB_Istr(void)
+void USB_Istr(USB_CORE_HANDLE *pdev)
 {
   __IO uint16_t wIstr = 0; 
   
@@ -257,7 +257,7 @@ void USB_Istr(void)
   {
     /* servicing of the endpoint correct transfer interrupt */
     /* clear of the CTR flag into the sub */
-    CTR();
+    CTR(pdev);
   }
 #endif  
   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
@@ -265,8 +265,8 @@ void USB_Istr(void)
   if (wIstr & ISTR_RESET & wInterrupt_Mask)
   {
     _SetISTR((uint16_t)CLR_RESET);
-    USBD_DCD_INT_fops->Reset(&USB_Device_dev);
-    DCD_EP_SetAddress(&USB_Device_dev, 0);
+    USBD_DCD_INT_fops->Reset(pdev);
+    DCD_EP_SetAddress(pdev, 0);
   }
 #endif
   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
@@ -289,7 +289,7 @@ void USB_Istr(void)
   {
     _SetISTR((uint16_t)CLR_WKUP);
     
-    USBD_DCD_INT_fops->Resume(&USB_Device_dev);
+    USBD_DCD_INT_fops->Resume(pdev);
      
     /* Handle Resume state machine */  
     Resume(RESUME_EXTERNAL);
@@ -308,7 +308,7 @@ void USB_Istr(void)
     _SetISTR((uint16_t)CLR_SUSP);
     
     /* process library core layer suspend routine*/
-    USBD_DCD_INT_fops->Suspend(&USB_Device_dev); 
+    USBD_DCD_INT_fops->Suspend(pdev);
     
     /* enter macrocell in suspend and system in low power mode when 
        USB_DEVICE_LOW_PWR_MGMT_SUPPORT defined in usb_conf.h */
@@ -320,7 +320,7 @@ void USB_Istr(void)
   if (wIstr & ISTR_SOF & wInterrupt_Mask)
   {
     _SetISTR((uint16_t)CLR_SOF);
-    USBD_DCD_INT_fops->SOF(&USB_Device_dev);
+    USBD_DCD_INT_fops->SOF(pdev);
   }
 #endif
   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
@@ -352,7 +352,7 @@ void USB_Istr(void)
     L1_remote_wakeup = (_GetLPMCSR()&LPMCSR_REMWAKE) >>3;
     
     /* process library core layer suspend routine*/
-    USBD_DCD_INT_fops->Suspend(&USB_Device_dev); 
+    USBD_DCD_INT_fops->Suspend(pdev);
     
     /* enter macrocell in suspend and system in low power mode (STOP mode) when 
     USB_DEVICE_LOW_PWR_MGMT_SUPPORT defined in usb_conf.h.*/   

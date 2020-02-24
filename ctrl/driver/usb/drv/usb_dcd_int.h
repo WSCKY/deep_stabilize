@@ -62,8 +62,8 @@ extern const USBD_DCD_INT_cb_TypeDef *USBD_DCD_INT_fops;
 /* Exported macros -----------------------------------------------------------*/
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */ 
-void CTR(void);
-void USB_Istr(void);
+
+void USB_Istr(USB_CORE_HANDLE *pdev);
 
 #endif /* USB_DCD_INT_H__ */
 
