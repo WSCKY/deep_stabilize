@@ -1,7 +1,7 @@
-#include "com_task.h"
+#include "main_task.h"
 
-KYLINK_CORE_HANDLE kylink_uart;
-//KYLINK_CORE_HANDLE CDC_PortHandle;
+static KYLINK_CORE_HANDLE *kylink_uart;
+//static KYLINK_CORE_HANDLE *CDC_PortHandle;
 
 #define UART_DECODER_CACHE_SIZE                (88)
 static uint8_t *uart_decoder_cache;
@@ -59,7 +59,7 @@ void com_task(void const *arg)
   for(;;) {
     delay(10);
 	while((rx_len = uart2_pullBytes(rcache, 16)) > 0) {
-      for(uint8_t cnt = 0; cnt < rx_len; cnt ++) {
+      for(cnt = 0; cnt < rx_len; cnt ++) {
         kylink_decode(kylink_uart, rcache[cnt]);
       }
 	}
@@ -80,10 +80,12 @@ static void com_decode_callback(kyLinkBlockDef *pRx)
 {
   switch(pRx->msg_id) {
     case MSG_PITCH_CONFIG:
+    {
       CtrlInfoDef *p = (CtrlInfoDef *)pRx->buffer;
       if(p->mode == 1) {
         exp_angle = p->pitch;
       }
+    }
     break;
     case MSG_UPGRADE_REQUEST:
       if(pRx->length == 16) {
