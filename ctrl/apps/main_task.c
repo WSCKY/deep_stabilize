@@ -9,7 +9,6 @@
 
 USB_CORE_HANDLE USB_Device_dev;
 
-void led_task(void const *arg);
 static void error_handler(int code);
 
 /**
@@ -22,7 +21,6 @@ void StartThread(void const * arg)
   irq_initialize();
   board_gpio_init();
 /*  pwm_init(); */
-  uart2_init();
 
   if(rs485_init() != status_ok) {
     error_handler(1);
@@ -44,30 +42,13 @@ void StartThread(void const * arg)
     error_handler(3);
   }
 
-  osThreadDef(T_LED, led_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
-  if(osThreadCreate (osThread(T_LED), NULL) == NULL) {
-    error_handler(5);
+  osThreadDef(T_COM, com_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+  if(osThreadCreate (osThread(T_COM), NULL) == NULL) {
+    error_handler(4);
   }
 
 /*  mpu9250_init();
   _delay_ms(10); */
-  for(;;) {
-    delay(1000);
-//    uart1_TxBytes((uint8_t *)"uart1\n", 6);
-//    uart4_TxBytes((uint8_t *)"uart4\n", 6);
-//    uart2_TxBytesDMA((uint8_t *)"uart2\n", 6);
-//    uart3_TxBytesDMA((uint8_t *)"uart3\n", 6);
-//    com_task();
-//    uart2_TxBytesDMA((uint8_t *)"kyChu\n", 6);
-//    if(USBD_isEnabled()) {
-//      USB_CDC_SendBufferFast((uint8_t *)"kyChu\n", 6);
-//    }
-//    _delay_ms(200);
-  }
-}
-
-void led_task(void const *arg)
-{
   for(;;) {
     delay(200);
     USER_LED_TOG();
