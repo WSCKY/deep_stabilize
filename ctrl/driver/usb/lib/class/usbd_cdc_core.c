@@ -101,7 +101,7 @@ extern CDC_IF_Prop_TypeDef  APP_FOPS;
 
 static __IO uint32_t  usbd_cdc_AltSet  = 0;
 
-uint8_t USB_Rx_Buffer   [CDC_DATA_MAX_PACKET_SIZE] ;
+__ALIGN_BEGIN uint8_t USB_Rx_Buffer   [CDC_DATA_MAX_PACKET_SIZE] __ALIGN_END;
 
 //uint8_t APP_Rx_Buffer   [APP_RX_DATA_SIZE] ;
 extern uint8_t  APP_Rx_Buffer [];
