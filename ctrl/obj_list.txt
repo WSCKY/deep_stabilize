@@ -51,6 +51,7 @@
 "build/apps/main_task.o"
 "build/apps/sins_task.o"
 "build/apps/ctrl_task.o"
+"build/apps/com_task.o"
 "build/apps/AttEst.o"
 "build/apps/printHardFault.o"
 "build/startup/start.o"
