@@ -33,6 +33,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+static USB_CORE_HANDLE *usb_dev;
 /* Private function prototypes -----------------------------------------------*/
 
 /* Private functions ---------------------------------------------------------*/
@@ -130,7 +131,8 @@ void USB_BSP_Init(USB_CORE_HANDLE *pdev)
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
 #endif /*USB_DEVICE_LOW_PWR_MGMT_SUPPORT */
-  
+
+  usb_dev = pdev;
 }
 
 /**
@@ -156,7 +158,7 @@ void USB_BSP_EnableInterrupt(USB_CORE_HANDLE *pdev)
   */
 void USB_IRQHandler(void)
 {
-  USB_Istr();
+  USB_Istr(usb_dev);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
