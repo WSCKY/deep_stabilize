@@ -45,7 +45,7 @@ static uint8_t USBD_Reset(USB_CORE_HANDLE  *pdev);
 static uint8_t USBD_Suspend(USB_CORE_HANDLE  *pdev);
 static uint8_t USBD_Resume(USB_CORE_HANDLE  *pdev);
 
-USBD_DCD_INT_cb_TypeDef USBD_DCD_INT_cb = 
+static const USBD_DCD_INT_cb_TypeDef USBD_DCD_INT_cb =
 {
   USBD_DataOutStage,
   USBD_DataInStage,
@@ -57,7 +57,7 @@ USBD_DCD_INT_cb_TypeDef USBD_DCD_INT_cb =
   
 };
 
-USBD_DCD_INT_cb_TypeDef  *USBD_DCD_INT_fops = &USBD_DCD_INT_cb;
+const USBD_DCD_INT_cb_TypeDef  *USBD_DCD_INT_fops = &USBD_DCD_INT_cb;
 
 /* Private functions ---------------------------------------------------------*/
 /**
