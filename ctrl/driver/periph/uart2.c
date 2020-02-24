@@ -170,17 +170,19 @@ void uart2_TxBytes(uint8_t *p, uint32_t l)
 	}
 }
 #if UART2_DMA_ENABLE
-void uart2_TxBytesDMA(uint8_t *p, uint32_t l)
+status_t uart2_TxBytesDMA(uint8_t *p, uint32_t l)
 {
-	if(_tx_comp_flag == 1) {
-		_tx_comp_flag = 0;
-		DMA_InitStructure.DMA_BufferSize = l;
-		DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)p;
-		DMA_Init(UART2_TX_DMA, &DMA_InitStructure);
+  if(_tx_comp_flag == 1) {
+    _tx_comp_flag = 0;
+    DMA_InitStructure.DMA_BufferSize = l;
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)p;
+    DMA_Init(UART2_TX_DMA, &DMA_InitStructure);
 
-		/* Enable the UART2_DMA channels */
-		DMA_Cmd(UART2_TX_DMA, ENABLE);
-	}
+    /* Enable the UART2_DMA channels */
+    DMA_Cmd(UART2_TX_DMA, ENABLE);
+    return status_ok;
+  }
+  return status_busy;
 }
 
 uint8_t uart2_pullByte(uint8_t *p)
