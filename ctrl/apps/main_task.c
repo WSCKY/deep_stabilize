@@ -7,7 +7,7 @@
 
 #include "main_task.h"
 
-USB_CORE_HANDLE USB_Device_dev;
+static USB_CORE_HANDLE *USB_Device_dev;
 
 static void error_handler(int code);
 
@@ -29,7 +29,11 @@ void StartThread(void const * arg)
   /* The Application layer has only to call USBD_Init to
      initialize the USB low level driver, the USB device library, the USB clock,
      pins and interrupt service routine (BSP) to start the Library*/
-  USBD_Init(&USB_Device_dev, &USR_desc, &USBD_CDC_cb, &USR_cb);
+  USB_Device_dev = kmm_alloc(sizeof(USB_CORE_HANDLE));
+  if(USB_Device_dev == NULL) {
+    error_handler(5);
+  }
+  USBD_Init(USB_Device_dev, &USR_desc, &USBD_CDC_cb, &USR_cb);
   delay(50);
 
   osThreadDef(T_SINS, sins_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
