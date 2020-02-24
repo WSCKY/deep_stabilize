@@ -19,9 +19,11 @@ void ctrl_task(void const *arg)
   for(;;) {
     if(tim7_check_update(100) == status_ok) {
       task_period_div ++;
-//      (AngleInfo.AngleVal - exp_angle) * 50 * 200 / 360
-      if(task_period_div == 4)
+      if(task_period_div == 4) {
         task_period_div = 0;
+
+//      (AngleInfo.AngleVal - exp_angle) * 50 * 200 / 360
+      }
     }
   }
 }
