@@ -1,69 +1,96 @@
 #include "com_task.h"
 
-static kyLinkPackageDef *pRxUart;
-static kyLinkPackageDef TxPacket;
-KYLINK_CORE_HANDLE UartPortHandle;
-KYLINK_CORE_HANDLE CDC_PortHandle;
-static IMU_UNIT imu_unit;
+KYLINK_CORE_HANDLE kylink_uart;
+//KYLINK_CORE_HANDLE CDC_PortHandle;
 
-static uint8_t tx_cnt = 0;
-static uint32_t tx_stamp = 0;
+#define UART_DECODER_CACHE_SIZE                (88)
+static uint8_t *uart_decoder_cache;
 
-void com_task_init(void)
+#define MSG_UPGRADE_REQUEST                    0x80
+#define MSG_BOARD_STATE                        0x60
+#define MSG_PITCH_CONFIG                       0x61
+
+float exp_angle = 0.0f;
+extern AngleInfo_t AngleInfo;
+
+__PACK_BEGIN typedef struct {
+  uint8_t mode;
+  float pitch;
+} __PACK_END CtrlInfoDef;
+
+__PACK_BEGIN typedef struct {
+  float pitch;
+  uint32_t state;
+} __PACK_END StateInfoDef;
+
+static void com_decode_callback(kyLinkBlockDef *pRx);
+
+void com_task(void const *arg)
 {
-	kyLinkInit(&UartPortHandle, uart2_TxBytesDMA);
-	kyLinkInit(&CDC_PortHandle, USB_CDC_SendBufferFast);
-	kyLinkTxEnable(&UartPortHandle);
-	pRxUart = GetRxPackage(&UartPortHandle);
-	TxPacket.FormatData.stx1 = kySTX1;
-	TxPacket.FormatData.stx2 = kySTX2;
-	TxPacket.FormatData.dev_id = HARD_DEV_ID;
+  kyLinkConfig_t *cfg = NULL;
+  StateInfoDef *msg = NULL;
+
+  uint8_t rcache[16];
+  uint32_t rx_len, cnt;
+  uint32_t tx_period_div = 0;
+
+  msg = kmm_alloc(sizeof(StateInfoDef));
+  cfg = kmm_alloc(sizeof(kyLinkConfig_t));
+  kylink_uart = kmm_alloc(sizeof(KYLINK_CORE_HANDLE));
+  uart_decoder_cache = kmm_alloc(UART_DECODER_CACHE_SIZE);
+  if(msg == NULL || cfg == NULL || kylink_uart == NULL || uart_decoder_cache == NULL) {
+    kmm_free(msg);
+    kmm_free(cfg);
+    kmm_free(kylink_uart);
+    kmm_free(uart_decoder_cache);
+    vTaskDelete(NULL);
+  }
+
+  uart2_init();
+
+  cfg->txfunc = uart2_TxBytesDMA;
+  cfg->callback = com_decode_callback;
+  cfg->decoder_cache = uart_decoder_cache;
+  cfg->cache_size = UART_DECODER_CACHE_SIZE;
+  kylink_init(kylink_uart, cfg);
+
+  kmm_free(cfg);
+
+  for(;;) {
+    delay(10);
+	while((rx_len = uart2_pullBytes(rcache, 16)) > 0) {
+      for(uint8_t cnt = 0; cnt < rx_len; cnt ++) {
+        kylink_decode(kylink_uart, rcache[cnt]);
+      }
+	}
+	tx_period_div ++;
+	if(tx_period_div == 5) {
+      tx_period_div = 0;
+
+      // prepare data
+      msg->pitch = AngleInfo.AngleVal;
+      msg->state = 0x00000000;
+      // send message
+      kylink_send(kylink_uart, msg, MSG_BOARD_STATE, sizeof(StateInfoDef));
+	}
+  }
 }
-//extern DebugFloatDef DBGDATA;
-//static uint8_t rx_data;
-static uint8_t read_len;
-static uint8_t read_buf[8];
-void com_task(void)
-{
-	if(_Get_Millis() - tx_stamp > 10) {
-		tx_stamp = _Get_Millis();
-		tx_cnt ++;
-		if(tx_cnt % 2 == 0) {
-			TxPacket.FormatData.msg_id = TYPE_ATT_QUAT_Resp;
-			TxPacket.FormatData.length = sizeof(Quat_T);
-			TxPacket.FormatData.PacketData.TypeData.AttitudeQuat = get_est_q();
-		} else {// if(tx_cnt % 3 == 1)
-			TxPacket.FormatData.msg_id = TYPE_IMU_INFO_Resp;
-			TxPacket.FormatData.length = sizeof(IMU_INFO_DEF);
-			imu_unit = get_imu_unit();
-			TxPacket.FormatData.PacketData.TypeData.IMU_InfoData.accX = imu_unit.AccData.accX;
-			TxPacket.FormatData.PacketData.TypeData.IMU_InfoData.accY = imu_unit.AccData.accY;
-			TxPacket.FormatData.PacketData.TypeData.IMU_InfoData.accZ = imu_unit.AccData.accZ;
-			TxPacket.FormatData.PacketData.TypeData.IMU_InfoData.gyrX = imu_unit.GyrData.gyrX;
-			TxPacket.FormatData.PacketData.TypeData.IMU_InfoData.gyrY = imu_unit.GyrData.gyrY;
-			TxPacket.FormatData.PacketData.TypeData.IMU_InfoData.gyrZ = imu_unit.GyrData.gyrZ;
-//		} else {
-//			TxPacket.FormatData.msg_id = TYPE_DEBUG_DATA_Resp;
-//			TxPacket.FormatData.length = sizeof(DebugFloatDef);
-//			TxPacket.FormatData.PacketData.TypeData.DebugData = DBGDATA;
-		}
-		SendTxPacket(&UartPortHandle, &TxPacket);
-		SendTxPacket(&CDC_PortHandle, &TxPacket);
-	}
 
-	while((read_len = uart2_pullBytes(read_buf, 8)) > 0) {
-//	while(uart2_pullByte(&rx_data) != 0) {
-		for(uint8_t idx = 0; idx < read_len; idx ++) {
-			kylink_decode(&UartPortHandle, read_buf[idx]);
-		}
-//		kyLink_DecodeProcess(rx_data);
-		if(kyLinkCheckUpdate(&UartPortHandle)) {
-			USER_LED_TOG();
-			if(pRxUart->FormatData.msg_id == TYPE_UPGRADE_REQUEST && pRxUart->FormatData.length == 16 &&
-			   pRxUart->FormatData.PacketData.TypeData.FileInfo.Enc_Type == ENC_TYPE_PLAIN) {
-				__disable_irq();
-				NVIC_SystemReset();
-			}
-		}
-	}
+static void com_decode_callback(kyLinkBlockDef *pRx)
+{
+  switch(pRx->msg_id) {
+    case MSG_PITCH_CONFIG:
+      CtrlInfoDef *p = (CtrlInfoDef *)pRx->buffer;
+      if(p->mode == 1) {
+        exp_angle = p->pitch;
+      }
+    break;
+    case MSG_UPGRADE_REQUEST:
+      if(pRx->length == 16) {
+        __disable_irq();
+        NVIC_SystemReset();
+      }
+    break;
+    default: break;
+  }
 }
