@@ -139,7 +139,8 @@ $(ProjName).elf: $(OBJS) | $(OutPath)
 	@echo ''
 	@echo ' Building $@'
 	$(CPP) -P -E $(LD_INCS) $(TopPath)/LinkerScript.ld.S > $(BuildPath)/LinkerScript.lds
-	$(CC) -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -T$(BuildPath)/LinkerScript.lds $(LD_CFGS) -Wl,-Map=$(OutPath)/output.map -Wl,--gc-sections -o $(OutPath)/$(ProjName).elf @"obj_list.txt" $(LIBS) -lm
+	$(ECHO) $(OBJS) > $(OutPath)/objects.list
+	$(CC) $(PLATFORM) -T$(BuildPath)/LinkerScript.lds $(LD_CFGS) -Wl,-Map=$(OutPath)/output.map -Wl,--gc-sections -o $(OutPath)/$(ProjName).elf @$(OutPath)/objects.list $(LIBS) -lm
 	$(MAKE) $(MAKEFLAGS) post-build
 
 # Other Targets
