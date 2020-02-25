@@ -14,7 +14,6 @@
 static uint8_t _uart3_init_flag = 0;
 #if UART3_DMA_ENABLE
 static uint32_t _tx_comp_flag = 1;
-static DMA_InitTypeDef DMA_InitStructure;
 
 static uint32_t in_ptr = 0, out_ptr = 0;
 #if FREERTOS_ENABLED
@@ -121,6 +120,7 @@ status_t uart3_init(
 #if UART3_DMA_ENABLE
 static void dma_config(void)
 {
+  DMA_InitTypeDef DMA_InitStructure;
 /*	NVIC_InitTypeDef NVIC_InitStructure; */
 
 	/* Enable UART3_DMA Clock */
@@ -189,12 +189,11 @@ status_t uart3_TxBytesDMA(uint8_t *p, uint32_t l)
 {
   if(_tx_comp_flag == 1) {
     _tx_comp_flag = 0;
-    DMA_InitStructure.DMA_BufferSize = l;
-    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)p;
-    DMA_Init(UART3_TX_DMA, &DMA_InitStructure);
+    UART3_TX_DMA->CNDTR = l;
+    UART3_TX_DMA->CMAR = (uint32_t)p;
 
     /* Enable the UART3_DMA channels */
-    DMA_Cmd(UART3_TX_DMA, ENABLE);
+    UART3_TX_DMA->CCR |= DMA_CCR_EN;
     return status_ok;
   }
   return status_busy;
