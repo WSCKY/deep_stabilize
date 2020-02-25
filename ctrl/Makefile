@@ -41,8 +41,21 @@ endif
 
 LD_INCS = -I$(TopPath)/sysconfig
 
+# get version from git
+__VERSION_STR__ := $(shell git rev-parse --abbrev-ref HEAD):$(shell git rev-parse --short HEAD)
+
 # Global definitions
 DEFS = -DSTM32 -DSTM32F0 -DSTM32F072CBTx -DSTM32F072 -DUSE_STDPERIPH_DRIVER
+
+# External Library path
+LIB_PATH := -L$(BuildPath)/rtu \
+            -L$(BuildPath)/rtos \
+            -L$(BuildPath)/maths \
+            -L$(BuildPath)/kylink \
+            -L$(BuildPath)/stdrv \
+
+# External Libraries
+LIBS := -lrtu -lrtos -lmaths -lkylink -lstdrv
 
 # Other configuration
 CFGS = -mthumb -Dprintf=iprintf -fno-exceptions
@@ -96,14 +109,17 @@ export OBJDUMP
 export MKDIR
 export ECHO
 # -Variables
-# export BuildPath
-# export OutPath
+export INCS
+export DBGS
+export CFGS
+export DEFS
+export PLATFORM
+export TopPath
 
 # All Target
 all: $(ProjName).elf | $(BuildPath)
 
 # All of the sources participating in the build are defined here
--include sources.mk
 -include startup/subdir.mk
 -include apps/subdir.mk
 ifeq ($(CONFIG_USB_IF_ENABLE),y)
@@ -111,20 +127,6 @@ ifeq ($(CONFIG_USB_IF_ENABLE),y)
 endif
 -include driver/periph/subdir.mk
 -include driver/device/subdir.mk
--include driver/stdriver/src/subdir.mk
--include middleware/rtu/subdir.mk
--include middleware/maths/subdir.mk
--include middleware/kylink/subdir.mk
--include middleware/freertos/subdir.mk
-
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(strip $(S_UPPER_DEPS)),)
--include $(S_UPPER_DEPS)
-endif
-ifneq ($(strip $(C_DEPS)),)
--include $(C_DEPS)
-endif
-endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 
@@ -138,18 +140,25 @@ $(OBJ_DIRS):
 	$(MKDIR) -p $@
 
 # generate elf
-$(ProjName).elf: $(OBJS) | $(OutPath)
+$(ProjName).elf: libraries $(OBJS) | $(OutPath)
 	@echo ''
 	@echo ' Building $@'
 	$(CPP) -P -E $(LD_INCS) $(TopPath)/LinkerScript.ld.S > $(BuildPath)/LinkerScript.lds
 	$(ECHO) $(OBJS) > $(OutPath)/objects.list
-	$(CC) $(PLATFORM) -T$(BuildPath)/LinkerScript.lds $(LD_CFGS) -Wl,-Map=$(OutPath)/output.map -Wl,--gc-sections -o $(OutPath)/$(ProjName).elf @$(OutPath)/objects.list $(LIBS) -lm
+	$(CC) $(PLATFORM) $(LIB_PATH) -T$(BuildPath)/LinkerScript.lds $(LD_CFGS) -Wl,-Map=$(OutPath)/output.map -Wl,--gc-sections -o $(OutPath)/$(ProjName).elf @$(OutPath)/objects.list $(LIBS) -lm
 	$(MAKE) $(MAKEFLAGS) post-build
 
 # Other Targets
 clean:
 	-$(RM) $(BuildPath)/ $(OutPath)/
 	-@echo 'Cleaned.'
+
+libraries:
+	$(MAKE) -C middleware/rtu BUILD=$(BuildPath)/rtu
+	$(MAKE) -C middleware/maths BUILD=$(BuildPath)/maths
+	$(MAKE) -C middleware/kylink BUILD=$(BuildPath)/kylink
+	$(MAKE) -C middleware/freertos BUILD=$(BuildPath)/rtos
+	$(MAKE) -C driver/stdriver BUILD=$(BuildPath)/stdrv
 
 BINARY := $(OutPath)/$(ProjName).bin
 FIRMWARE := $(OutPath)/$(ProjName).fw
