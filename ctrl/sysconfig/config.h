@@ -23,7 +23,7 @@
 #define SYS_MAIN_MEMORY                     SRAM
 
 #define SYS_HEAP_SIZE                       0
-#define SYS_STACK_SIZE                      256
+#define SYS_STACK_SIZE                      128
 
 /* reserve 48 word starting in RAM @ 0x20000000 */
 #define SYS_VECTOR_SIZE                     192
@@ -31,6 +31,7 @@
 #define FREERTOS_ENABLED                    (1)
 
 #define BOARD_IMU_ENABLE                    (0)
+#define CONFIG_USB_IF_ENABLE                (0)
 
 #if FREERTOS_ENABLED
 #define SYSTICK_ENABLE                      (1)
@@ -45,7 +46,9 @@
 /* Interrupt Priority Table */
 #define SYSTEM_TIMER_INT_PRIORITY           (0)
 
+#if CONFIG_USB_IF_ENABLE
 #define USB_DEVICE_INT_PRIORITY             (3)
+#endif /* CONFIG_USB_IF_ENABLE */
 #define IMU_SPI_DMA_INT_PRIORITY            (0)
 #define IMU_UPDATE_INT_PRIORITY             (1)
 #define USART1_RX_INT_PRIORITY              (1)
@@ -57,8 +60,10 @@
 #define SYSTICK_INT_PRIORITY                (3)
 #endif /* SYSTICK_ENABLE */
 
+#if CONFIG_USB_IF_ENABLE
 /*  Total size of IN buffer:  Total size of USB IN buffer: APP_RX_DATA_SIZE*8/MAX_BAUDARATE*1000 should be > CDC_IN_FRAME_INTERVAL */
 #define APP_RX_DATA_SIZE                    256
+#endif /* CONFIG_USB_IF_ENABLE */
 
 #define UART2_RX_CACHE_SIZE                 88
 #define UART3_RX_CACHE_SIZE                 88
