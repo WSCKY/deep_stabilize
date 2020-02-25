@@ -6,7 +6,7 @@
 #target directory
 BUILD := build
 #target name
-MODULE_NAME := libkylink
+MODULE_NAME := librtu
 #source files
 C_SRCS := $(wildcard *.c)
 #objects
