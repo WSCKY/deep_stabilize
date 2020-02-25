@@ -7,20 +7,28 @@
 
 #include "uart3.h"
 
+#if FREERTOS_ENABLED
+#include "cmsis_os.h"
+#endif /* FREERTOS_ENABLED */
+
 static uint8_t _uart3_init_flag = 0;
 #if UART3_DMA_ENABLE
 static uint32_t _tx_comp_flag = 1;
 static DMA_InitTypeDef DMA_InitStructure;
 
 static uint32_t in_ptr = 0, out_ptr = 0;
-extern uint8_t UART3_RX_CACHE[UART3_RX_CACHE_SIZE];
+#if FREERTOS_ENABLED
+uint8_t *UART3_RX_CACHE;
+#else
+uint8_t UART3_RX_CACHE[UART3_RX_CACHE_SIZE];
+#endif /* FREERTOS_ENABLED */
 
 static void dma_config(void);
 #else
 static PortRecvByteCallback pCallback = 0;
 #endif /* UART3_DMA_ENABLE */
 
-void uart3_init(
+status_t uart3_init(
 #if UART3_DMA_ENABLE
 		void
 #else
@@ -32,12 +40,18 @@ void uart3_init(
 	USART_InitTypeDef USART_InitStructure;
 /*	NVIC_InitTypeDef NVIC_InitStructure; */
 
-	if(_uart3_init_flag == 1) return; // already init.
+	if(_uart3_init_flag == 1) return status_ok; // already init.
 #if !UART3_DMA_ENABLE
 	if(p != 0) {
 		pCallback = p;
 	}
 #endif
+
+#if FREERTOS_ENABLED
+  UART3_RX_CACHE = kmm_alloc(UART3_RX_CACHE_SIZE);
+  if(UART3_RX_CACHE == NULL) return status_nomem;
+#endif /* FREERTOS_ENABLED */
+
 	/* Enable GPIO clock */
 	RCC_AHBPeriphClockCmd(UART3_GPIO_CLK, ENABLE);
 
@@ -102,6 +116,7 @@ void uart3_init(
 	USART_Cmd(UART3, ENABLE);
 
 	_uart3_init_flag = 1;
+	return status_ok;
 }
 #if UART3_DMA_ENABLE
 static void dma_config(void)
@@ -170,17 +185,19 @@ void uart3_TxBytes(uint8_t *p, uint32_t l)
 	}
 }
 #if UART3_DMA_ENABLE
-void uart3_TxBytesDMA(uint8_t *p, uint32_t l)
+status_t uart3_TxBytesDMA(uint8_t *p, uint32_t l)
 {
-	if(_tx_comp_flag == 1) {
-		_tx_comp_flag = 0;
-		DMA_InitStructure.DMA_BufferSize = l;
-		DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)p;
-		DMA_Init(UART3_TX_DMA, &DMA_InitStructure);
+  if(_tx_comp_flag == 1) {
+    _tx_comp_flag = 0;
+    DMA_InitStructure.DMA_BufferSize = l;
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)p;
+    DMA_Init(UART3_TX_DMA, &DMA_InitStructure);
 
-		/* Enable the UART3_DMA channels */
-		DMA_Cmd(UART3_TX_DMA, ENABLE);
-	}
+    /* Enable the UART3_DMA channels */
+    DMA_Cmd(UART3_TX_DMA, ENABLE);
+    return status_ok;
+  }
+  return status_busy;
 }
 
 uint8_t uart3_pullByte(uint8_t *p)

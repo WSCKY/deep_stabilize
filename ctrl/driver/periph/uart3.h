@@ -33,10 +33,11 @@
 #define UART3_RX_DMA_IT_HT_FLAG             DMA1_IT_HT6
 #define UART3_RX_DMA_IT_TC_FLAG             DMA1_IT_TC6
 /* #define UART3_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn */ /*!< DMA1 Channel 6, Channel 7 Interrupts */
-
 #endif /* UART3_DMA_ENABLE */
 
-void uart3_init(
+#define UART3_RX_CACHE_SIZE                 88
+
+status_t uart3_init(
 #if UART3_DMA_ENABLE
 		void
 #else
@@ -47,11 +48,11 @@ void uart3_init(
 void uart3_TxByte(uint8_t c);
 void uart3_TxBytes(uint8_t *p, uint32_t l);
 #if UART3_DMA_ENABLE
-void uart3_TxBytesDMA(uint8_t *p, uint32_t l);
+status_t uart3_TxBytesDMA(uint8_t *p, uint32_t l);
 uint8_t uart3_pullByte(uint8_t *p);
 uint32_t uart3_pullBytes(uint8_t *p, uint32_t l);
 #else
-#define uart3_TxBytesDMA uart2_TxBytes
+#define uart3_TxBytesDMA uart3_TxBytes
 void uart3_set_callback(PortRecvByteCallback p);
 #endif /* UART3_DMA_ENABLE */
 
