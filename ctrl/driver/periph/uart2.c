@@ -7,20 +7,28 @@
 
 #include "uart2.h"
 
+#if FREERTOS_ENABLED
+#include "cmsis_os.h"
+#endif /* FREERTOS_ENABLED */
+
 static uint8_t _uart2_init_flag = 0;
 #if UART2_DMA_ENABLE
 static uint32_t _tx_comp_flag = 1;
 static DMA_InitTypeDef DMA_InitStructure;
 
 static uint32_t in_ptr = 0, out_ptr = 0;
-extern uint8_t UART2_RX_CACHE[UART2_RX_CACHE_SIZE];
+#if FREERTOS_ENABLED
+uint8_t *UART2_RX_CACHE;
+#else
+uint8_t UART2_RX_CACHE[UART2_RX_CACHE_SIZE];
+#endif /* FREERTOS_ENABLED */
 
 static void dma_config(void);
 #else
 static PortRecvByteCallback pCallback = 0;
 #endif /* UART2_DMA_ENABLE */
 
-void uart2_init(
+status_t uart2_init(
 #if UART2_DMA_ENABLE
 		void
 #else
@@ -32,12 +40,18 @@ void uart2_init(
 	USART_InitTypeDef USART_InitStructure;
 /*	NVIC_InitTypeDef NVIC_InitStructure; */
 
-	if(_uart2_init_flag == 1) return; // already init.
+	if(_uart2_init_flag == 1) return status_ok; // already init.
 #if !UART2_DMA_ENABLE
 	if(p != 0) {
 		pCallback = p;
 	}
 #endif
+
+#if FREERTOS_ENABLED
+  UART2_RX_CACHE = kmm_alloc(UART2_RX_CACHE_SIZE);
+  if(UART2_RX_CACHE == NULL) return status_nomem;
+#endif /* FREERTOS_ENABLED */
+
 	/* Enable GPIO clock */
 	RCC_AHBPeriphClockCmd(UART2_GPIO_CLK, ENABLE);
 
@@ -102,6 +116,7 @@ void uart2_init(
 	USART_Cmd(UART2, ENABLE);
 
 	_uart2_init_flag = 1;
+	return status_ok;
 }
 #if UART2_DMA_ENABLE
 static void dma_config(void)

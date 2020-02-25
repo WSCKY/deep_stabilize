@@ -33,10 +33,11 @@
 #define UART2_RX_DMA_IT_HT_FLAG             DMA1_IT_HT5
 #define UART2_RX_DMA_IT_TC_FLAG             DMA1_IT_TC5
 /* #define UART2_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn */ /*!< DMA1 Channel 4, Channel 5 Interrupts */
-
 #endif /* UART2_DMA_ENABLE */
 
-void uart2_init(
+#define UART2_RX_CACHE_SIZE                 88
+
+status_t uart2_init(
 #if UART2_DMA_ENABLE
 		void
 #else
