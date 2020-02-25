@@ -65,7 +65,4 @@
 #define APP_RX_DATA_SIZE                    256
 #endif /* CONFIG_USB_IF_ENABLE */
 
-#define UART2_RX_CACHE_SIZE                 88
-#define UART3_RX_CACHE_SIZE                 88
-
 #endif /* SYSCONFIG_CONFIG_H_ */
