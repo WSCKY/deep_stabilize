@@ -89,6 +89,7 @@
  extern uint32_t SystemCoreClock;
 #endif
 
+#include "config.h"
 
 #define configUSE_PREEMPTION			1
 #define configUSE_IDLE_HOOK			0
@@ -97,11 +98,11 @@
 #define configTICK_RATE_HZ			( ( TickType_t ) 1000 )
 #define configMAX_PRIORITIES			(  7 )
 #define configMINIMAL_STACK_SIZE		( ( uint16_t ) 64 )
-#if defined(__GNUC__)
+#if CONFIG_USB_IF_ENABLE
  #define configTOTAL_HEAP_SIZE			( ( size_t ) ( 4 * 1024 ) )
 #else
- #define configTOTAL_HEAP_SIZE			( ( size_t ) ( 2 * 1024 ) )
-#endif
+ #define configTOTAL_HEAP_SIZE			( ( size_t ) ( 5 * 1024 ) )
+#endif /* CONFIG_USB_IF_ENABLE */
 #define configMAX_TASK_NAME_LEN			( 16 )
 #define configUSE_TRACE_FACILITY		1
 #define configUSE_16_BIT_TICKS			0
