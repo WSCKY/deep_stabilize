@@ -103,12 +103,14 @@ SECTIONS
     . = . + SYS_VECTOR_SIZE;
   } >SYS_MAIN_MEMORY
 
+#if CONFIG_USB_IF_ENABLE
   .cdc_rx_buff (NOLOAD) :
   {
     . = ALIGN(4);
     APP_Rx_Buffer = .;
     . = . + APP_RX_DATA_SIZE;
   } >SYS_MAIN_MEMORY
+#endif /* CONFIG_USB_IF_ENABLE */
 
   .uart2_rx_cache (NOLOAD) :
   {
