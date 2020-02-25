@@ -34,6 +34,10 @@ void com_task(void const *arg)
   uint32_t rx_len, cnt;
   uint32_t tx_period_div = 0;
 
+  if(uart2_init() != status_ok) {
+    vTaskDelete(NULL);
+  }
+
   msg = kmm_alloc(sizeof(StateInfoDef));
   cfg = kmm_alloc(sizeof(kyLinkConfig_t));
   kylink_uart = kmm_alloc(sizeof(KYLINK_CORE_HANDLE));
@@ -45,8 +49,6 @@ void com_task(void const *arg)
     kmm_free(uart_decoder_cache);
     vTaskDelete(NULL);
   }
-
-  uart2_init();
 
   cfg->txfunc = uart2_TxBytesDMA;
   cfg->callback = com_decode_callback;

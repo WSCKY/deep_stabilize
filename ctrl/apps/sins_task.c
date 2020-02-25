@@ -23,7 +23,9 @@ void sins_task(void const *arg)
   uint8_t rcache[16];
   uint32_t rx_len, cnt;
 
-  uart3_init();
+  if(uart3_init() != status_ok) {
+    vTaskDelete(NULL);
+  }
 
   cfg = kmm_alloc(sizeof(kyLinkConfig_t));
   kylink_sins = kmm_alloc(sizeof(KYLINK_CORE_HANDLE));
