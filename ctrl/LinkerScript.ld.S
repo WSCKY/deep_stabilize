@@ -15,7 +15,7 @@
 /* Entry Point */
 ENTRY(Reset_Handler)
 
-#include "boardconfig.h"
+#include "config.h"
 
 /* Specify the memory areas */
 MEMORY
