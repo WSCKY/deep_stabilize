@@ -35,7 +35,7 @@
 uint32_t ADDRESS=0;
 
 /* should be word aligned */
-uint8_t USBD_StrDesc[USB_MAX_STR_DESC_SIZ] __attribute__ ((aligned (4)));
+__ALIGN_BEGIN uint8_t USBD_StrDesc[USB_MAX_STR_DESC_SIZ] __ALIGN_END;
 
 /* Private function prototypes -----------------------------------------------*/
 static void USBD_GetDescriptor(USB_CORE_HANDLE  *pdev, 
