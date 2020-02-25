@@ -19,10 +19,6 @@
 
 #include "irq.h"
 
-#include "usbd_cdc_core.h"
-#include "usbd_usr.h"
-#include "usbd_cdc_vcp.h"
-
 typedef struct {
   float AngleRateVal;
   float AngleVal;

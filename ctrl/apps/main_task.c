@@ -7,7 +7,11 @@
 
 #include "main_task.h"
 
-static USB_CORE_HANDLE *USB_Device_dev;
+#if CONFIG_USB_IF_ENABLE
+#include "usbd_cdc_core.h"
+#include "usbd_usr.h"
+#include "usbd_cdc_vcp.h"
+#endif /* CONFIG_USB_IF_ENABLE */
 
 static void error_handler(int code);
 
@@ -18,6 +22,10 @@ static void error_handler(int code);
   */
 void StartThread(void const * arg)
 {
+#if CONFIG_USB_IF_ENABLE
+  USB_CORE_HANDLE *USB_Device_dev;
+#endif /* CONFIG_USB_IF_ENABLE */
+
   irq_initialize();
   board_gpio_init();
 /*  pwm_init(); */
@@ -26,6 +34,8 @@ void StartThread(void const * arg)
     error_handler(1);
   }
   delay(50);
+
+#if CONFIG_USB_IF_ENABLE
   /* The Application layer has only to call USBD_Init to
      initialize the USB low level driver, the USB device library, the USB clock,
      pins and interrupt service routine (BSP) to start the Library*/
@@ -35,6 +45,7 @@ void StartThread(void const * arg)
   }
   USBD_Init(USB_Device_dev, &USR_desc, &USBD_CDC_cb, &USR_cb);
   delay(50);
+#endif /* CONFIG_USB_IF_ENABLE */
 
   osThreadDef(T_SINS, sins_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
   if(osThreadCreate (osThread(T_SINS), NULL) == NULL) {
