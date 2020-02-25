@@ -10,22 +10,12 @@
 
 #include "stm32f0xx.h"
 
+#include "config.h"
 #include "sys_def.h"
 
-#include "boardconfig.h"
 #include "SysDataTypes.h"
 
 #include "TimerCounter.h"
-
-#define FREERTOS_ENABLED               (1)
-
-#define BOARD_IMU_ENABLE               (0)
-
-#if FREERTOS_ENABLED
-#define SYSTICK_ENABLE                 (1)
-#else
-#define SYSTICK_ENABLE                 (0)
-#endif /* FREERTOS_ENABLED */
 
 #if FREERTOS_ENABLED
 #define kmm_alloc                      pvPortMalloc
@@ -36,25 +26,6 @@
 #define kmm_alloc                      malloc
 #define kmm_free                       free
 #endif /* FREERTOS_ENABLED */
-
-#if FREERTOS_ENABLED
-#define START_TASK_STACK_SIZE          (configMINIMAL_STACK_SIZE * 2)
-#endif /* FREERTOS_ENABLED */
-
-/* Interrupt Priority Table */
-#define SYSTEM_TIMER_INT_PRIORITY      (0)
-
-#define USB_DEVICE_INT_PRIORITY        (3)
-#define IMU_SPI_DMA_INT_PRIORITY       (0)
-#define IMU_UPDATE_INT_PRIORITY        (1)
-#define USART1_RX_INT_PRIORITY         (1)
-#define USART2_RX_INT_PRIORITY         (2)
-#define USART3_4_RX_INT_PRIORITY       (0)
-#define DMA_CHAN4_5_6_7_INT_PRIORITY   (0)
-#define CONTROL_TIMER_INT_PRIORITY     (1)
-#if SYSTICK_ENABLE
-#define SYSTICK_INT_PRIORITY           (3)
-#endif /* SYSTICK_ENABLE */
 
 #define UNUSED_VARIABLE(X)                       ((void)(X))
 #define UNUSED_PARAMETER(X)                      UNUSED_VARIABLE(X)
