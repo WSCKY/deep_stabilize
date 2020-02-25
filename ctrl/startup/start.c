@@ -10,7 +10,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "SysConfig.h"
-#include "boardconfig.h"
 #if FREERTOS_ENABLED
 #include "cmsis_os.h"
 #endif /* FREERTOS_ENABLED */
