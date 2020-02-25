@@ -167,7 +167,9 @@ monitor:
 	@./../tools/monitor
 
 post-build:
-	-@echo ' Generating binary and Printing size information:'
+	$(ECHO) ' Generate disassembled listing for checking ...'
+	$(OBJDUMP) -S $(OutPath)/$(ProjName).elf > $(OutPath)/disasm.txt
+	$(ECHO) ' Generating binary and Printing size information:'
 	$(OBJCOPY) -O binary $(OutPath)/$(ProjName).elf $(OutPath)/$(ProjName).bin
 	$(JAVA) -cp ../tools/mkfw/ mkfw.mkfw $(OutPath)/$(ProjName).bin PLAIN
 	$(SIZE) $(OutPath)/$(ProjName).elf
