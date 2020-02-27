@@ -90,8 +90,8 @@ status_t servo_run_time(const servo_handle_t *hsrv, int32_t time)
 {
   status_t ret;
   uint16_t buf[2];
-  buf[0] = (time >> 16) & 0xFFFF;
-  buf[1] = time & 0xFFFF;
+  buf[0] = time & 0xFFFF;
+  buf[1] = (time >> 16) & 0xFFFF;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
   ret = rtu_write_multi(hsrv->hrtu, hsrv->addr, 0x00CC, buf, 2);
   if(ret != status_ok) goto exit;
@@ -104,8 +104,8 @@ status_t servo_run_pulse(const servo_handle_t *hsrv, int32_t pulse)
 {
   status_t ret;
   uint16_t buf[2];
-  buf[0] = (pulse >> 16) & 0xFFFF;
-  buf[1] = pulse & 0xFFFF;
+  buf[0] = pulse & 0xFFFF;
+  buf[1] = (pulse >> 16) & 0xFFFF;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
   ret = rtu_write_multi(hsrv->hrtu, hsrv->addr, 0x00CE, buf, 2);
   if(ret != status_ok) goto exit;
@@ -118,8 +118,8 @@ status_t servo_run_position(const servo_handle_t *hsrv, int32_t pos)
 {
   status_t ret;
   uint16_t buf[2];
-  buf[0] = (pos >> 16) & 0xFFFF;
-  buf[1] = pos & 0xFFFF;
+  buf[0] = pos & 0xFFFF;
+  buf[1] = (pos >> 16) & 0xFFFF;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
   ret = rtu_write_multi(hsrv->hrtu, hsrv->addr, 0x00D0, buf, 2);
   if(ret != status_ok) goto exit;
@@ -132,8 +132,8 @@ status_t servo_set_position(const servo_handle_t *hsrv, int32_t pos)
 {
   status_t ret;
   uint16_t buf[2];
-  buf[0] = (pos >> 16) & 0xFFFF;
-  buf[1] = pos & 0xFFFF;
+  buf[0] = pos & 0xFFFF;
+  buf[1] = (pos >> 16) & 0xFFFF;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
   ret = rtu_write_multi(hsrv->hrtu, hsrv->addr, 0x00D2, buf, 2);
   if(ret != status_ok) goto exit;
