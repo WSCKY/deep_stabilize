@@ -7,12 +7,12 @@
 
 #include "servo.h"
 
-void servo_init(servo_handle_t *hsrv)
+void servo_init(const servo_handle_t *hsrv)
 {
 
 }
 
-status_t servo_detect(servo_handle_t *hsrv)
+status_t servo_detect(const servo_handle_t *hsrv)
 {
   status_t ret;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
@@ -28,7 +28,7 @@ exit:
   return ret;
 }
 
-status_t servo_get_position(servo_handle_t *hsrv, uint32_t *val)
+status_t servo_get_position(const servo_handle_t *hsrv, uint32_t *val)
 {
   status_t ret;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
@@ -41,7 +41,7 @@ exit:
   return ret;
 }
 
-status_t servo_speed_up_time(servo_handle_t *hsrv, uint16_t time)
+status_t servo_speed_up_time(const servo_handle_t *hsrv, uint16_t time)
 {
   status_t ret;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
@@ -52,7 +52,7 @@ exit:
   return ret;
 }
 
-status_t servo_speed_down_time(servo_handle_t *hsrv, uint16_t time)
+status_t servo_speed_down_time(const servo_handle_t *hsrv, uint16_t time)
 {
   status_t ret;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
@@ -63,7 +63,7 @@ exit:
   return ret;
 }
 
-status_t servo_set_speed(servo_handle_t *hsrv, uint16_t val) // default speed is 300r/min
+status_t servo_set_speed(const servo_handle_t *hsrv, uint16_t val) // default speed is 300r/min
 {
   status_t ret;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
@@ -74,7 +74,7 @@ exit:
   return ret;
 }
 
-status_t servo_get_speed(servo_handle_t *hsrv, uint16_t *val)
+status_t servo_get_speed(const servo_handle_t *hsrv, uint16_t *val)
 {
   status_t ret;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
@@ -86,7 +86,7 @@ exit:
   return ret;
 }
 
-status_t servo_run_time(servo_handle_t *hsrv, int32_t time)
+status_t servo_run_time(const servo_handle_t *hsrv, int32_t time)
 {
   status_t ret;
   uint16_t buf[2];
@@ -100,7 +100,7 @@ exit:
   return ret;
 }
 
-status_t servo_run_pulse(servo_handle_t *hsrv, int32_t pulse)
+status_t servo_run_pulse(const servo_handle_t *hsrv, int32_t pulse)
 {
   status_t ret;
   uint16_t buf[2];
@@ -114,7 +114,7 @@ exit:
   return ret;
 }
 
-status_t servo_run_position(servo_handle_t *hsrv, int32_t pos)
+status_t servo_run_position(const servo_handle_t *hsrv, int32_t pos)
 {
   status_t ret;
   uint16_t buf[2];
@@ -128,7 +128,7 @@ exit:
   return ret;
 }
 
-status_t servo_set_position(servo_handle_t *hsrv, int32_t pos)
+status_t servo_set_position(const servo_handle_t *hsrv, int32_t pos)
 {
   status_t ret;
   uint16_t buf[2];
