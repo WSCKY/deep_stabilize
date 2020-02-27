@@ -6,15 +6,18 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ./driver/device/mpu9250.c \
-./driver/device/rs485.c
+./driver/device/rs485.c \
+./driver/device/servo.c
 
 OBJS += \
 $(BuildPath)/driver/device/mpu9250.o \
-$(BuildPath)/driver/device/rs485.o
+$(BuildPath)/driver/device/rs485.o \
+$(BuildPath)/driver/device/servo.o
 
 C_DEPS += \
 $(BuildPath)/driver/device/mpu9250.d \
-$(BuildPath)/driver/device/rs485.d
+$(BuildPath)/driver/device/rs485.d \
+$(BuildPath)/driver/device/servo.d
 
 OBJ_DIRS = $(sort $(dir $(OBJS)))
 
