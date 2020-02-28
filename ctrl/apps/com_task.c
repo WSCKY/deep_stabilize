@@ -11,7 +11,9 @@ static uint8_t *uart_decoder_cache;
 #define MSG_PITCH_CONFIG                       0x61
 
 float exp_angle = 0.0f;
+#if !CONFIG_LOG_ENABLE
 extern AngleInfo_t AngleInfo;
+#endif /* CONFIG_LOG_ENABLE */
 
 __PACK_BEGIN typedef struct {
   uint8_t mode;
@@ -32,7 +34,9 @@ void com_task(void const *arg)
 
   uint8_t rcache[16];
   uint32_t rx_len, cnt;
+#if !CONFIG_LOG_ENABLE
   uint32_t tx_period_div = 0;
+#endif /* CONFIG_LOG_ENABLE */
 
   if(uart2_init() != status_ok) {
     vTaskDelete(NULL);
@@ -65,6 +69,7 @@ void com_task(void const *arg)
         kylink_decode(kylink_uart, rcache[cnt]);
       }
 	}
+#if !CONFIG_LOG_ENABLE
 	tx_period_div ++;
 	if(tx_period_div == 5) {
       tx_period_div = 0;
@@ -75,6 +80,7 @@ void com_task(void const *arg)
       // send message
       kylink_send(kylink_uart, msg, MSG_BOARD_STATE, sizeof(StateInfoDef));
 	}
+#endif /* CONFIG_LOG_ENABLE */
   }
 }
 
