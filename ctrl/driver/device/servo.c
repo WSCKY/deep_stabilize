@@ -41,6 +41,17 @@ exit:
   return ret;
 }
 
+status_t servo_set_current(const servo_handle_t *hsrv, uint32_t val)
+{
+  status_t ret;
+  if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
+  ret = rtu_write_single(hsrv->hrtu, hsrv->addr, 0x000D, val * 100);
+  if(ret != status_ok) goto exit;
+exit:
+  rtu_rel_grant(hsrv->hrtu);
+  return ret;
+}
+
 status_t servo_speed_up_time(const servo_handle_t *hsrv, uint16_t time)
 {
   status_t ret;
@@ -136,6 +147,17 @@ status_t servo_set_position(const servo_handle_t *hsrv, int32_t pos)
   buf[1] = (pos >> 16) & 0xFFFF;
   if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
   ret = rtu_write_multi(hsrv->hrtu, hsrv->addr, 0x00D2, buf, 2);
+  if(ret != status_ok) goto exit;
+exit:
+  rtu_rel_grant(hsrv->hrtu);
+  return ret;
+}
+
+status_t servo_set_release(const servo_handle_t *hsrv, uint32_t sta)
+{
+  status_t ret;
+  if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
+  ret = rtu_write_single(hsrv->hrtu, hsrv->addr, 0x00D4, sta);
   if(ret != status_ok) goto exit;
 exit:
   rtu_rel_grant(hsrv->hrtu);
