@@ -47,6 +47,7 @@ status_t uart2_init(
 
 void uart2_TxByte(uint8_t c);
 void uart2_TxBytes(uint8_t *p, uint32_t l);
+status_t uart2_TxString(const char *p);
 #if UART2_DMA_ENABLE
 status_t uart2_TxBytesDMA(uint8_t *p, uint32_t l);
 uint8_t uart2_pullByte(uint8_t *p);

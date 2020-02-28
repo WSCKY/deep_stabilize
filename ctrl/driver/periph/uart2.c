@@ -6,6 +6,7 @@
  */
 
 #include "uart2.h"
+#include <string.h>
 
 #if FREERTOS_ENABLED
 #include "cmsis_os.h"
@@ -184,6 +185,18 @@ void uart2_TxBytes(uint8_t *p, uint32_t l)
 		uart2_TxByte(*p ++);
 	}
 }
+
+status_t uart2_TxString(const char *p)
+{
+  uint32_t l = strlen(p);
+  while(l --) {
+    UART2->TDR = (*p & (uint16_t)0x01FF);
+    while(USART_GetFlagStatus(UART2, USART_FLAG_TXE) == RESET) {}
+    p ++;
+  }
+  return status_ok;
+}
+
 #if UART2_DMA_ENABLE
 status_t uart2_TxBytesDMA(uint8_t *p, uint32_t l)
 {
