@@ -62,6 +62,7 @@ static status_t rs485_1_tx(uint8_t *buffer, uint32_t size)
 {
   output_port_set(RS485_CTRL1); // driver output enable
   uart1_TxBytes(buffer, size);
+  uart1_TxByte(0); // send one data for delay
   output_port_clear(RS485_CTRL1); // receiver output enable
   return status_ok;
 }
@@ -70,6 +71,7 @@ static status_t rs485_2_tx(uint8_t *buffer, uint32_t size)
 {
   output_port_set(RS485_CTRL2); // driver output enable
   uart4_TxBytes(buffer, size);
+  uart4_TxByte(0); // send one data for delay
   output_port_clear(RS485_CTRL2); // receiver output enable
   return status_ok;
 }
