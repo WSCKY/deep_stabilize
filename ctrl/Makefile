@@ -39,6 +39,10 @@ INCS += -I$(TopPath)/driver/usb/app \
         -I$(TopPath)/driver/usb/lib/class
 endif
 
+ifeq ($(CONFIG_LOG_ENABLE),y)
+INCS += -I$(TopPath)/middleware/log
+endif
+
 LD_INCS = -I$(TopPath)/sysconfig
 
 # get version from git
@@ -52,10 +56,18 @@ LIB_PATH := -L$(BuildPath)/rtu \
             -L$(BuildPath)/rtos \
             -L$(BuildPath)/maths \
             -L$(BuildPath)/kylink \
-            -L$(BuildPath)/stdrv \
+            -L$(BuildPath)/stdrv
+
+ifeq ($(CONFIG_LOG_ENABLE),y)
+LIB_PATH += -L$(BuildPath)/log
+endif
 
 # External Libraries
 LIBS := -lrtu -lrtos -lmaths -lkylink -lstdrv
+
+ifeq ($(CONFIG_LOG_ENABLE),y)
+LIBS += -llog
+endif
 
 # Other configuration
 CFGS = -mthumb -Dprintf=iprintf -fno-exceptions
@@ -159,6 +171,9 @@ libraries:
 	$(MAKE) -C middleware/kylink BUILD=$(BuildPath)/kylink
 	$(MAKE) -C middleware/freertos BUILD=$(BuildPath)/rtos
 	$(MAKE) -C driver/stdriver BUILD=$(BuildPath)/stdrv
+ifeq ($(CONFIG_LOG_ENABLE),y)
+	$(MAKE) -C middleware/log BUILD=$(BuildPath)/log
+endif
 
 BINARY := $(OutPath)/$(ProjName).bin
 FIRMWARE := $(OutPath)/$(ProjName).fw
