@@ -30,6 +30,7 @@
 
 #define FREERTOS_ENABLED                    (1)
 
+#define CONFIG_LOG_ENABLE                   (1)
 #define BOARD_IMU_ENABLE                    (0)
 #define CONFIG_USB_IF_ENABLE                (0)
 
@@ -40,7 +41,7 @@
 #endif /* FREERTOS_ENABLED */
 
 #if FREERTOS_ENABLED
-#define START_TASK_STACK_SIZE               (100)
+#define START_TASK_STACK_SIZE               (128)
 #endif /* FREERTOS_ENABLED */
 
 /* Interrupt Priority Table */
@@ -64,5 +65,9 @@
 /*  Total size of IN buffer:  Total size of USB IN buffer: APP_RX_DATA_SIZE*8/MAX_BAUDARATE*1000 should be > CDC_IN_FRAME_INTERVAL */
 #define APP_RX_DATA_SIZE                    256
 #endif /* CONFIG_USB_IF_ENABLE */
+
+#if CONFIG_LOG_ENABLE
+#define CONFIG_LOG_CACHE_SIZE               (128)
+#endif /* CONFIG_LOG_ENABLE */
 
 #endif /* SYSCONFIG_CONFIG_H_ */
