@@ -19,6 +19,10 @@
 
 #include "irq.h"
 
+#if CONFIG_LOG_ENABLE
+#include "log.h"
+#endif /* CONFIG_LOG_ENABLE */
+
 typedef struct {
   float AngleRateVal;
   float AngleVal;
