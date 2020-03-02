@@ -97,6 +97,22 @@ exit:
   return ret;
 }
 
+status_t servo_set_inching(const servo_handle_t *hsrv, servo_inching_t cmd)
+{
+  status_t ret;
+  uint16_t val = 0;
+  if(cmd.dir) val |= (1 << 15);
+  val |= (cmd.speed & 0x1FF) << 6;
+  if(cmd.stop) val |= (1 << 5);
+  if(cmd.cmd) val |= 1;
+  if(rtu_req_grant(hsrv->hrtu) == 0) return status_timeout;
+  ret = rtu_write_single(hsrv->hrtu, hsrv->addr, 0x00CA, val);
+  if(ret != status_ok) goto exit;
+exit:
+  rtu_rel_grant(hsrv->hrtu);
+  return ret;
+}
+
 status_t servo_run_time(const servo_handle_t *hsrv, int32_t time)
 {
   status_t ret;
