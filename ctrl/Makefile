@@ -179,7 +179,7 @@ BINARY := $(OutPath)/$(ProjName).bin
 FIRMWARE := $(OutPath)/$(ProjName).fw
 
 flash: all
-	@st-flash --reset write $(BINARY) 0x08000000
+	@st-flash --reset write $(BINARY) 0x08002000
 
 upgrade: all
 	@./../tools/flasher -f $(FIRMWARE)
