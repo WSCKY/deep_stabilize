@@ -13,7 +13,9 @@
 #include "usbd_cdc_vcp.h"
 #endif /* CONFIG_USB_IF_ENABLE */
 
+#if CONFIG_LOG_ENABLE
 static const char* TAG = "MAIN";
+#endif /* CONFIG_LOG_ENABLE */
 
 static void error_handler(int code);
 
@@ -31,6 +33,7 @@ void StartThread(void const * arg)
   irq_initialize();
   board_gpio_init();
 /*  pwm_init(); */
+  pwm2_init();
 
   if(uart2_init() != status_ok) {
     error_handler(1);
