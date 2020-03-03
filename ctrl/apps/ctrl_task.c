@@ -27,14 +27,13 @@ static const servo_handle_t motor_pitch = {
 void ctrl_task(void const *arg)
 {
   uint32_t task_period_div = 0;
-
+  pwm16_init();
+  pwm17_init();
   delay(1000); // wait motor driver ready.
 
   if(tim7_init() != status_ok) {
     vTaskDelete(NULL);
   }
-
-  pwm2_period(0);
 
   for(;;) {
     if(tim7_check_update(100) == status_ok) {
@@ -42,7 +41,7 @@ void ctrl_task(void const *arg)
       if(task_period_div == 4) { // 20ms
         task_period_div = 0;
 
-        pwm2_period((int)(25 * fabs((AngleInfo.AngleVal - 0))));
+        pwm16_period((int)(1200 * fabs((AngleInfo.AngleVal - 0))));
         if(AngleInfo.AngleVal < 0) {
         	output_port_clear(IO_OUTPUT2);
         } else {
