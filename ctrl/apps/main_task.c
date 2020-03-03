@@ -33,7 +33,6 @@ void StartThread(void const * arg)
   irq_initialize();
   board_gpio_init();
 /*  pwm_init(); */
-  pwm2_init();
 
   if(uart2_init() != status_ok) {
     error_handler(1);
