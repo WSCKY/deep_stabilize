@@ -1,30 +1,30 @@
 /*
- * pwm2.c
+ * pwm16.c
  *
  *  Created on: Mar 9, 2019
  *      Author: kychu
  */
 
-#include "pwm2.h"
+#include "pwm16.h"
 
-#define PWM_TIM                TIM15
-#define PWM_TIM_CLK_EN()       RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM15, ENABLE)
+#define PWM_TIM                TIM16
+#define PWM_TIM_CLK_EN()       RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM16, ENABLE)
 
 #define PWM_GPIO_PORT          GPIOB
 #define PWM_GPIO_CLK           RCC_AHBPeriph_GPIOB
-#define PWM_GPIO_PIN           GPIO_Pin_15
-#define PWM_GPIO_PinSource     GPIO_PinSource15
-#define PWM_GPIO_PIN_AF        GPIO_AF_1
+#define PWM_GPIO_PIN           GPIO_Pin_8
+#define PWM_GPIO_PinSource     GPIO_PinSource8
+#define PWM_GPIO_PIN_AF        GPIO_AF_2
 
-#define PWM_TIM_OCxInit        TIM_OC2Init
-#define PWM_TIM_SET_CCR(x)     do { PWM_TIM->CCR2= x; } while(0);
+#define PWM_TIM_OCxInit        TIM_OC1Init
+#define PWM_TIM_SET_CCR(x)     do { PWM_TIM->CCR1= x; } while(0);
 
 /**
   * @brief  Configure the PWM Pin.
   * @param  None
   * @retval None
   */
-void pwm2_init(void)
+void pwm16_init(void)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   TIM_OCInitTypeDef TIM_OCInitStructure;
@@ -83,25 +83,25 @@ void pwm2_init(void)
   /* PWM_TIM counter enable */
   TIM_Cmd(PWM_TIM, ENABLE);
 
-  /* TIM15 Main Output Enable */
+  /* TIM16 Main Output Enable */
   TIM_CtrlPWMOutputs(PWM_TIM, ENABLE);
 }
 
-void pwm2_dutycycle(uint8_t d)
+void pwm16_dutycycle(uint8_t d)
 {
 	if(d > 99) d = 99;
 	PWM_TIM_SET_CCR(d);
 }
 
-void pwm2_period(uint32_t p)
+void pwm16_period(uint32_t p)
 {
-  if(p > 50000) p = 50000;
+  if(p > 6000) p = 6000;
   if(p < 2) {
     PWM_TIM_SET_CCR(0);
     PWM_TIM->ARR = 50000 - 1;
   } else {
     PWM_TIM->ARR = 100000 / p - 1;
-    PWM_TIM_SET_CCR(1);
+    PWM_TIM_SET_CCR(50000 / p);
     PWM_TIM->CNT = 0;
   }
 }
