@@ -18,10 +18,10 @@
 #define DEG_TO_RAD 0.017453292519943295769236907684886f
 #define RAD_TO_DEG 57.295779513082320876798154814105f
 
-typedef union {
-  uint8_t cData[4];
-  float fData;
-} __packed FloatUnion;
+//typedef union {
+//  uint8_t cData[4];
+//  float fData;
+//} __packed FloatUnion;
 
 //uint8_t* GetVersionString(void);
 
