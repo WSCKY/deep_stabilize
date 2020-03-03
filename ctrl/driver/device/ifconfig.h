@@ -16,6 +16,7 @@
 #include "uart3.h"
 #include "uart4.h"
 #include "pwm.h"
+#include "pwm2.h"
 #include "gpio.h"
 
 #if FREERTOS_ENABLED
