@@ -6,6 +6,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ./driver/periph/pwm.c \
+./driver/periph/pwm2.c \
 ./driver/periph/uart1.c \
 ./driver/periph/uart2.c \
 ./driver/periph/uart3.c \
@@ -18,6 +19,7 @@ C_SRCS += \
 
 OBJS += \
 $(BuildPath)/driver/periph/pwm.o \
+$(BuildPath)/driver/periph/pwm2.o \
 $(BuildPath)/driver/periph/uart1.o \
 $(BuildPath)/driver/periph/uart2.o \
 $(BuildPath)/driver/periph/uart3.o \
@@ -30,6 +32,7 @@ $(BuildPath)/driver/periph/irq.o
 
 C_DEPS += \
 $(BuildPath)/driver/periph/pwm.d \
+$(BuildPath)/driver/periph/pwm2.d \
 $(BuildPath)/driver/periph/uart1.d \
 $(BuildPath)/driver/periph/uart2.d \
 $(BuildPath)/driver/periph/uart3.d \
