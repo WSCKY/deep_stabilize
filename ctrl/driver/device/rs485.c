@@ -27,7 +27,7 @@ static status_t rs485_2_rx(uint8_t *buffer, uint32_t size, uint32_t timeout);
 status_t rs485_init(void)
 {
   status_t ret = status_ok;
-  ret = uart1_init();
+  ret = uart1_init(9600);
   if(ret != status_ok) return ret;
 #if CONFIG_RS485_2_ENABLE
   ret = uart4_init();
