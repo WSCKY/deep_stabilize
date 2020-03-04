@@ -101,7 +101,7 @@ void pwm17_period(uint32_t p)
     PWM_TIM->ARR = 50000 - 1;
   } else {
     PWM_TIM->ARR = 100000 / p - 1;
-    PWM_TIM_SET_CCR(1);
+    PWM_TIM_SET_CCR(50000 / p);
     PWM_TIM->CNT = 0;
   }
 }
