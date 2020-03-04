@@ -11,29 +11,43 @@
 
 #define RS485_RTU_CACHE_SIZE   80
 
-rtu_handle_t rtu_rs485_1, rtu_rs485_2;
+rtu_handle_t rtu_rs485_1;
+#if CONFIG_RS485_2_ENABLE
+rtu_handle_t rtu_rs485_2;
+#endif /* CONFIG_RS485_2_ENABLE */
 
 static status_t rs485_1_tx(uint8_t *buffer, uint32_t size);
-static status_t rs485_2_tx(uint8_t *buffer, uint32_t size);
 static status_t rs485_1_rx(uint8_t *buffer, uint32_t size, uint32_t timeout);
+
+#if CONFIG_RS485_2_ENABLE
+static status_t rs485_2_tx(uint8_t *buffer, uint32_t size);
 static status_t rs485_2_rx(uint8_t *buffer, uint32_t size, uint32_t timeout);
+#endif /* CONFIG_RS485_2_ENABLE */
 
 status_t rs485_init(void)
 {
   status_t ret = status_ok;
   ret = uart1_init();
   if(ret != status_ok) return ret;
+#if CONFIG_RS485_2_ENABLE
   ret = uart4_init();
   if(ret != status_ok) return ret;
+#endif /* CONFIG_RS485_2_ENABLE */
   // receiver output enable
   output_port_clear(RS485_CTRL1);
+#if CONFIG_RS485_2_ENABLE
   output_port_clear(RS485_CTRL2);
+#endif /* CONFIG_RS485_2_ENABLE */
 
   rtu_rs485_1.cache_size = 0;
+#if CONFIG_RS485_2_ENABLE
   rtu_rs485_2.cache_size = 0;
+#endif /* CONFIG_RS485_2_ENABLE */
 
   osSemaphoreDef(RTU_SEM_1);
+#if CONFIG_RS485_2_ENABLE
   osSemaphoreDef(RTU_SEM_2);
+#endif /* CONFIG_RS485_2_ENABLE */
 
   rtu_rs485_1.tx_bytes = rs485_1_tx;
   rtu_rs485_1.rx_bytes = rs485_1_rx;
@@ -45,6 +59,7 @@ status_t rs485_init(void)
     return status_nomem;
   rtu_rs485_1.cache_size = RS485_RTU_CACHE_SIZE;
 
+#if CONFIG_RS485_2_ENABLE
   rtu_rs485_2.tx_bytes = rs485_2_tx;
   rtu_rs485_2.rx_bytes = rs485_2_rx;
   rtu_rs485_2.sync_obj = osSemaphoreCreate(osSemaphore(RTU_SEM_2), 1);
@@ -54,7 +69,7 @@ status_t rs485_init(void)
   if(rtu_rs485_2.cache == NULL)
     return status_nomem;
   rtu_rs485_2.cache_size = RS485_RTU_CACHE_SIZE;
-
+#endif /* CONFIG_RS485_2_ENABLE */
   return ret;
 }
 
@@ -68,6 +83,7 @@ static status_t rs485_1_tx(uint8_t *buffer, uint32_t size)
   return status_ok;
 }
 
+#if CONFIG_RS485_2_ENABLE
 static status_t rs485_2_tx(uint8_t *buffer, uint32_t size)
 {
   output_port_set(RS485_CTRL2); // driver output enable
@@ -77,6 +93,7 @@ static status_t rs485_2_tx(uint8_t *buffer, uint32_t size)
   output_port_clear(RS485_CTRL2); // receiver output enable
   return status_ok;
 }
+#endif /* CONFIG_RS485_2_ENABLE */
 
 static status_t rs485_1_rx(uint8_t *buffer, uint32_t size, uint32_t timeout)
 {
@@ -96,6 +113,7 @@ static status_t rs485_1_rx(uint8_t *buffer, uint32_t size, uint32_t timeout)
   return status_ok;
 }
 
+#if CONFIG_RS485_2_ENABLE
 static status_t rs485_2_rx(uint8_t *buffer, uint32_t size, uint32_t timeout)
 {
   uint32_t rec = 0;
@@ -113,6 +131,7 @@ static status_t rs485_2_rx(uint8_t *buffer, uint32_t size, uint32_t timeout)
   } while(rec < size);
   return status_ok;
 }
+#endif /* CONFIG_RS485_2_ENABLE */
 
 int rtu_req_grant(rtu_handle_t *hrtu)
 {
