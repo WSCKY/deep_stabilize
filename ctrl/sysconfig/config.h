@@ -33,6 +33,7 @@
 #define CONFIG_LOG_ENABLE                   (1)
 #define BOARD_IMU_ENABLE                    (0)
 #define CONFIG_USB_IF_ENABLE                (0)
+#define CONFIG_RS485_2_ENABLE               (0)
 
 #if FREERTOS_ENABLED
 #define SYSTICK_ENABLE                      (1)
