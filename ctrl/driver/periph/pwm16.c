@@ -95,7 +95,7 @@ void pwm16_dutycycle(uint8_t d)
 
 void pwm16_period(uint32_t p)
 {
-  if(p > 6000) p = 6000;
+  if(p > 50000) p = 50000;
   if(p < 2) {
     PWM_TIM_SET_CCR(0);
     PWM_TIM->ARR = 50000 - 1;
