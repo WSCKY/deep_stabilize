@@ -25,6 +25,13 @@
 
 //uint8_t* GetVersionString(void);
 
+typedef struct
+{
+  float kp, ki, kd, preErr, Output, I_max, I_sum, dt, D_max;
+} PID;
+
+void pid_loop(PID* pid, float expect, float measure);
+
 //float apply_deadband(float value, float deadband);
 //void step_change(float *in, float target, float step, float deadBand);
 //uint8_t ComputeCRC8(uint8_t *pchMessage, uint32_t dwLength, uint8_t ucCRC8);
