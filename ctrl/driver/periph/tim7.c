@@ -17,7 +17,7 @@ static osSemaphoreId t7_semaphore;
 static uint32_t t7_update_flag = 0;
 #endif /* FREERTOS_ENABLED */
 
-status_t tim7_init(void)
+status_t tim7_init(uint32_t period)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 
@@ -31,7 +31,7 @@ status_t tim7_init(void)
 
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
   /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 4999; /* 5ms */
+  TIM_TimeBaseStructure.TIM_Period = period * 1000 - 1; /* 5ms */
   TIM_TimeBaseStructure.TIM_Prescaler = (uint16_t) ((SystemCoreClock) / 1000000) - 1; /* 1us */
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
