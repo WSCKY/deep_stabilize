@@ -10,7 +10,7 @@ static Euler_T AttE = {0, 0, 0};
 
 //static uint8_t tx_cnt = 0;
 static uint32_t tx_stamp = 0;
-
+static uint32_t tx_div = 0;
 void com_task_init(void)
 {
 	kyLinkInit(&UartPortHandle, uart2_TxBytesDMA);
@@ -27,7 +27,7 @@ static uint8_t read_len;
 static uint8_t read_buf[8];
 void com_task(void)
 {
-	if(_Get_Millis() - tx_stamp >= 5) {
+	if(_Get_Millis() - tx_stamp >= 2) {
 		tx_stamp = _Get_Millis();
 /*		tx_cnt ++;
 		if(tx_cnt % 2 == 0) {
@@ -58,7 +58,12 @@ void com_task(void)
 		TxPacket.FormatData.PacketData.TypeData.PitchInfoData.Pitch = AttE.roll;
 		TxPacket.FormatData.PacketData.TypeData.PitchInfoData.PitchRate = imu_unit.GyrData.gyrX;
 		SendTxPacket(&UartPortHandle, &TxPacket);
-//		SendTxPacket(&CDC_PortHandle, &TxPacket);
+
+		tx_div ++;
+		if(tx_div == 3) {
+			tx_div = 0;
+			SendTxPacket(&CDC_PortHandle, &TxPacket);
+		}
 	}
 
 	while((read_len = uart2_pullBytes(read_buf, 8)) > 0) {
