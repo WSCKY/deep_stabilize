@@ -25,7 +25,7 @@ uint8_t *UART1_RX_CACHE;
 uint8_t UART1_RX_CACHE[UART1_RX_CACHE_SIZE];
 #endif /* FREERTOS_ENABLED */
 
-status_t uart1_init(void)
+status_t uart1_init(uint32_t baudrate)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
   USART_InitTypeDef USART_InitStructure;
@@ -67,7 +67,7 @@ status_t uart1_init(void)
 
   /* UART1 configuration -------------------------------------------*/
   /* UART1 configured as follow:
-        - BaudRate = 115200
+        - BaudRate = baudrate
         - Word Length = 8 Bits
         - One Stop Bit
         - No parity
@@ -75,7 +75,7 @@ status_t uart1_init(void)
         - Receive && Transmit enabled
   */
 
-  USART_InitStructure.USART_BaudRate = 115200;
+  USART_InitStructure.USART_BaudRate = baudrate;
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
   USART_InitStructure.USART_Parity = USART_Parity_No;

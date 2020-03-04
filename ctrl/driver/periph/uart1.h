@@ -24,7 +24,7 @@
 
 #define UART1_RX_CACHE_SIZE                 80
 
-status_t uart1_init(void);
+status_t uart1_init(uint32_t baudrate);
 
 void uart1_TxByte(uint8_t c);
 void uart1_TxBytes(uint8_t *p, uint32_t l);
