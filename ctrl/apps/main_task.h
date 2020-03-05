@@ -31,5 +31,6 @@ typedef struct {
 void com_task(void const *arg);
 void sins_task(void const *arg);
 void ctrl_task(void const *arg);
+void stat_task(void const *arg);
 
 #endif /* APPS_MAIN_TASK_H_ */
