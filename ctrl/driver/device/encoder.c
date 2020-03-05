@@ -11,12 +11,12 @@
 #define REG_BAUDRATE_VALUE     0x0003
 #define REG_CONFIG_ORIGIN      0x000D
 
-void encoder_init(encoder_handle_t *henc)
+void encoder_init(const encoder_handle_t *henc)
 {
 
 }
 
-status_t encoder_read(encoder_handle_t *henc, uint16_t *val)
+status_t encoder_read(const encoder_handle_t *henc, uint16_t *val)
 {
   status_t ret;
   if(rtu_req_grant(henc->hrtu) == 0) return status_timeout;
@@ -29,7 +29,7 @@ exit:
   return ret;
 }
 
-status_t encoder_baudrate(encoder_handle_t *henc, uint32_t baudrate)
+status_t encoder_baudrate(const encoder_handle_t *henc, uint32_t baudrate)
 {
   status_t ret;
   uint16_t buf[2];
@@ -43,7 +43,7 @@ exit:
   return ret;
 }
 
-status_t encoder_origin(encoder_handle_t *henc)
+status_t encoder_origin(const encoder_handle_t *henc)
 {
   status_t ret;
   if(rtu_req_grant(henc->hrtu) == 0) return status_timeout;

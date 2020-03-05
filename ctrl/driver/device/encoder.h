@@ -17,9 +17,9 @@ typedef struct {
   rtu_handle_t *hrtu;
 } encoder_handle_t;
 
-void encoder_init(encoder_handle_t *henc);
-status_t encoder_read(encoder_handle_t *henc, uint16_t *val);
-status_t encoder_baudrate(encoder_handle_t *henc, uint32_t baudrate);
-status_t encoder_origin(encoder_handle_t *henc);
+void encoder_init(const encoder_handle_t *henc);
+status_t encoder_read(const encoder_handle_t *henc, uint16_t *val);
+status_t encoder_baudrate(const encoder_handle_t *henc, uint32_t baudrate);
+status_t encoder_origin(const encoder_handle_t *henc);
 
 #endif /* DRIVER_DEVICE_ENCODER_H_ */
