@@ -23,6 +23,7 @@ typedef status_t (*rtuRxBytesFunc)(uint8_t *, uint32_t, uint32_t);
 typedef struct {
   uint8_t *cache;
   uint32_t cache_size;
+  uint32_t timeout;
 #if RTU_SYNC_ENABLED
   RTU_SYNC_t sync_obj;
 #endif /* RTU_SYNC_ENABLED */
