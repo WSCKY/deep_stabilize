@@ -49,7 +49,7 @@ LD_INCS = -I$(TopPath)/sysconfig
 __VERSION_STR__ := $(shell git rev-parse --abbrev-ref HEAD):$(shell git rev-parse --short HEAD)
 
 # Global definitions
-DEFS = -DSTM32 -DSTM32F0 -DSTM32F072CBTx -DSTM32F072 -DUSE_STDPERIPH_DRIVER
+DEFS = -DSTM32 -DSTM32F0 -DSTM32F072CBTx -DSTM32F072 -DUSE_STDPERIPH_DRIVER -D__VERSION_STR__=$(__VERSION_STR__)
 
 # External Library path
 LIB_PATH := -L$(BuildPath)/rtu \
