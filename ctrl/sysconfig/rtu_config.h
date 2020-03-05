@@ -12,9 +12,9 @@
 
 #include "ifconfig.h"
 
-#define rtu_delay              delay
+//#define rtu_delay              delay
 
-#define RTU_RECV_TIMEOUT       5       /* milliseconds */
+//#define RTU_RECV_TIMEOUT       5       /* milliseconds */
 #define RTU_MUTEX_TIMEOUT      1000
 
 #define RTU_SYNC_ENABLED       (1)
