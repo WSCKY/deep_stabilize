@@ -7,17 +7,20 @@
 C_SRCS += \
 ./driver/device/mpu9250.c \
 ./driver/device/rs485.c \
-./driver/device/servo.c
+./driver/device/servo.c \
+./driver/device/encoder.c
 
 OBJS += \
 $(BuildPath)/driver/device/mpu9250.o \
 $(BuildPath)/driver/device/rs485.o \
-$(BuildPath)/driver/device/servo.o
+$(BuildPath)/driver/device/servo.o \
+$(BuildPath)/driver/device/encoder.o
 
 C_DEPS += \
 $(BuildPath)/driver/device/mpu9250.d \
 $(BuildPath)/driver/device/rs485.d \
-$(BuildPath)/driver/device/servo.d
+$(BuildPath)/driver/device/servo.d \
+$(BuildPath)/driver/device/encoder.d
 
 OBJ_DIRS = $(sort $(dir $(OBJS)))
 
