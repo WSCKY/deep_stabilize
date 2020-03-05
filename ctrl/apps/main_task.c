@@ -14,6 +14,26 @@
 #endif /* CONFIG_USB_IF_ENABLE */
 
 #if CONFIG_LOG_ENABLE
+
+#define STR1(R) #R
+#define STR2(R) STR1(R)
+
+static const char SystemInfo[] =
+"\n  .--,       .--,"
+"\n ( (  \\.---./  ) )"
+"\n  '.__/o   o\\__.'"
+"\n     {=  ^  =}"               "\t\t\t"   "Fire-fighting Robot Sprinkler Controller"
+"\n      >  -  <"                "\t\t\t"   "Author:  kyChu<kychu@qq.com>"
+"\n     /       \\"              "\t\t\t"   "Version: " STR2(__VERSION_STR__)
+"\n    //       \\\\"            "\t\t\t"   "Date:    " __DATE__
+"\n   //|   .   |\\\\"             "\t\t"   "Time:    " __TIME__
+"\n   \"'\\       /'\"_.-~^`'-."     "\t"   "Board:   Deepblue DRV CTR Board(2019 V1)"
+"\n      \\  _  /--'         `"      "\t"   "ALL RIGHTS RESERVED BY kyChu<kychu@qq.com>"
+"\n    ___)( )(___"
+"\n   (((__) (__)))"
+"\n"
+;
+
 static const char* TAG = "MAIN";
 #endif /* CONFIG_LOG_ENABLE */
 
@@ -39,6 +59,10 @@ void StartThread(void const * arg)
   }
 
 #if CONFIG_LOG_ENABLE
+  delay(500);
+  uart2_TxString("!!!KERNEL START!!!\n");
+  uart2_TxString(SystemInfo);
+
   if(log_init(uart2_TxString) != status_ok) {
     error_handler(1);
   }
@@ -92,15 +116,16 @@ void StartThread(void const * arg)
   }
 
 #if CONFIG_LOG_ENABLE
-    ky_info(TAG, "application started!");
+  ky_info(TAG, "application started!");
 #endif /* CONFIG_LOG_ENABLE */
 
 /*  mpu9250_init();
   _delay_ms(10); */
-  for(;;) {
-    delay(200);
-    USER_LED_TOG();
-  }
+  stat_task(NULL);
+//  for(;;) {
+//    delay(200);
+//    USER_LED_TOG();
+//  }
 }
 
 static void error_handler(int code)
