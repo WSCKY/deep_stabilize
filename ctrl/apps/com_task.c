@@ -4,7 +4,6 @@ static KYLINK_CORE_HANDLE *kylink_uart;
 //static KYLINK_CORE_HANDLE *CDC_PortHandle;
 
 #define UART_DECODER_CACHE_SIZE                (88)
-static uint8_t *uart_decoder_cache;
 
 #define MSG_UPGRADE_REQUEST                    0x80
 #define MSG_BOARD_STATE                        0x60
@@ -31,6 +30,7 @@ void com_task(void const *arg)
 {
   kyLinkConfig_t *cfg = NULL;
   StateInfoDef *msg = NULL;
+  uint8_t *uart_decoder_cache;
 
   uint8_t rcache[16];
   uint32_t rx_len, cnt;
