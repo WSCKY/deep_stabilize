@@ -22,34 +22,37 @@
 void irq_initialize(void)
 {
   NVIC_InitTypeDef NVIC_InitStructure;
+
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+
   /* Enable the USART1 Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = USART1_RX_INT_PRIORITY;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 
   /* Enable the USART2 Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = USART2_RX_INT_PRIORITY;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 
   /* Enable the USART3 and USART4 Interrupts */
   NVIC_InitStructure.NVIC_IRQChannel = USART3_4_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = USART3_4_RX_INT_PRIORITY;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
+  /* Enable the DMA1 Channel 2, 3 Interrupts */
+  NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel2_3_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = DMA_CHAN2_3_INT_PRIORITY;
   NVIC_Init(&NVIC_InitStructure);
 
   /* Enable the DMA1 Channel 4, 5, 6, 7 Interrupts */
   NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel4_5_6_7_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = DMA_CHAN4_5_6_7_INT_PRIORITY;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 
   /* NVIC configuration *******************************************************/
   NVIC_InitStructure.NVIC_IRQChannel = TIM7_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = CONTROL_TIMER_INT_PRIORITY;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 }
 
@@ -145,6 +148,16 @@ void USART3_4_IRQHandler(void)
 {
   uart3_irq_handler();
   uart4_irq_handler();
+}
+
+/**
+  * @brief  This function handles DMA Channel 2, 3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA1_Channel2_3_IRQHandler(void)
+{
+  uart1_dma_irq_handler();
 }
 
 /**
