@@ -12,38 +12,65 @@
 static const char* TAG = "STAT";
 #endif /* CONFIG_LOG_ENABLE */
 
-extern rtu_handle_t rtu_rs485_1;
-static const encoder_handle_t encoder1 = {
-  .addr = 0x01,
-  .hrtu = &rtu_rs485_1,
-};
-static const encoder_handle_t encoder2 = {
-  .addr = 0x02,
-  .hrtu = &rtu_rs485_1,
-};
+uint16_t encoder_val[ENCODER_NUMBER];
+
+#define RS485_RTU_CACHE_SIZE   16
+
+osSemaphoreDef(SEM_ENC_RTU);
 
 void stat_task(void const *arg)
 {
-  uint16_t val1, val2;
+  encoder_handle_t *encoder;
+  rtu_handle_t *rtu_rs485_1;
+
+  if(rs485_1_init() != status_ok) {
+#if CONFIG_LOG_ENABLE
+    ky_err(TAG, "rs485 init failed.");
+#endif /* CONFIG_LOG_ENABLE */
+  }
+
+  rtu_rs485_1 = kmm_alloc(sizeof(rtu_handle_t));
+  encoder = kmm_alloc(sizeof(encoder_handle_t));
+
+  rtu_rs485_1->cache_size = 0;
+  rtu_rs485_1->cache = kmm_alloc(RS485_RTU_CACHE_SIZE);
+  rtu_rs485_1->sync_obj = osSemaphoreCreate(osSemaphore(SEM_ENC_RTU), 1);
+
+  if(encoder == NULL || \
+     rtu_rs485_1 == NULL || \
+	 rtu_rs485_1->cache == NULL || \
+	 rtu_rs485_1->sync_obj == NULL) {
+#if CONFIG_LOG_ENABLE
+    ky_info(TAG, "task start failed");
+#endif /* CONFIG_LOG_ENABLE */
+    kmm_free(encoder);
+    if(rtu_rs485_1 != NULL) {
+      kmm_free(rtu_rs485_1->cache);
+      osSemaphoreDelete(rtu_rs485_1->sync_obj);
+    }
+    kmm_free(rtu_rs485_1);
+    vTaskDelete(NULL);
+  }
+
+  rtu_rs485_1->tx_bytes = rs485_1_tx;
+  rtu_rs485_1->rx_bytes = rs485_1_rx;
+  rtu_rs485_1->cache_size = RS485_RTU_CACHE_SIZE;
+
+  encoder->addr = 0x00;
+  encoder->hrtu = rtu_rs485_1;
+
   for(;;) {
-    delay(200);
-    USER_LED_TOG();
-    if(encoder_read(&encoder1, &val1) != status_ok) {
+    delay(20);
+    encoder->addr ++;
+    if(encoder_read(encoder, &encoder_val[encoder->addr - 1]) != status_ok) {
 #if CONFIG_LOG_ENABLE
-      ky_warn(TAG, "e1 read fail");
+      ky_warn(TAG, "e%d read fail", encoder->addr);
 #endif /* CONFIG_LOG_ENABLE */
-      continue;
+    } else {
+#if CONFIG_LOG_ENABLE
+//      ky_info(TAG, "e1: %05d", val);
+#endif /* CONFIG_LOG_ENABLE */
     }
-    delay(200);
-    USER_LED_TOG();
-    if(encoder_read(&encoder2, &val2) != status_ok) {
-#if CONFIG_LOG_ENABLE
-      ky_warn(TAG, "e2 read fail");
-#endif /* CONFIG_LOG_ENABLE */
-      continue;
-    }
-#if CONFIG_LOG_ENABLE
-    ky_info(TAG, "e1: %05d, e2: %05d", val1, val2);
-#endif /* CONFIG_LOG_ENABLE */
+    if(encoder->addr >= ENCODER_NUMBER) encoder->addr = 0;
   }
 }
