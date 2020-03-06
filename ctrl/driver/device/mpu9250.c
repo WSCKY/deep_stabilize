@@ -7,7 +7,7 @@
 
 #include "mpu9250.h"
 
-#if BOARD_IMU_ENABLE
+#if CONFIG_USE_BOARD_IMU
 
 static uint8_t mpu9250_configured = 0;
 
@@ -255,4 +255,4 @@ static void mpu_read_reg_dma_util(uint8_t reg, uint8_t num, uint8_t *r)
 	spi_rx_tx_dma_util(mpu_tx_buffer, r, num + 1);//ignore the first byte.
 }
 
-#endif /* BOARD_IMU_ENABLE */
+#endif /* CONFIG_USE_BOARD_IMU */
