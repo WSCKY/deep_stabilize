@@ -16,6 +16,20 @@
   #define __PACK_END
 #endif /* __CC_ARM */
 
+#if defined   (__GNUC__)        /* GNU Compiler */
+  #define __ALIGN_END    __attribute__ ((aligned (4)))
+  #define __ALIGN_BEGIN
+#else
+  #define __ALIGN_END
+  #if defined   (__CC_ARM)      /* ARM Compiler */
+    #define __ALIGN_BEGIN    __align(4)
+  #elif defined (__ICCARM__)    /* IAR Compiler */
+    #define __ALIGN_BEGIN
+  #elif defined  (__TASKING__)  /* TASKING Compiler */
+    #define __ALIGN_BEGIN    __align(4)
+  #endif /* __CC_ARM */
+#endif /* __GNUC__ */
+
 typedef enum 
 {
   status_ok      = 0x00U,
