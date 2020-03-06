@@ -30,8 +30,8 @@
 
 #define FREERTOS_ENABLED                    (1)
 
-#define CONFIG_LOG_ENABLE                   (1)
-#define BOARD_IMU_ENABLE                    (0)
+#define CONFIG_LOG_ENABLE                   (0)
+#define CONFIG_USE_BOARD_IMU                (0)
 #define CONFIG_USB_IF_ENABLE                (0)
 #define CONFIG_RS485_2_ENABLE               (0)
 
@@ -42,6 +42,12 @@
 #endif /* FREERTOS_ENABLED */
 
 #if FREERTOS_ENABLED
+#if CONFIG_USB_IF_ENABLE
+#define FREERTOS_HEAP_SIZE                  (4 * 1024)
+#else
+#define FREERTOS_HEAP_SIZE                  (5 * 1024)
+#endif /* CONFIG_USB_IF_ENABLE */
+
 #define START_TASK_STACK_SIZE               (128)
 #endif /* FREERTOS_ENABLED */
 
@@ -51,12 +57,15 @@
 #if CONFIG_USB_IF_ENABLE
 #define USB_DEVICE_INT_PRIORITY             (3)
 #endif /* CONFIG_USB_IF_ENABLE */
+#if CONFIG_USE_BOARD_IMU
 #define IMU_SPI_DMA_INT_PRIORITY            (0)
 #define IMU_UPDATE_INT_PRIORITY             (1)
+#endif /* CONFIG_USE_BOARD_IMU */
 #define USART1_RX_INT_PRIORITY              (1)
 #define USART2_RX_INT_PRIORITY              (2)
 #define USART3_4_RX_INT_PRIORITY            (0)
 #define DMA_CHAN4_5_6_7_INT_PRIORITY        (0)
+#define DMA_CHAN2_3_INT_PRIORITY            (1)
 #define CONTROL_TIMER_INT_PRIORITY          (1)
 #if SYSTICK_ENABLE
 #define SYSTICK_INT_PRIORITY                (3)
@@ -68,7 +77,7 @@
 #endif /* CONFIG_USB_IF_ENABLE */
 
 #if CONFIG_LOG_ENABLE
-#define CONFIG_LOG_CACHE_SIZE               (128)
+#define CONFIG_LOG_CACHE_SIZE               (80)
 #endif /* CONFIG_LOG_ENABLE */
 
 #endif /* SYSCONFIG_CONFIG_H_ */
