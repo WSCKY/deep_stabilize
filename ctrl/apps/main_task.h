@@ -28,6 +28,8 @@ typedef struct {
   float AngleVal;
 } AngleInfo_t;
 
+#define ENCODER_NUMBER       2
+
 void com_task(void const *arg);
 void sins_task(void const *arg);
 void ctrl_task(void const *arg);
