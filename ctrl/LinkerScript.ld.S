@@ -103,6 +103,15 @@ SECTIONS
     . = . + SYS_VECTOR_SIZE;
   } >SYS_MAIN_MEMORY
 
+#if FREERTOS_ENABLED
+  .rtos_heap (NOLOAD) :
+  {
+    . = ALIGN(4);
+    ucHeap = .;
+    . = . + FREERTOS_HEAP_SIZE;
+  } >SYS_MAIN_MEMORY
+#endif /* FREERTOS_ENABLED */
+
 #if CONFIG_USB_IF_ENABLE
   .cdc_rx_buff (NOLOAD) :
   {
