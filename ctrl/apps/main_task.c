@@ -13,8 +13,6 @@
 #include "usbd_cdc_vcp.h"
 #endif /* CONFIG_USB_IF_ENABLE */
 
-#if CONFIG_LOG_ENABLE
-
 #define STR1(R) #R
 #define STR2(R) STR1(R)
 
@@ -27,13 +25,16 @@ static const char SystemInfo[] =
 "\n     /       \\"              "\t\t\t"   "Version: " STR2(__VERSION_STR__)
 "\n    //       \\\\"            "\t\t\t"   "Date:    " __DATE__
 "\n   //|   .   |\\\\"             "\t\t"   "Time:    " __TIME__
-"\n   \"'\\       /'\"_.-~^`'-."     "\t"   "Board:   Deepblue DRV CTR Board(2019 V1)"
+"\n   \"'\\       /'\"_.-~^`'-."     "\t"   "Board:   Deepblue DRV CTR Board(2020 V1)"
 "\n      \\  _  /--'         `"      "\t"   "ALL RIGHTS RESERVED BY kyChu<kychu@qq.com>"
 "\n    ___)( )(___"
 "\n   (((__) (__)))"
 "\n"
 ;
 
+extern uint16_t encoder_val[ENCODER_NUMBER];
+
+#if CONFIG_LOG_ENABLE
 static const char* TAG = "MAIN";
 #endif /* CONFIG_LOG_ENABLE */
 
@@ -58,23 +59,14 @@ void StartThread(void const * arg)
     error_handler(1);
   }
 
-#if CONFIG_LOG_ENABLE
-  delay(500);
   uart2_TxString("!!!KERNEL START!!!\n");
   uart2_TxString(SystemInfo);
 
+#if CONFIG_LOG_ENABLE
   if(log_init(uart2_TxString) != status_ok) {
     error_handler(1);
   }
 #endif /* CONFIG_LOG_ENABLE */
-
-  if(rs485_init() != status_ok) {
-#if CONFIG_LOG_ENABLE
-    ky_err(TAG, "rs485 init failed.");
-#endif /* CONFIG_LOG_ENABLE */
-    error_handler(1);
-  }
-  delay(50);
 
 #if CONFIG_USB_IF_ENABLE
   /* The Application layer has only to call USBD_Init to
@@ -91,7 +83,7 @@ void StartThread(void const * arg)
   delay(50);
 #endif /* CONFIG_USB_IF_ENABLE */
 
-  osThreadDef(T_SINS, sins_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+  osThreadDef(T_SINS, sins_task, osPriorityNormal, 0, 160);
   if(osThreadCreate (osThread(T_SINS), NULL) == NULL) {
 #if CONFIG_LOG_ENABLE
     ky_err(TAG, "sins task create failed.");
@@ -99,7 +91,7 @@ void StartThread(void const * arg)
     error_handler(2);
   }
 
-  osThreadDef(T_CTRL, ctrl_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 2);
+  osThreadDef(T_CTRL, ctrl_task, osPriorityNormal, 0, 128);
   if(osThreadCreate (osThread(T_CTRL), NULL) == NULL) {
 #if CONFIG_LOG_ENABLE
     ky_err(TAG, "ctrl task create failed.");
@@ -107,25 +99,43 @@ void StartThread(void const * arg)
     error_handler(3);
   }
 
-  osThreadDef(T_COM, com_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
-  if(osThreadCreate (osThread(T_COM), NULL) == NULL) {
+  osThreadDef(T_STAT, stat_task, osPriorityNormal, 0, 128);
+  if(osThreadCreate (osThread(T_STAT), NULL) == NULL) {
 #if CONFIG_LOG_ENABLE
-    ky_err(TAG, "mesg task create failed.");
+    ky_err(TAG, "stat task create failed.");
 #endif /* CONFIG_LOG_ENABLE */
-    error_handler(4);
+    error_handler(5);
   }
+
+//  osThreadDef(T_COM, com_task, osPriorityNormal, 0, 128);
+//  if(osThreadCreate (osThread(T_COM), NULL) == NULL) {
+//#if CONFIG_LOG_ENABLE
+//    ky_err(TAG, "mesg task create failed.");
+//#endif /* CONFIG_LOG_ENABLE */
+//    error_handler(4);
+//  }
 
 #if CONFIG_LOG_ENABLE
   ky_info(TAG, "application started!");
 #endif /* CONFIG_LOG_ENABLE */
-
+//vTaskDelete(NULL);
 /*  mpu9250_init();
   _delay_ms(10); */
-  stat_task(NULL);
-//  for(;;) {
-//    delay(200);
-//    USER_LED_TOG();
-//  }
+//  ctrl_task(NULL);
+  for(;;) {
+    delay(200);
+    USER_LED_TOG();
+#if CONFIG_LOG_ENABLE
+    ky_info(TAG, "e1: %05d, e2: %05d", encoder_val[0], encoder_val[1]);
+#endif /* CONFIG_LOG_ENABLE */
+  }
+}
+
+void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName )
+{
+#if CONFIG_LOG_ENABLE
+  ky_err("RTOS", "stack overflow: %s", pcTaskName);
+#endif /* CONFIG_LOG_ENABLE */
 }
 
 static void error_handler(int code)
