@@ -7,7 +7,7 @@
 
 #include "AttEst.h"
 
-#if BOARD_IMU_ENABLE
+#if CONFIG_USE_BOARD_IMU
 
 #if MPU_DATA_UPDATE_HOOK_ENABLE
 
@@ -107,4 +107,4 @@ static void calib_loop(IMU_RAW *raw)
 #error "MPU_DATA_UPDATE_HOOK_ENABLE UNSET"
 #endif /* MPU_DATA_UPDATE_HOOK_ENABLE */
 
-#endif /* BOARD_IMU_ENABLE */
+#endif /* CONFIG_USE_BOARD_IMU */
