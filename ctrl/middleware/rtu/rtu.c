@@ -26,7 +26,7 @@ status_t rtu_read_single(rtu_handle_t *hrtu, uint8_t dev_addr, uint16_t reg_addr
   cal_crc16(hrtu->cache, cnt, hrtu->cache + cnt);
   ret = hrtu->tx_bytes(hrtu->cache, cnt + 2);
   if(ret != status_ok) return ret;
-  ret = hrtu->rx_bytes(hrtu->cache, 7, hrtu->timeout);
+  ret = hrtu->rx_bytes(hrtu->cache, 7);
   if(ret != status_ok) return ret;
   ret = rtu_checksum(hrtu->cache, 7);
   return ret;
@@ -50,7 +50,7 @@ status_t rtu_read_multi(rtu_handle_t *hrtu, uint8_t dev_addr, uint16_t reg_addr,
   cal_crc16(hrtu->cache, cnt, hrtu->cache + cnt);
   ret = hrtu->tx_bytes(hrtu->cache, cnt + 2);
   if(ret != status_ok) return ret;
-  ret = hrtu->rx_bytes(hrtu->cache, 5 + (reg_numb * 2), hrtu->timeout);
+  ret = hrtu->rx_bytes(hrtu->cache, 5 + (reg_numb * 2));
   if(ret != status_ok) return ret;
   ret = rtu_checksum(hrtu->cache, 5 + (reg_numb * 2));
   return ret;
@@ -72,7 +72,7 @@ status_t rtu_write_single(rtu_handle_t *hrtu, uint8_t dev_addr, uint16_t reg_add
   cal_crc16(hrtu->cache, cnt, hrtu->cache + cnt);
   ret = hrtu->tx_bytes(hrtu->cache, cnt + 2);
   if(ret != status_ok) return ret;
-  ret = hrtu->rx_bytes(hrtu->cache, 8, hrtu->timeout);
+  ret = hrtu->rx_bytes(hrtu->cache, 8);
   if(ret != status_ok) return ret;
   ret = rtu_checksum(hrtu->cache, 8);
   return ret;
@@ -101,7 +101,7 @@ status_t rtu_write_multi(rtu_handle_t *hrtu, uint8_t dev_addr, uint16_t reg_addr
   cal_crc16(hrtu->cache, cnt, hrtu->cache + cnt);
   ret = hrtu->tx_bytes(hrtu->cache, cnt + 2);
   if(ret != status_ok) return ret;
-  ret = hrtu->rx_bytes(hrtu->cache, 8, hrtu->timeout);
+  ret = hrtu->rx_bytes(hrtu->cache, 8);
   if(ret != status_ok) return ret;
   ret = rtu_checksum(hrtu->cache, 8);
   return ret;
