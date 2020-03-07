@@ -1,4 +1,5 @@
 #include "main_task.h"
+#include "parameter.h"
 
 static KYLINK_CORE_HANDLE *kylink_uart;
 //static KYLINK_CORE_HANDLE *CDC_PortHandle;
@@ -9,7 +10,6 @@ static KYLINK_CORE_HANDLE *kylink_uart;
 #define MSG_BOARD_STATE                        0x60
 #define MSG_PITCH_CONFIG                       0x61
 
-float exp_angle = 0.0f;
 #if !CONFIG_LOG_ENABLE
 extern AngleInfo_t AngleInfo;
 #endif /* CONFIG_LOG_ENABLE */
@@ -91,7 +91,7 @@ static void com_decode_callback(kyLinkBlockDef *pRx)
     {
       CtrlInfoDef *p = (CtrlInfoDef *)pRx->buffer;
       if(p->mode == 1) {
-        exp_angle = p->pitch;
+        param_set_exppit(p->pitch);
       }
     }
     break;
