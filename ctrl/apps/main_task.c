@@ -55,15 +55,15 @@ void StartThread(void const * arg)
   board_gpio_init();
 /*  pwm_init(); */
 
-  if(uart2_init() != status_ok) {
+  if(LOG_PORT_INIT() != status_ok) {
     error_handler(1);
   }
 
-  uart2_TxString("!!!KERNEL START!!!\n");
-  uart2_TxString(SystemInfo);
+  LOG_PORT_OUTPUT("!!!KERNEL START!!!\n");
+  LOG_PORT_OUTPUT(SystemInfo);
 
 #if CONFIG_LOG_ENABLE
-  if(log_init(uart2_TxString) != status_ok) {
+  if(log_init(LOG_PORT_OUTPUT) != status_ok) {
     error_handler(1);
   }
 #endif /* CONFIG_LOG_ENABLE */
