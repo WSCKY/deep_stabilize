@@ -54,22 +54,28 @@ void ctrl_task(void const *arg)
 
   for(;;) {
     if(xTaskNotifyWait(0xFFFFFFFF, 0xFFFFFFFF, NULL, 100) == pdTRUE) {
-      param_get_anginfo(&AngleInfo);
-      param_get_exppit(&exp_ang);
+      if(param_get_flag_bit(CTRL_LOOP_ENABLE_BIT)) {
+        param_get_anginfo(&AngleInfo);
+        param_get_exppit(&exp_ang);
 
-      if(ABS(exp_ang - AngleInfo.AngleVal) < 0.5f)
-        angle = exp_ang;
-      else
-        angle = AngleInfo.AngleVal;
-      pid_loop(pid, exp_ang, angle);
+        if(ABS(exp_ang - AngleInfo.AngleVal) < 0.5f)
+          angle = exp_ang;
+        else
+          angle = AngleInfo.AngleVal;
+        pid_loop(pid, exp_ang, angle);
 //        pid->Output += ((0 - angle) * 300 - AngleInfo.AngleRateVal) * 1.0f;
-      pid->Output = pid->Output - AngleInfo.AngleRateVal * 40.6667f;
-      pid->Output = LIMIT(pid->Output, OUTPUT_LIMIT, -OUTPUT_LIMIT);
-      pwm16_period((uint32_t)ABS(pid->Output));
-      if(pid->Output < 0) {
-        output_port_set(IO_OUTPUT2);
+        pid->Output = pid->Output - AngleInfo.AngleRateVal * 40.6667f;
+        pid->Output = LIMIT(pid->Output, OUTPUT_LIMIT, -OUTPUT_LIMIT);
+        pwm16_period((uint32_t)ABS(pid->Output));
+        if(pid->Output < 0) {
+          output_port_set(IO_OUTPUT2);
+        } else {
+          output_port_clear(IO_OUTPUT2);
+        }
       } else {
-        output_port_clear(IO_OUTPUT2);
+        // reset PID controller ...
+
+        // control step motor ...
       }
     } else {
 #if CONFIG_LOG_ENABLE
