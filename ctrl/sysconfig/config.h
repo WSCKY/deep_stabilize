@@ -17,7 +17,7 @@
 #define SYS_TEXT_ORIGIN                     0x08002000
 #define SYS_TEXT_LENGTH                     120K
 #define SYS_SRAM_ORIGIN                     0x20000000
-#define SYS_SRAM_LENGTH                     6K
+#define SYS_SRAM_LENGTH                     16K
 
 #define SYS_MAIN_FLASH                      FLASH_TEXT
 #define SYS_MAIN_MEMORY                     SRAM
@@ -43,9 +43,9 @@
 
 #if FREERTOS_ENABLED
 #if CONFIG_USB_IF_ENABLE
-#define FREERTOS_HEAP_SIZE                  (4 * 1024)
+#define FREERTOS_HEAP_SIZE                  (8 * 1024)
 #else
-#define FREERTOS_HEAP_SIZE                  (5 * 1024)
+#define FREERTOS_HEAP_SIZE                  (12 * 1024)
 #endif /* CONFIG_USB_IF_ENABLE */
 
 #define START_TASK_STACK_SIZE               (128)
