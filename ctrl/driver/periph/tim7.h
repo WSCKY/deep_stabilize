@@ -10,7 +10,8 @@
 
 #include "SysConfig.h"
 
-status_t tim7_init(uint32_t period);
-status_t tim7_check_update(uint32_t timeout);
+typedef void (*UpdateCallback)(void);
+
+status_t tim7_init(uint32_t period, UpdateCallback callback);
 
 #endif /* DRIVER_PERIPH_TIM7_H_ */
