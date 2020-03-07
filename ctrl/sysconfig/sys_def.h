@@ -1,6 +1,12 @@
 #ifndef __SYS_DEF_H
 #define __SYS_DEF_H
 
+#include "stddef.h"
+
+#ifndef NULL
+ #define NULL    0
+#endif
+
 /* __packed keyword used to decrease the data type alignment to 1-byte */
 #if defined (__CC_ARM)         /* ARM Compiler */
   #define __PACK_BEGIN  __packed
