@@ -12,32 +12,32 @@
 #include <math.h>
 
 #if CONFIG_LOG_ENABLE
-//static const char* TAG = "CTRL";
+static const char* TAG = "CTRL";
 #endif /* CONFIG_LOG_ENABLE */
+
+#define CTRL_LOOP_PERIOD_MS    (2)
 
 #define OUTPUT_LIMIT           8000
 
-//float exp_angle = 0.0f;
+static osThreadId ctrlThread;
 
-/* extern rtu_handle_t rtu_rs485_1;
-
-static const servo_handle_t motor_pitch = {
-  .addr = 0x01,
-  .hrtu = &rtu_rs485_1,
-}; */
+static void ctrl_task_notify(void);
 
 void ctrl_task(void const *arg)
 {
   PID *pid;
   AngleInfo_t AngleInfo;
   float angle = 0, exp_ang;
-//  uint32_t task_period_div = 0;
+
+  ctrlThread = xTaskGetCurrentTaskHandle();
+
   pwm16_init();
   pwm17_init();
   delay(1000); // wait motor driver ready.
 
   pid = kmm_alloc(sizeof(PID));
-  if(tim7_init(2) != status_ok || pid == NULL) {
+  if(tim7_init(CTRL_LOOP_PERIOD_MS, ctrl_task_notify) != status_ok || pid == NULL) {
+    kmm_alloc(pid);
     vTaskDelete(NULL);
   }
 
@@ -46,11 +46,11 @@ void ctrl_task(void const *arg)
   pid->kd = 0;
   pid->I_max = 3000;
   pid->I_sum = 0;
-  pid->dt = 0.005;
+  pid->dt = CTRL_LOOP_PERIOD_MS * 0.001f;
   pid->D_max = 100;
 
   for(;;) {
-    if(tim7_check_update(100) == status_ok) {
+    if(xTaskNotifyWait(0xFFFFFFFF, 0xFFFFFFFF, NULL, 100) == pdTRUE) {
       param_get_anginfo(&AngleInfo);
       param_get_exppit(&exp_ang);
 
@@ -63,12 +63,20 @@ void ctrl_task(void const *arg)
       pid->Output = pid->Output - AngleInfo.AngleRateVal * 40.6667f;
       pid->Output = LIMIT(pid->Output, OUTPUT_LIMIT, -OUTPUT_LIMIT);
       pwm16_period((uint32_t)ABS(pid->Output));
-//        pwm16_period((int)(1200 * fabs((AngleInfo.AngleVal - 0))));
       if(pid->Output < 0) {
         output_port_set(IO_OUTPUT2);
       } else {
         output_port_clear(IO_OUTPUT2);
       }
+    } else {
+#if CONFIG_LOG_ENABLE
+      ky_err(TAG, "wait notify error");
+#endif /* CONFIG_LOG_ENABLE */
     }
   }
+}
+
+static void ctrl_task_notify(void)
+{
+  osSignalSet(ctrlThread, 0x00000001);
 }
