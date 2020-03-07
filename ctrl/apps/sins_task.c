@@ -7,18 +7,18 @@
 
 #include "main_task.h"
 
+#include "parameter.h"
+
 static KYLINK_CORE_HANDLE *kylink_sins;
 
 #define SINS_DECODER_CACHE_SIZE                (12)
-static uint8_t *sins_decoder_cache;
-
-AngleInfo_t AngleInfo;
 
 static void sins_decode_callback(kyLinkBlockDef *pRx);
 
 void sins_task(void const *arg)
 {
   kyLinkConfig_t *cfg = NULL;
+  uint8_t *sins_decoder_cache;
 
   uint8_t rcache[16];
   uint32_t rx_len, cnt;
@@ -58,6 +58,6 @@ void sins_task(void const *arg)
 static void sins_decode_callback(kyLinkBlockDef *pRx)
 {
   if(pRx->msg_id == 0x17) {
-	  AngleInfo = *(AngleInfo_t *)pRx->buffer;
+    param_set_anginfo((AngleInfo_t *)pRx->buffer);
   }
 }
