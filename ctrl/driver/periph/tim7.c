@@ -16,6 +16,9 @@ status_t tim7_init(uint32_t period, UpdateCallback callback)
   if(callback == NULL) return status_error;
   update_evt = callback;
 
+  /* enable TIM7 peripheral clock */
+  RCC->APB1ENR |= RCC_APB1Periph_TIM7;
+
   tmpcr1 = TIM7->CR1;
   tmpcr1 &= (uint16_t)(~((uint16_t)TIM_CR1_CKD));
   TIM7->CR1 = tmpcr1;
