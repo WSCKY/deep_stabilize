@@ -23,11 +23,6 @@
 #include "log.h"
 #endif /* CONFIG_LOG_ENABLE */
 
-typedef struct {
-  float AngleRateVal;
-  float AngleVal;
-} AngleInfo_t;
-
 #define ENCODER_NUMBER       2
 
 void com_task(void const *arg);
