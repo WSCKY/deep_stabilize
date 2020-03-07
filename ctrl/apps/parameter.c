@@ -127,6 +127,15 @@ void param_clr_flag_bit(uint32_t bit)
   param_rel_grant();
 }
 
+bool param_get_flag_bit(uint32_t bit)
+{
+  bool ret = false;
+  param_req_grant();
+  if(params->flags & bit != 0) ret = true;
+  param_rel_grant();
+  return ret;
+}
+
 static void param_req_grant(void)
 {
   osMutexWait(paramMutex, osWaitForever);
