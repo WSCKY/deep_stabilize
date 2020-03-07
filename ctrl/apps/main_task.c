@@ -83,7 +83,7 @@ void StartThread(void const * arg)
   delay(50);
 #endif /* CONFIG_USB_IF_ENABLE */
 
-  osThreadDef(T_SINS, sins_task, osPriorityNormal, 0, 160);
+  osThreadDef(T_SINS, sins_task, osPriorityNormal, 0, 256);
   if(osThreadCreate (osThread(T_SINS), NULL) == NULL) {
 #if CONFIG_LOG_ENABLE
     ky_err(TAG, "sins task create failed.");
@@ -91,7 +91,7 @@ void StartThread(void const * arg)
     error_handler(2);
   }
 
-  osThreadDef(T_CTRL, ctrl_task, osPriorityNormal, 0, 128);
+  osThreadDef(T_CTRL, ctrl_task, osPriorityNormal, 0, 256);
   if(osThreadCreate (osThread(T_CTRL), NULL) == NULL) {
 #if CONFIG_LOG_ENABLE
     ky_err(TAG, "ctrl task create failed.");
@@ -99,7 +99,7 @@ void StartThread(void const * arg)
     error_handler(3);
   }
 
-  osThreadDef(T_STAT, stat_task, osPriorityNormal, 0, 128);
+  osThreadDef(T_STAT, stat_task, osPriorityNormal, 0, 256);
   if(osThreadCreate (osThread(T_STAT), NULL) == NULL) {
 #if CONFIG_LOG_ENABLE
     ky_err(TAG, "stat task create failed.");
@@ -107,13 +107,13 @@ void StartThread(void const * arg)
     error_handler(5);
   }
 
-//  osThreadDef(T_COM, com_task, osPriorityNormal, 0, 128);
-//  if(osThreadCreate (osThread(T_COM), NULL) == NULL) {
-//#if CONFIG_LOG_ENABLE
-//    ky_err(TAG, "mesg task create failed.");
-//#endif /* CONFIG_LOG_ENABLE */
-//    error_handler(4);
-//  }
+  osThreadDef(T_COM, com_task, osPriorityNormal, 0, 256);
+  if(osThreadCreate (osThread(T_COM), NULL) == NULL) {
+#if CONFIG_LOG_ENABLE
+    ky_err(TAG, "mesg task create failed.");
+#endif /* CONFIG_LOG_ENABLE */
+    error_handler(4);
+  }
 
 #if CONFIG_LOG_ENABLE
   ky_info(TAG, "application started!");
@@ -121,7 +121,6 @@ void StartThread(void const * arg)
 //vTaskDelete(NULL);
 /*  mpu9250_init();
   _delay_ms(10); */
-//  ctrl_task(NULL);
   for(;;) {
     delay(200);
     USER_LED_TOG();
