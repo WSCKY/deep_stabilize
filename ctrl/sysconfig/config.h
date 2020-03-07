@@ -23,7 +23,7 @@
 #define SYS_MAIN_MEMORY                     SRAM
 
 #define SYS_HEAP_SIZE                       0
-#define SYS_STACK_SIZE                      128
+#define SYS_STACK_SIZE                      512
 
 /* reserve 48 word starting in RAM @ 0x20000000 */
 #define SYS_VECTOR_SIZE                     192
@@ -48,7 +48,7 @@
 #define FREERTOS_HEAP_SIZE                  (12 * 1024)
 #endif /* CONFIG_USB_IF_ENABLE */
 
-#define START_TASK_STACK_SIZE               (128)
+#define START_TASK_STACK_SIZE               (256)
 #endif /* FREERTOS_ENABLED */
 
 /* Interrupt Priority Table */
