@@ -7,6 +7,8 @@
 
 #include "main_task.h"
 
+#include "parameter.h"
+
 #if CONFIG_USB_IF_ENABLE
 #include "usbd_cdc_core.h"
 #include "usbd_usr.h"
@@ -82,6 +84,10 @@ void StartThread(void const * arg)
   USBD_Init(USB_Device_dev, &USR_desc, &USBD_CDC_cb, &USR_cb);
   delay(50);
 #endif /* CONFIG_USB_IF_ENABLE */
+
+  if(param_init() != status_ok) {
+    error_handler(1);
+  }
 
   osThreadDef(T_SINS, sins_task, osPriorityNormal, 0, 256);
   if(osThreadCreate (osThread(T_SINS), NULL) == NULL) {
