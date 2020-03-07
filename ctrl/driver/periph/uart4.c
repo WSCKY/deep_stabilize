@@ -6,6 +6,7 @@
  */
 
 #include "uart4.h"
+#include <string.h>
 
 #if FREERTOS_ENABLED
 #include "cmsis_os.h"
@@ -114,6 +115,17 @@ void uart4_TxBytes(uint8_t *p, uint32_t l)
     while(USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET) {}
     p ++;
   }
+}
+
+status_t uart4_TxString(const char *p)
+{
+  uint32_t l = strlen(p);
+  while(l --) {
+    UART4->TDR = (*p & (uint16_t)0x01FF);
+    while(USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET) {}
+    p ++;
+  }
+  return status_ok;
 }
 
 status_t uart4_waitBytes(uint32_t size, uint32_t timeout)

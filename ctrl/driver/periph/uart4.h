@@ -29,6 +29,8 @@ status_t uart4_init(void);
 void uart4_TxByte(uint8_t c);
 void uart4_TxBytes(uint8_t *p, uint32_t l);
 
+status_t uart4_TxString(const char *p);
+
 uint8_t uart4_pullByte(uint8_t *p);
 uint32_t uart4_pullBytes(uint8_t *p, uint32_t l);
 
