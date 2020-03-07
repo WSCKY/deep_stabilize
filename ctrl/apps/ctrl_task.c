@@ -30,16 +30,19 @@ void ctrl_task(void const *arg)
   float angle = 0, exp_ang;
 
   ctrlThread = xTaskGetCurrentTaskHandle();
+#if CONFIG_LOG_ENABLE
+  ky_info(TAG, "ctrl task id: 0x%lx", (uint32_t)ctrlThread);
+#endif /* CONFIG_LOG_ENABLE */
+
+  pid = kmm_alloc(sizeof(PID));
+  if(tim7_init(CTRL_LOOP_PERIOD_MS, ctrl_task_notify) != status_ok || pid == NULL) {
+    kmm_free(pid);
+    vTaskDelete(NULL);
+  }
 
   pwm16_init();
   pwm17_init();
   delay(1000); // wait motor driver ready.
-
-  pid = kmm_alloc(sizeof(PID));
-  if(tim7_init(CTRL_LOOP_PERIOD_MS, ctrl_task_notify) != status_ok || pid == NULL) {
-    kmm_alloc(pid);
-    vTaskDelete(NULL);
-  }
 
   pid->kp = 2500;
   pid->ki = 000;
