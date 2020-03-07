@@ -9,35 +9,11 @@
 
 #include "rtu.h"
 
-//#if CONFIG_RS485_2_ENABLE
-//rtu_handle_t rtu_rs485_2;
-//#endif /* CONFIG_RS485_2_ENABLE */
-
 status_t rs485_1_init(void)
 {
   // receiver output enable
   output_port_clear(RS485_CTRL1);
   return uart1_init(9600);
-
-//#if CONFIG_RS485_2_ENABLE
-//  rtu_rs485_2.cache_size = 0;
-//#endif /* CONFIG_RS485_2_ENABLE */
-
-//#if CONFIG_RS485_2_ENABLE
-//  osSemaphoreDef(RTU_SEM_2);
-//#endif /* CONFIG_RS485_2_ENABLE */
-
-//#if CONFIG_RS485_2_ENABLE
-//  rtu_rs485_2.tx_bytes = rs485_2_tx;
-//  rtu_rs485_2.rx_bytes = rs485_2_rx;
-//  rtu_rs485_2.sync_obj = osSemaphoreCreate(osSemaphore(RTU_SEM_2), 1);
-//  if(rtu_rs485_2.sync_obj == NULL)
-//    return status_error;
-//  rtu_rs485_2.cache = kmm_alloc(RS485_RTU_CACHE_SIZE);
-//  if(rtu_rs485_2.cache == NULL)
-//    return status_nomem;
-//  rtu_rs485_2.cache_size = RS485_RTU_CACHE_SIZE;
-//#endif /* CONFIG_RS485_2_ENABLE */
 }
 
 #if CONFIG_RS485_2_ENABLE
@@ -75,20 +51,6 @@ status_t rs485_2_tx(uint8_t *buffer, uint32_t size)
 status_t rs485_1_rx(uint8_t *buffer, uint32_t size)
 {
   return uart1_read_block(buffer, size, 100);
-//  uint32_t rec = 0;
-//  uint32_t ts_now, ts_start;
-//  ts_start = xTaskGetTickCount() * (1000 / configTICK_RATE_HZ);
-//  do {
-//    rec += uart1_pullBytes(buffer, size - rec);
-//    if(rec < size) {
-//      ts_now = xTaskGetTickCount() * (1000 / configTICK_RATE_HZ);
-//      if((ts_now - ts_start) < 100)
-//        uart1_waitBytes(size - rec, 100 + ts_start - ts_now);
-//      else
-//        return status_timeout;
-//    }
-//  } while(rec < size);
-//  return status_ok;
 }
 
 #if CONFIG_RS485_2_ENABLE
