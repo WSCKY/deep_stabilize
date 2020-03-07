@@ -6,13 +6,12 @@
  */
 
 #include "main_task.h"
+#include "parameter.h"
 #include "encoder.h"
 
 #if CONFIG_LOG_ENABLE
 static const char* TAG = "STAT";
 #endif /* CONFIG_LOG_ENABLE */
-
-uint16_t encoder_val[ENCODER_NUMBER];
 
 #define RS485_RTU_CACHE_SIZE   16
 
@@ -20,6 +19,7 @@ osSemaphoreDef(SEM_ENC_RTU);
 
 void stat_task(void const *arg)
 {
+  uint16_t encoder_val;
   encoder_handle_t *encoder;
   rtu_handle_t *rtu_rs485_1;
 
@@ -62,11 +62,12 @@ void stat_task(void const *arg)
   for(;;) {
     delay(20);
     encoder->addr ++;
-    if(encoder_read(encoder, &encoder_val[encoder->addr - 1]) != status_ok) {
+    if(encoder_read(encoder, &encoder_val) != status_ok) {
 #if CONFIG_LOG_ENABLE
       ky_warn(TAG, "e%d read fail", encoder->addr);
 #endif /* CONFIG_LOG_ENABLE */
     } else {
+      param_set_encval(encoder_val, encoder->addr - 1);
 #if CONFIG_LOG_ENABLE
 //      ky_info(TAG, "e1: %05d", val);
 #endif /* CONFIG_LOG_ENABLE */
