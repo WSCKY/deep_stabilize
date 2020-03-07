@@ -2,9 +2,18 @@
 #define __SYS_DEF_H
 
 #include "stddef.h"
+#include "stdbool.h"
 
 #ifndef NULL
  #define NULL    0
+#endif
+
+#ifndef true
+ #define true 1
+#endif
+
+#ifndef false
+ #define false 0
 #endif
 
 /* __packed keyword used to decrease the data type alignment to 1-byte */
@@ -44,11 +53,5 @@ typedef enum
   status_timeout = 0x03U,
   status_nomem   = 0x04U
 } status_t;
-
-typedef enum
-{
-  false = 0U,
-  true = !false
-} bool_t;
 
 #endif /* __SYS_DEF_H */
