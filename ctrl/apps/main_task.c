@@ -34,8 +34,6 @@ static const char SystemInfo[] =
 "\n"
 ;
 
-extern uint16_t encoder_val[ENCODER_NUMBER];
-
 #if CONFIG_LOG_ENABLE
 static const char* TAG = "MAIN";
 #endif /* CONFIG_LOG_ENABLE */
@@ -130,9 +128,6 @@ void StartThread(void const * arg)
   for(;;) {
     delay(200);
     USER_LED_TOG();
-#if CONFIG_LOG_ENABLE
-    ky_info(TAG, "e1: %05d, e2: %05d", encoder_val[0], encoder_val[1]);
-#endif /* CONFIG_LOG_ENABLE */
   }
 }
 
