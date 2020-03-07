@@ -40,4 +40,13 @@ status_t param_init(void);
 void param_set_anginfo(AngleInfo_t *info);
 void param_get_anginfo(AngleInfo_t *info);
 
+void param_set_exppit(float ang);
+void param_get_exppit(float *ang);
+
+void param_set_expyaw(float ang);
+void param_get_expyaw(float *ang);
+
+void param_set_encval(uint16_t val, uint8_t id);
+void param_get_encval(uint16_t *val, uint8_t id);
+
 #endif /* APPS_PARAMETER_H_ */
