@@ -24,9 +24,6 @@
 #include "cmsis_os.h"
 #endif /* FREERTOS_ENABLED */
 
-#define USER_UART_TX_BYTE                   uart2_TxByte
-#define USER_UART_TX_BYTES                  uart2_TxBytesDMA
-
 #define USER_PWM_SET_DUTYCYCLE              pwm_dutycycle
 
 #define USER_LED_ON                         USER_IO_LOW
@@ -38,5 +35,24 @@
 #else
 #define delay                               _delay_ms
 #endif /* FREERTOS_ENABLED */
+
+#define USER_LOG_PORT                       (4)
+
+#if (USER_LOG_PORT == 1)
+#define LOG_PORT_INIT                       uart1_init
+#define LOG_PORT_OUTPUT                     uart1_TxString
+#elif (USER_LOG_PORT == 2)
+#define LOG_PORT_INIT                       uart2_init
+#define LOG_PORT_OUTPUT                     uart2_TxString
+#elif (USER_LOG_PORT == 3)
+#define LOG_PORT_INIT                       uart3_init
+#define LOG_PORT_OUTPUT                     uart3_TxString
+#elif (USER_LOG_PORT == 4)
+#define LOG_PORT_INIT                       uart4_init
+#define LOG_PORT_OUTPUT                     uart4_TxString
+#else
+#define LOG_PORT_INIT                       uart2_init
+#define LOG_PORT_OUTPUT                     uart2_TxString
+#endif
 
 #endif /* DRIVER_DEVICE_IFCONFIG_H_ */
