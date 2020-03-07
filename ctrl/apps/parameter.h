@@ -35,6 +35,8 @@ typedef struct {
 #define IO_OUTPUT_7_BIT        0x00400000
 #define IO_OUTPUT_8_BIT        0x00800000
 
+#define CTRL_LOOP_ENABLE_BIT   0x01000000
+
 status_t param_init(void);
 
 void param_set_anginfo(AngleInfo_t *info);
@@ -48,5 +50,12 @@ void param_get_expyaw(float *ang);
 
 void param_set_encval(uint16_t val, uint8_t id);
 void param_get_encval(uint16_t *val, uint8_t id);
+
+void param_set_flag(uint32_t flag);
+void param_get_flag(uint32_t *flag);
+
+void param_set_flag_bit(uint32_t bit);
+void param_clr_flag_bit(uint32_t bit);
+bool param_get_flag_bit(uint32_t bit);
 
 #endif /* APPS_PARAMETER_H_ */
