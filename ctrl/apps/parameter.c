@@ -16,8 +16,8 @@
 typedef struct {
 	AngleInfo_t angInfo;
 	uint16_t encoder[ENCODER_NUMBER];
-	float pitch;
-	float yaw;
+	float exp_pitch;
+	float exp_yaw;
 	uint32_t flags;
 } Params_t;
 
@@ -55,31 +55,31 @@ void param_get_anginfo(AngleInfo_t *info)
   param_rel_grant();
 }
 
-void param_set_pitch(float ang)
+void param_set_exppit(float ang)
 {
   param_req_grant();
-  params->pitch = ang;
+  params->exp_pitch = ang;
   param_rel_grant();
 }
 
-void param_get_pitch(float *ang)
+void param_get_exppit(float *ang)
 {
   param_req_grant();
-  *ang = params->pitch;
+  *ang = params->exp_pitch;
   param_rel_grant();
 }
 
-void param_set_yaw(float ang)
+void param_set_expyaw(float ang)
 {
   param_req_grant();
-  params->yaw = ang;
+  params->exp_yaw = ang;
   param_rel_grant();
 }
 
-void param_get_yaw(float *ang)
+void param_get_expyaw(float *ang)
 {
   param_req_grant();
-  *ang = params->yaw;
+  *ang = params->exp_yaw;
   param_rel_grant();
 }
 
