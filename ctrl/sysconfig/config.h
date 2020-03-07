@@ -30,7 +30,7 @@
 
 #define FREERTOS_ENABLED                    (1)
 
-#define CONFIG_LOG_ENABLE                   (0)
+#define CONFIG_LOG_ENABLE                   (1)
 #define CONFIG_USE_BOARD_IMU                (0)
 #define CONFIG_USB_IF_ENABLE                (0)
 #define CONFIG_RS485_2_ENABLE               (0)
