@@ -1,10 +1,13 @@
 #include "main_task.h"
 #include "parameter.h"
 
+#include <string.h>
+
 static KYLINK_CORE_HANDLE *kylink_uart;
 //static KYLINK_CORE_HANDLE *CDC_PortHandle;
 
-#define UART_DECODER_CACHE_SIZE                (88)
+#define UART_DECODER_CACHE_SIZE                (48)
+#define UART_KYLINK_TX_CACHE_SIZE              (sizeof(Params_t) + 8)
 
 #define MSG_UPGRADE_REQUEST                    0x80
 #define MSG_BOARD_STATE                        0x60
@@ -16,6 +19,11 @@ __PACK_BEGIN typedef struct {
   uint32_t flag;
 } __PACK_END CtrlInfoDef;
 
+static uint8_t *kylink_tx_cache = NULL;
+static uint32_t cache_available = 0;
+
+static status_t com_cache_flush(void);
+static status_t com_tx_cached(uint8_t *p, uint32_t l);
 static void com_decode_callback(kyLinkBlockDef *pRx);
 
 void com_task(void const *arg)
@@ -38,15 +46,21 @@ void com_task(void const *arg)
   cfg = kmm_alloc(sizeof(kyLinkConfig_t));
   kylink_uart = kmm_alloc(sizeof(KYLINK_CORE_HANDLE));
   uart_decoder_cache = kmm_alloc(UART_DECODER_CACHE_SIZE);
-  if(param == NULL || cfg == NULL || kylink_uart == NULL || uart_decoder_cache == NULL) {
+  kylink_tx_cache = kmm_alloc(UART_KYLINK_TX_CACHE_SIZE);
+  if(cfg == NULL || \
+     param == NULL || \
+     kylink_uart == NULL || \
+	 kylink_tx_cache == NULL || \
+	 uart_decoder_cache == NULL) {
     kmm_free(param);
     kmm_free(cfg);
     kmm_free(kylink_uart);
+    kmm_free(kylink_tx_cache);
     kmm_free(uart_decoder_cache);
     vTaskDelete(NULL);
   }
 
-  cfg->txfunc = uart2_TxBytesDMA;
+  cfg->txfunc = com_tx_cached;
   cfg->callback = com_decode_callback;
   cfg->decoder_cache = uart_decoder_cache;
   cfg->cache_size = UART_DECODER_CACHE_SIZE;
@@ -70,9 +84,25 @@ void com_task(void const *arg)
       param_get_param(param);
       // send message
       kylink_send(kylink_uart, param, MSG_BOARD_STATE, sizeof(Params_t));
+      com_cache_flush();
 	}
 #endif /* (USER_LOG_PORT != 2) */
   }
+}
+
+static status_t com_tx_cached(uint8_t *p, uint32_t l)
+{
+  memcpy(kylink_tx_cache + cache_available, p, l);
+  cache_available += l;
+  return status_ok;
+}
+
+static status_t com_cache_flush(void)
+{
+  status_t ret;
+  ret = uart2_TxBytesDMA(kylink_tx_cache, cache_available);
+  cache_available = 0;
+  return ret;
 }
 
 static void com_decode_callback(kyLinkBlockDef *pRx)
