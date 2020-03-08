@@ -10,44 +10,36 @@ static KYLINK_CORE_HANDLE *kylink_uart;
 #define MSG_BOARD_STATE                        0x60
 #define MSG_PITCH_CONFIG                       0x61
 
-#if !CONFIG_LOG_ENABLE
-extern AngleInfo_t AngleInfo;
-#endif /* CONFIG_LOG_ENABLE */
-
 __PACK_BEGIN typedef struct {
   uint8_t mode;
   float pitch;
+  uint32_t flag;
 } __PACK_END CtrlInfoDef;
-
-__PACK_BEGIN typedef struct {
-  float pitch;
-  uint32_t state;
-} __PACK_END StateInfoDef;
 
 static void com_decode_callback(kyLinkBlockDef *pRx);
 
 void com_task(void const *arg)
 {
   kyLinkConfig_t *cfg = NULL;
-  StateInfoDef *msg = NULL;
+  Params_t *param = NULL;
   uint8_t *uart_decoder_cache;
 
   uint8_t rcache[16];
   uint32_t rx_len, cnt;
-#if !CONFIG_LOG_ENABLE
+#if (USER_LOG_PORT != 2)
   uint32_t tx_period_div = 0;
-#endif /* CONFIG_LOG_ENABLE */
+#endif /* (USER_LOG_PORT != 2) */
 
   if(uart2_init() != status_ok) {
     vTaskDelete(NULL);
   }
 
-  msg = kmm_alloc(sizeof(StateInfoDef));
+  param = kmm_alloc(sizeof(Params_t));
   cfg = kmm_alloc(sizeof(kyLinkConfig_t));
   kylink_uart = kmm_alloc(sizeof(KYLINK_CORE_HANDLE));
   uart_decoder_cache = kmm_alloc(UART_DECODER_CACHE_SIZE);
-  if(msg == NULL || cfg == NULL || kylink_uart == NULL || uart_decoder_cache == NULL) {
-    kmm_free(msg);
+  if(param == NULL || cfg == NULL || kylink_uart == NULL || uart_decoder_cache == NULL) {
+    kmm_free(param);
     kmm_free(cfg);
     kmm_free(kylink_uart);
     kmm_free(uart_decoder_cache);
@@ -69,18 +61,17 @@ void com_task(void const *arg)
         kylink_decode(kylink_uart, rcache[cnt]);
       }
 	}
-#if !CONFIG_LOG_ENABLE
+#if (USER_LOG_PORT != 2)
 	tx_period_div ++;
 	if(tx_period_div == 5) {
       tx_period_div = 0;
 
       // prepare data
-      msg->pitch = AngleInfo.AngleVal;
-      msg->state = 0x00000000;
+      param_get_param(param);
       // send message
-      kylink_send(kylink_uart, msg, MSG_BOARD_STATE, sizeof(StateInfoDef));
+      kylink_send(kylink_uart, param, MSG_BOARD_STATE, sizeof(Params_t));
 	}
-#endif /* CONFIG_LOG_ENABLE */
+#endif /* (USER_LOG_PORT != 2) */
   }
 }
 
