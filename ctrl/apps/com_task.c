@@ -11,7 +11,7 @@ static KYLINK_CORE_HANDLE *kylink_uart;
 
 #define MSG_UPGRADE_REQUEST                    0x80
 #define MSG_BOARD_STATE                        0x60
-#define MSG_PITCH_CONFIG                       0x61
+#define MSG_BOARD_CONFIG                       0x61
 
 __PACK_BEGIN typedef struct {
   uint8_t mode;
@@ -109,7 +109,7 @@ static status_t com_cache_flush(void)
 static void com_decode_callback(kyLinkBlockDef *pRx)
 {
   switch(pRx->msg_id) {
-    case MSG_PITCH_CONFIG:
+    case MSG_BOARD_CONFIG:
     {
       CtrlInfoDef *p = (CtrlInfoDef *)pRx->buffer;
       if(p->mode == 1) {
