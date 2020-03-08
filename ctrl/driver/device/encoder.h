@@ -12,6 +12,10 @@
 
 #include "rtu.h"
 
+#define ENCODER_PRECISION      0x4000 /*(1 << 14)*/
+#define ENCODER_DEG2INT(x)     ((uint16_t)((x) * 45.5111111111f))
+#define ENCODER_INT2DEG(x)     ((float)(x) * 0.02197265625f)
+
 typedef struct {
   uint8_t addr;
   rtu_handle_t *hrtu;
