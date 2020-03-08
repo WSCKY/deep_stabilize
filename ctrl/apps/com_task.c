@@ -116,6 +116,24 @@ static void com_decode_callback(kyLinkBlockDef *pRx)
         param_set_exppit(p->pitch);
       }
       param_set_expyaw(p->yaw);
+      if((p->flag & IO_OUTPUT_3_BIT) != 0)
+        output_port_set(IO_OUTPUT3);
+      else
+        output_port_clear(IO_OUTPUT3);
+      if((p->flag & IO_OUTPUT_4_BIT) != 0)
+        output_port_set(IO_OUTPUT4);
+      else
+        output_port_clear(IO_OUTPUT4);
+
+      if((p->flag & IO_OUTPUT_5_BIT) != 0)
+        output_port_set(IO_OUTPUT5);
+      else
+        output_port_clear(IO_OUTPUT5);
+      if((p->flag & IO_OUTPUT_6_BIT) != 0)
+        output_port_set(IO_OUTPUT6);
+      else
+        output_port_clear(IO_OUTPUT6);
+      param_cfg_flag_bits(0xFFC3FFFF, p->flag);
     }
     break;
     case MSG_UPGRADE_REQUEST:
