@@ -17,13 +17,13 @@ typedef struct {
   float AngleVal;
 } AngleInfo_t;
 
-typedef struct {
+__PACK_BEGIN typedef struct {
 	AngleInfo_t angInfo;
 	uint16_t encoder[ENCODER_NUMBER];
 	float exp_pitch;
 	float exp_yaw;
 	uint32_t flags;
-} Params_t;
+} __PACK_END Params_t;
 
 #define IO_INPUT_1_BIT         0x00000001
 #define IO_INPUT_2_BIT         0x00000002
@@ -67,5 +67,6 @@ void param_get_flag(uint32_t *flag);
 void param_set_flag_bit(uint32_t bit);
 void param_clr_flag_bit(uint32_t bit);
 bool param_get_flag_bit(uint32_t bit);
+void param_cfg_flag_bits(uint32_t mask, uint32_t bits);
 
 #endif /* APPS_PARAMETER_H_ */
