@@ -135,6 +135,14 @@ bool param_get_flag_bit(uint32_t bit)
   return ret;
 }
 
+void param_cfg_flag_bits(uint32_t mask, uint32_t bits)
+{
+  param_req_grant();
+  params->flags &= mask;
+  params->flags |= (~mask & bits);
+  param_rel_grant();
+}
+
 static void param_req_grant(void)
 {
   osMutexWait(paramMutex, osWaitForever);
