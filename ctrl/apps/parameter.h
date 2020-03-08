@@ -17,6 +17,14 @@ typedef struct {
   float AngleVal;
 } AngleInfo_t;
 
+typedef struct {
+	AngleInfo_t angInfo;
+	uint16_t encoder[ENCODER_NUMBER];
+	float exp_pitch;
+	float exp_yaw;
+	uint32_t flags;
+} Params_t;
+
 #define IO_INPUT_1_BIT         0x00000001
 #define IO_INPUT_2_BIT         0x00000002
 #define IO_INPUT_3_BIT         0x00000004
@@ -38,6 +46,8 @@ typedef struct {
 #define CTRL_LOOP_ENABLE_BIT   0x01000000
 
 status_t param_init(void);
+
+void param_get_param(Params_t *param);
 
 void param_set_anginfo(AngleInfo_t *info);
 void param_get_anginfo(AngleInfo_t *info);
