@@ -13,14 +13,6 @@
 #include "cmsis_os.h"
 #endif /* FREERTOS_ENABLED */
 
-typedef struct {
-	AngleInfo_t angInfo;
-	uint16_t encoder[ENCODER_NUMBER];
-	float exp_pitch;
-	float exp_yaw;
-	uint32_t flags;
-} Params_t;
-
 static Params_t* params;
 static osMutexId paramMutex;
 
@@ -39,6 +31,13 @@ status_t param_init(void)
   memset(params, 0, sizeof(Params_t));
 
   return status_ok;
+}
+
+void param_get_param(Params_t *param)
+{
+  param_req_grant();
+  memcpy(param, params, sizeof(Params_t));
+  param_rel_grant();
 }
 
 void param_set_anginfo(AngleInfo_t *info)
@@ -131,7 +130,7 @@ bool param_get_flag_bit(uint32_t bit)
 {
   bool ret = false;
   param_req_grant();
-  if(params->flags & bit != 0) ret = true;
+  if((params->flags & bit) != 0) ret = true;
   param_rel_grant();
   return ret;
 }
