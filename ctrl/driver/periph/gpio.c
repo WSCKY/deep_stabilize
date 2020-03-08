@@ -12,7 +12,6 @@ typedef struct {
   uint32_t GPIO_Pin;
 } USER_IO_LIST;
 
-#define INPUT_IO_NUMBER        4
 static const USER_IO_LIST INPUT_IOS[INPUT_IO_NUMBER] = {
   {GPIOA, GPIO_Pin_15},
   {GPIOB, GPIO_Pin_3},
@@ -20,7 +19,6 @@ static const USER_IO_LIST INPUT_IOS[INPUT_IO_NUMBER] = {
   {GPIOB, GPIO_Pin_5},
 };
 
-#define OUTPUT_IO_NUMBER       9
 static const USER_IO_LIST OUTPUT_IOS[OUTPUT_IO_NUMBER] = {
   {GPIOB, GPIO_Pin_13},
   {GPIOB, GPIO_Pin_14},

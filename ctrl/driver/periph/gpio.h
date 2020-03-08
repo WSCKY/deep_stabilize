@@ -10,6 +10,9 @@
 
 #include "SysConfig.h"
 
+#define INPUT_IO_NUMBER        4
+#define OUTPUT_IO_NUMBER       9
+
 #define USER_IO_LOW()                  GPIOB->BRR = GPIO_Pin_12;
 #define USER_IO_HIGH()                 GPIOB->BSRR = GPIO_Pin_12;
 #define USER_IO_TOGGLE()               GPIOB->ODR ^= GPIO_Pin_12;
