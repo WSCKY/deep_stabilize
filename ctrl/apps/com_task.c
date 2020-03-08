@@ -16,6 +16,7 @@ static KYLINK_CORE_HANDLE *kylink_uart;
 __PACK_BEGIN typedef struct {
   uint8_t mode;
   float pitch;
+  float yaw;
   uint32_t flag;
 } __PACK_END CtrlInfoDef;
 
@@ -114,6 +115,7 @@ static void com_decode_callback(kyLinkBlockDef *pRx)
       if(p->mode == 1) {
         param_set_exppit(p->pitch);
       }
+      param_set_expyaw(p->yaw);
     }
     break;
     case MSG_UPGRADE_REQUEST:
