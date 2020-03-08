@@ -20,6 +20,7 @@ osSemaphoreDef(SEM_ENC_RTU);
 void stat_task(void const *arg)
 {
   uint16_t encoder_val;
+  uint8_t gpio_in, gpio_msk;
   encoder_handle_t *encoder;
   rtu_handle_t *rtu_rs485_1;
 
@@ -60,7 +61,8 @@ void stat_task(void const *arg)
   encoder->hrtu = rtu_rs485_1;
 
   for(;;) {
-    delay(20);
+    delay(10);
+    // read encoder
     encoder->addr ++;
     if(encoder_read(encoder, &encoder_val) != status_ok) {
 #if CONFIG_LOG_ENABLE
@@ -73,5 +75,15 @@ void stat_task(void const *arg)
 #endif /* CONFIG_LOG_ENABLE */
     }
     if(encoder->addr >= ENCODER_NUMBER) encoder->addr = 0;
+    delay(10);
+    // read GPIO input
+    gpio_in = 0;
+    gpio_msk = 1;
+    for(int i = 0; i < INPUT_IO_NUMBER; i ++) {
+      if(input_port_read(i) != 0)
+        gpio_in |= gpio_msk;
+      gpio_msk <<= 1;
+    }
+    param_cfg_flag_bits(0xFFFFFF00, gpio_in);
   }
 }
