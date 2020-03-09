@@ -50,7 +50,8 @@ static KYLINK_CORE_HANDLE kylink_tool;
 static pthread_t decode_thread;
 static bool_t _should_exit = false;
 
-static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t ctrlInfo_mtx = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t devState_mtx = PTHREAD_MUTEX_INITIALIZER;
 
 static void decode_task(void);
 static status_t update_config(void);
@@ -78,41 +79,76 @@ int SprinklerCtrl_start(const char *dev, const char *baudrate)
 
 int SprinklerCtrl_enable_stabilize(int e)
 {
+  int ret = 0;
+  pthread_mutex_lock(&ctrlInfo_mtx);
   if(e != 0) ctrlInfo.flag |= CTRL_LOOP_ENABLE_BIT;
   else ctrlInfo.flag &= ~CTRL_LOOP_ENABLE_BIT;
-  if(update_config() != status_ok) return -2;
-  return 0;
+  if(update_config() != status_ok) ret = -2;
+  pthread_mutex_unlock(&ctrlInfo_mtx);
+  return ret;
 }
 
 int SprinklerCtrl_set_pitch(float pitch)
 {
+  int ret = 0;
   if(pitch < -15 || pitch > 30) return -1;
+  pthread_mutex_lock(&ctrlInfo_mtx);
   ctrlInfo.pitch = pitch;
-  if(update_config() != status_ok) return -2;
-  return 0;
-}
-
-float SprinklerCtrl_get_pitch(void)
-{
-  float ret;
-  pthread_mutex_lock(&mtx);
-  ret = devState.angInfo.AngleVal;
-  pthread_mutex_unlock(&mtx);
+  if(update_config() != status_ok) ret = -2;
+  pthread_mutex_unlock(&ctrlInfo_mtx);
   return ret;
-}
-
-float SprinklerCtrl_get_pitchrate(void)
-{
-  return devState.angInfo.AngleRateVal;
 }
 
 /* from -180 to +180 */
 int SprinklerCtrl_set_yaw(float yaw)
 {
+  int ret = 0;
   if(yaw < -180 || yaw > 180) return -1; // invalid parameter
+
+  pthread_mutex_lock(&ctrlInfo_mtx);
   ctrlInfo.yaw = yaw;
-  if(update_config() != status_ok) return -2;
-  return 0;
+  if(update_config() != status_ok) {
+    ret = -2;
+  }
+  pthread_mutex_unlock(&ctrlInfo_mtx);
+
+  return ret;
+}
+
+float SprinklerCtrl_get_pitch(void)
+{
+  float ret;
+  pthread_mutex_lock(&devState_mtx);
+  ret = devState.angInfo.AngleVal;
+  pthread_mutex_unlock(&devState_mtx);
+  return ret;
+}
+
+float SprinklerCtrl_get_pitchrate(void)
+{
+  float ret;
+  pthread_mutex_lock(&devState_mtx);
+  ret = devState.angInfo.AngleRateVal;
+  pthread_mutex_unlock(&devState_mtx);
+  return ret;
+}
+
+int SprinklerCtrl_get_pitchencoder(void)
+{
+  int ret;
+  pthread_mutex_lock(&devState_mtx);
+  ret = devState.encoder[0];
+  pthread_mutex_unlock(&devState_mtx);
+  return ret;
+}
+
+int SprinklerCtrl_get_yawencoder(void)
+{
+  int ret;
+  pthread_mutex_lock(&devState_mtx);
+  ret = devState.encoder[1];
+  pthread_mutex_unlock(&devState_mtx);
+  return ret;
 }
 
 int SprinklerCtrl_stop(void)
@@ -148,9 +184,9 @@ static void decode_task(void)
 static void kylink_decode_callback(kyLinkBlockDef *pRx)
 {
   if(pRx->msg_id == MSG_BOARD_STATE) {
-    pthread_mutex_lock(&mtx);
+    pthread_mutex_lock(&devState_mtx);
     devState = *(Params_t *)pRx->buffer;
-    pthread_mutex_unlock(&mtx);
+    pthread_mutex_unlock(&devState_mtx);
   }
 }
 
