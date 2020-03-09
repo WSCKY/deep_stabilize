@@ -50,6 +50,8 @@ static KYLINK_CORE_HANDLE kylink_tool;
 static pthread_t decode_thread;
 static bool_t _should_exit = false;
 
+static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+
 static void decode_task(void);
 static status_t update_config(void);
 static void kylink_decode_callback(kyLinkBlockDef *pRx);
@@ -67,6 +69,8 @@ int SprinklerCtrl_start(const char *dev, const char *baudrate)
     printf("\e[0;31mfailed to setup kylink.\e[0m\n");
     return -2;
   }
+  memset(&devState, 0, sizeof(Params_t));
+  memset(&ctrlInfo, 0, sizeof(CtrlInfoDef));
   if(pthread_create(&decode_thread, NULL, (void *)decode_task, NULL) != 0)
     return -3;
   return 0;
@@ -86,6 +90,20 @@ int SprinklerCtrl_set_pitch(float pitch)
   ctrlInfo.pitch = pitch;
   if(update_config() != status_ok) return -2;
   return 0;
+}
+
+float SprinklerCtrl_get_pitch(void)
+{
+  float ret;
+  pthread_mutex_lock(&mtx);
+  ret = devState.angInfo.AngleVal;
+  pthread_mutex_unlock(&mtx);
+  return ret;
+}
+
+float SprinklerCtrl_get_pitchrate(void)
+{
+  return devState.angInfo.AngleRateVal;
 }
 
 /* from -180 to +180 */
@@ -118,6 +136,7 @@ static void decode_task(void)
   while(_should_exit != 1) {
     recved = uart_read((char *)rx_cache, 40);
     if(recved > 0) {
+      cnt = 0;
       while(recved --) {
         kylink_decode(&kylink_tool, rx_cache[cnt]);
         cnt ++;
@@ -129,7 +148,9 @@ static void decode_task(void)
 static void kylink_decode_callback(kyLinkBlockDef *pRx)
 {
   if(pRx->msg_id == MSG_BOARD_STATE) {
+    pthread_mutex_lock(&mtx);
     devState = *(Params_t *)pRx->buffer;
+    pthread_mutex_unlock(&mtx);
   }
 }
 
