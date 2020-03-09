@@ -37,7 +37,7 @@ DEFS =
 LIB_PATH = -L$(BuildPath)/sdk
 
 # External Libraries
-LIBS := -lSprinklerCtrl
+LIBS := -lSprinklerCtrl -lpthread
 
 # Other configuration
 CFGS = -c -fPIC
