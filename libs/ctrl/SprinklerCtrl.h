@@ -21,6 +21,9 @@ int SprinklerCtrl_enable_stabilize(int e);
 int SprinklerCtrl_set_pitch(float pitch);
 int SprinklerCtrl_set_yaw(float yaw);
 
+float SprinklerCtrl_get_pitch(void);
+float SprinklerCtrl_get_pitchrate(void);
+
 int SprinklerCtrl_stop(void);
 
 #ifdef __cplusplus
