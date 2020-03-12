@@ -55,8 +55,8 @@ void com_task(void)
 
 		TxPacket.FormatData.msg_id = TYPE_PITCH_DATA_Resp;
 		TxPacket.FormatData.length = sizeof(PitchInfoDef);
-		TxPacket.FormatData.PacketData.TypeData.PitchInfoData.Pitch = AttE.roll;
-		TxPacket.FormatData.PacketData.TypeData.PitchInfoData.PitchRate = imu_unit.GyrData.gyrX;
+		TxPacket.FormatData.PacketData.TypeData.PitchInfoData.Pitch = -AttE.roll;
+		TxPacket.FormatData.PacketData.TypeData.PitchInfoData.PitchRate = -imu_unit.GyrData.gyrX;
 		SendTxPacket(&UartPortHandle, &TxPacket);
 
 		tx_div ++;
