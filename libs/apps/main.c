@@ -19,17 +19,13 @@ static void exit_task(void);
 
 int main(int argc, char *argv[]) {
 	int ch;
-	char *baud = "115200";
 	const char *dev = "/dev/ttyUSB0";
 
 	terminal_config();
 
 	printf("\e[0;31mTEST START\e[0m\n");
-	while ((ch = getopt(argc, argv, "f:d:b:")) != -1) {
+	while ((ch = getopt(argc, argv, "d:")) != -1) {
 		switch (ch) {
-			case 'b':
-				baud = optarg;
-			break;
 			case 'd':
 				dev = optarg;
 			break;
@@ -44,7 +40,7 @@ int main(int argc, char *argv[]) {
 		goto exit;
 	}
 
-	if(SprinklerCtrl_start(dev, baud) != 0) {
+	if(SprinklerCtrl_start(dev) != 0) {
       printf("\e[0;31mfailed to start Sprinkler Control.\e[0m\n");
       _should_exit = 1;
       SprinklerCtrl_stop();
