@@ -14,12 +14,23 @@ extern "C" {
 #endif
 
 /*
+ * input argument: reserved.
+ */
+typedef void (*SprinklerCtrl_adj_done_callback)(unsigned int);
+
+/*
  * @brief  communication start.
- * @param  dev: device node, e.g. "/dev/ttyUSB0"
- *         baudrate: baudrate for serial port, e.g. "115200", default: "115200"
+ * @param  dev: device node, e.g. "/dev/ttyUSB0".
  * @retval 0 is OK, or negative value means error.
  */
-int SprinklerCtrl_start(const char *dev, const char *baudrate);
+int SprinklerCtrl_start(const char *dev);
+
+/*
+ * @brief  set controller event callback.
+ * @param  callback: callback handler.
+ * @retval 0 is OK, or -1 is error.
+ */
+int SprinklerCtrl_config_callback(SprinklerCtrl_adj_done_callback callback);
 
 /*
  * @brief  enable or disable stability augmentation control.
@@ -68,6 +79,9 @@ int SprinklerCtrl_get_pitchencoder(void);
  * @retval measured value.
  */
 int SprinklerCtrl_get_yawencoder(void);
+
+int SprinklerCtrl_set_exp(float pitch, float yaw);
+int SprinklerCtrl_get_angle(float *pitch, float *yaw);
 
 /*
  * @brief  exit safely.

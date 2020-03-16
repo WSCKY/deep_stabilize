@@ -60,9 +60,9 @@ static void kylink_decode_callback(kyLinkBlockDef *pRx);
 static int kylink_setup(void);
 static status_t kylink_tx_bytes(uint8_t *p, uint32_t l);
 
-int SprinklerCtrl_start(const char *dev, const char *baudrate)
+int SprinklerCtrl_start(const char *dev)
 {
-  if(uart_open(dev, baudrate) != EXIT_SUCCESS) {
+  if(uart_open(dev, (const char *)"115200") != EXIT_SUCCESS) {
     printf("\e[0;31mfailed to open uart %s.\e[0m\n", dev);
     return -1;
   }
@@ -72,9 +72,17 @@ int SprinklerCtrl_start(const char *dev, const char *baudrate)
   }
   memset(&devState, 0, sizeof(Params_t));
   memset(&ctrlInfo, 0, sizeof(CtrlInfoDef));
+  ctrlInfo.mode = 1;
+  ctrlInfo.flag |= CTRL_LOOP_ENABLE_BIT;
   if(pthread_create(&decode_thread, NULL, (void *)decode_task, NULL) != 0)
     return -3;
   return 0;
+}
+
+int SprinklerCtrl_config_callback(SprinklerCtrl_adj_done_callback callback)
+{
+//  printf("this function unsupported yet.");
+  return -1;
 }
 
 int SprinklerCtrl_enable_stabilize(int e)
@@ -115,6 +123,19 @@ int SprinklerCtrl_set_yaw(float yaw)
   return ret;
 }
 
+int SprinklerCtrl_set_exp(float pitch, float yaw)
+{
+  int ret = 0;
+  if(pitch < -15 || pitch > 30) return -1;
+  if(yaw < -180 || yaw > 180) return -1;
+  pthread_mutex_lock(&ctrlInfo_mtx);
+  ctrlInfo.pitch = pitch;
+  ctrlInfo.yaw = yaw;
+  if(update_config() != status_ok) ret = -2;
+  pthread_mutex_unlock(&ctrlInfo_mtx);
+  return ret;
+}
+
 float SprinklerCtrl_get_pitch(void)
 {
   float ret;
@@ -131,6 +152,15 @@ float SprinklerCtrl_get_pitchrate(void)
   ret = devState.angInfo.AngleRateVal;
   pthread_mutex_unlock(&devState_mtx);
   return ret;
+}
+
+int SprinklerCtrl_get_angle(float *pitch, float *yaw)
+{
+  pthread_mutex_lock(&devState_mtx);
+  *pitch = devState.angInfo.AngleVal;
+  *yaw = devState.encoder[1] * 0.02197265625f;
+  pthread_mutex_unlock(&devState_mtx);
+  return 0;
 }
 
 int SprinklerCtrl_get_pitchencoder(void)
