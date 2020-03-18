@@ -40,18 +40,23 @@
 
 #if (USER_LOG_PORT == 1)
 #define LOG_PORT_INIT                       uart1_init
+#define LOG_PORT_TXCHAR                     uart1_TxByte
 #define LOG_PORT_OUTPUT                     uart1_TxString
 #elif (USER_LOG_PORT == 2)
 #define LOG_PORT_INIT                       uart2_init
+#define LOG_PORT_TXCHAR                     uart2_TxByte
 #define LOG_PORT_OUTPUT                     uart2_TxString
 #elif (USER_LOG_PORT == 3)
 #define LOG_PORT_INIT                       uart3_init
+#define LOG_PORT_TXCHAR                     uart3_TxByte
 #define LOG_PORT_OUTPUT                     uart3_TxString
 #elif (USER_LOG_PORT == 4)
 #define LOG_PORT_INIT                       uart4_init
+#define LOG_PORT_TXCHAR                     uart4_TxByte
 #define LOG_PORT_OUTPUT                     uart4_TxString
 #else
 #define LOG_PORT_INIT                       uart2_init
+#define LOG_PORT_TXCHAR                     uart2_TxByte
 #define LOG_PORT_OUTPUT                     uart2_TxString
 #endif
 
