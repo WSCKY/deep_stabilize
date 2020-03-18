@@ -24,10 +24,10 @@
     A Heater circuit: (PB0)
     LED Indicator: GREEN(PB12)
     External sensor: RX(PB11) TX(PB10)
-    CAN BUS: RX(PB8) TX(PB9)        -> Servo Control TIM16_CH1(PB8) TIM17_CH1(PB9)
+    CAN BUS: RX(PB8) TX(PB9)             -> Servo Control TIM16_CH1(PB8) TIM17_CH1(PB9)
     RS232 BUS: RX(PA3) TX(PA2)
     RS485 BUS 1: RX(PB7) TX(PB6) DE(PB1)
-    RS485 BUS 2: RX(PA1) TX(PA0) DE(PB2)
+    RS485 BUS 2: RX(PA1) TX(PA0) DE(PB2) -> removed, used for logger
     USB Device: DM(PA11) DP(PA12)
     Output/Input GPIOs:
         OUTPUT1   -> PB13
@@ -48,11 +48,18 @@
 
 #### DMA requests for each channel:
 ```
+    if CONFIG_USE_BOARD_IMU=y
     +-------+---------+---------+-------+-------+-------+-------+
     | CHAN1 |  CHAN2  |  CHAN3  | CHAN4 | CHAN5 | CHAN6 | CHAN7 |
     +-------+---------+---------+-------+-------+-------+-------+
-    |  REV  | SPI1_RX | SPI1_TX | U2_TX | U2_RX | U3_RX | U3_TX |
+    |  REV  | SPI1_RX | SPI1_TX | U1_TX | U1_RX | U2_RX | U2_TX |
     +-------+---------+---------+-------+-------+-------+-------+
+    if CONFIG_USE_BOARD_IMU=n
+    +-------+-------+-------+-------+-------+-------+-------+
+    | CHAN1 | CHAN2 | CHAN3 | CHAN4 | CHAN5 | CHAN6 | CHAN7 |
+    +-------+-------+-------+-------+-------+-------+-------+
+    |  REV  | U1_TX | U1_RX | U2_TX | U2_RX | U3_RX | U3_TX |
+    +-------+-------+-------+-------+-------+-------+-------+
 ```
 
                                                        kyChu@2020/02/20
