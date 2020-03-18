@@ -25,10 +25,20 @@
 /* #define UART1_IRQn                          USART1_IRQn */
 
 #if UART1_DMA_ENABLE
-#define UART1_TX_DMA                        DMA1_Channel2
-#define UART1_RX_DMA                        DMA1_Channel3
 #define UART1_TDR_ADDRESS                   0x40013828
 #define UART1_RDR_ADDRESS                   0x40013824
+#if CONFIG_USE_BOARD_IMU
+#define UART1_TX_DMA                        DMA1_Channel4
+#define UART1_RX_DMA                        DMA1_Channel5
+#define UART1_DMA_CLK                       RCC_AHBPeriph_DMA1
+#define UART1_DMA_CLK_CMD                   RCC_AHBPeriphClockCmd
+#define UART1_TX_DMA_IT_TC_FLAG             DMA1_IT_TC4
+#define UART1_RX_DMA_IT_HT_FLAG             DMA1_IT_HT5
+#define UART1_RX_DMA_IT_TC_FLAG             DMA1_IT_TC5
+/* #define UART1_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn */ /*!< DMA1 Channel 4, Channel 5 Interrupts */
+#else
+#define UART1_TX_DMA                        DMA1_Channel2
+#define UART1_RX_DMA                        DMA1_Channel3
 #define UART1_DMA_CLK                       RCC_AHBPeriph_DMA1
 #define UART1_DMA_CLK_CMD                   RCC_AHBPeriphClockCmd
 #define UART1_TX_DMA_IT_TC_FLAG             DMA1_IT_TC2
@@ -36,6 +46,7 @@
 #define UART1_RX_DMA_IT_TC_FLAG             DMA1_IT_TC3
 /* #define UART1_DMA_IRQn                      DMA1_Channel2_3_IRQn */ /*!< DMA1 Channel 2, Channel 3 Interrupts */
 #endif /* UART1_DMA_ENABLE */
+#endif /* CONFIG_USE_BOARD_IMU */
 
 #define UART1_RX_CACHE_SIZE                 80
 

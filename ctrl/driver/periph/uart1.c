@@ -135,7 +135,12 @@ status_t uart1_init(uint32_t baudrate)
 static void uart1_dma_config(void)
 {
   DMA_InitTypeDef DMA_InitStructure;
-/*	NVIC_InitTypeDef NVIC_InitStructure; */
+/*  NVIC_InitTypeDef NVIC_InitStructure; */
+
+#if CONFIG_USE_BOARD_IMU
+  SYSCFG_DMAChannelRemapConfig(SYSCFG_DMARemap_USART1Rx, ENABLE);
+  SYSCFG_DMAChannelRemapConfig(SYSCFG_DMARemap_USART1Tx, ENABLE);
+#endif /* CONFIG_USE_BOARD_IMU */
 
   /* Enable UART1_DMA Clock */
   UART1_DMA_CLK_CMD(UART1_DMA_CLK, ENABLE);
