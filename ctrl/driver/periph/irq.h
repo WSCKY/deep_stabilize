@@ -19,10 +19,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "SysConfig.h"
 
+#include "spi1.h"
 #include "uart1.h"
 #include "uart2.h"
 #include "uart3.h"
 #include "uart4.h"
+#include "intio.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
