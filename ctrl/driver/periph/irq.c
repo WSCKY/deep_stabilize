@@ -40,6 +40,13 @@ void irq_initialize(void)
   NVIC_InitStructure.NVIC_IRQChannelPriority = USART3_4_RX_INT_PRIORITY;
   NVIC_Init(&NVIC_InitStructure);
 
+#if CONFIG_USE_BOARD_IMU
+  /* Enable the EXTI Line 4 to 15 Interrupts */
+  NVIC_InitStructure.NVIC_IRQChannel = EXTI4_15_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = EXTI4_15_INT_PRIORITY;
+  NVIC_Init(&NVIC_InitStructure);
+#endif /* CONFIG_USE_BOARD_IMU */
+
   /* Enable the DMA1 Channel 2, 3 Interrupts */
   NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel2_3_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = DMA_CHAN2_3_INT_PRIORITY;
@@ -150,6 +157,18 @@ void USART3_4_IRQHandler(void)
   uart4_irq_handler();
 }
 
+#if CONFIG_USE_BOARD_IMU
+/**
+  * @brief  This function handles EXTI Line 4 to 15 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI4_15_IRQHandler(void)
+{
+  intio_irq_handler();
+}
+#endif /* CONFIG_USE_BOARD_IMU */
+
 /**
   * @brief  This function handles DMA Channel 2, 3 interrupt request.
   * @param  None
@@ -157,7 +176,11 @@ void USART3_4_IRQHandler(void)
   */
 void DMA1_Channel2_3_IRQHandler(void)
 {
+#if CONFIG_USE_BOARD_IMU
+  spi1_dma_irq_handler();
+#else
   uart1_dma_irq_handler();
+#endif /* CONFIG_USE_BOARD_IMU */
 }
 
 /**
@@ -167,8 +190,13 @@ void DMA1_Channel2_3_IRQHandler(void)
   */
 void DMA1_Channel4_5_6_7_IRQHandler(void)
 {
+#if CONFIG_USE_BOARD_IMU
+  uart1_dma_irq_handler();
+  uart2_dma_irq_handler();
+#else
   uart3_dma_irq_handler();
   uart2_dma_irq_handler();
+#endif /* CONFIG_USE_BOARD_IMU */
 }
 
 /******************** kyChu<kyChu@qq.com> **** END OF FILE ********************/
