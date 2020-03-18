@@ -5,7 +5,7 @@
  *      Author: kychu
  */
 
-#include "uart2.h"
+#include "ifconfig.h"
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -18,7 +18,7 @@ void PutHex(unsigned int din)
     data4bit = (din & nmask) >> nshift;
     data4bit = data4bit + 48;
     if(data4bit > 57) data4bit = data4bit + 7;
-    uart2_TxByte((uint8_t)data4bit);
+    LOG_PORT_TXCHAR((uint8_t)data4bit);
     nshift = nshift - 4;
     nmask = nmask >> 4;
   } while(nmask != 0);
@@ -35,39 +35,39 @@ void hard_fault_handler_c(unsigned int * hf_args)
      PC   = hf_args[6]
      xPSR = hf_args[7]
   */
-  uart2_TxString("HardFault Handler:\n");
+  LOG_PORT_OUTPUT("HardFault Handler:\n");
 
-  uart2_TxString(" - R0 = 0x");
+  LOG_PORT_OUTPUT(" - R0 = 0x");
   PutHex(hf_args[0]);
-  uart2_TxByte('\n');
+  LOG_PORT_TXCHAR('\n');
 
-  uart2_TxString(" - R1 = 0x");
+  LOG_PORT_OUTPUT(" - R1 = 0x");
   PutHex(hf_args[1]);
-  uart2_TxByte('\n');
+  LOG_PORT_TXCHAR('\n');
 
-  uart2_TxString(" - R2 = 0x");
+  LOG_PORT_OUTPUT(" - R2 = 0x");
   PutHex(hf_args[2]);
-  uart2_TxByte('\n');
+  LOG_PORT_TXCHAR('\n');
 
-  uart2_TxString(" - R3 = 0x");
+  LOG_PORT_OUTPUT(" - R3 = 0x");
   PutHex(hf_args[3]);
-  uart2_TxByte('\n');
+  LOG_PORT_TXCHAR('\n');
 
-  uart2_TxString(" - R12 = 0x");
+  LOG_PORT_OUTPUT(" - R12 = 0x");
   PutHex(hf_args[4]);
-  uart2_TxByte('\n');
+  LOG_PORT_TXCHAR('\n');
 
-  uart2_TxString(" - LR = 0x");
+  LOG_PORT_OUTPUT(" - LR = 0x");
   PutHex(hf_args[5]);
-  uart2_TxByte('\n');
+  LOG_PORT_TXCHAR('\n');
 
-  uart2_TxString(" - PC = 0x");
+  LOG_PORT_OUTPUT(" - PC = 0x");
   PutHex(hf_args[6]);
-  uart2_TxByte('\n');
+  LOG_PORT_TXCHAR('\n');
 
-  uart2_TxString(" - xPSR = 0x");
+  LOG_PORT_OUTPUT(" - xPSR = 0x");
   PutHex(hf_args[7]);
-  uart2_TxByte('\n');
+  LOG_PORT_TXCHAR('\n');
 
   for(;;);
 }
