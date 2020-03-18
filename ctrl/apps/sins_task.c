@@ -9,6 +9,16 @@
 
 #include "parameter.h"
 
+#if CONFIG_USE_BOARD_IMU
+#include "icm20602.h"
+
+void sins_task(void const *arg)
+{
+  for(;;) {
+    delay(1000);
+  }
+}
+#else
 static KYLINK_CORE_HANDLE *kylink_sins;
 
 #define SINS_DECODER_CACHE_SIZE                (12)
@@ -61,3 +71,4 @@ static void sins_decode_callback(kyLinkBlockDef *pRx)
     param_set_anginfo((AngleInfo_t *)pRx->buffer);
   }
 }
+#endif /* CONFIG_USE_BOARD_IMU */
