@@ -5,11 +5,11 @@
  *      Author: kychu
  */
 
-#include "mpu9250.h"
+#include "icm20602.h"
 
 #if CONFIG_USE_BOARD_IMU
 
-static uint8_t mpu9250_configured = 0;
+static uint8_t icm20602_configured = 0;
 
 #if FREERTOS_ENABLED
 static QueueHandle_t mpu_queue = NULL;
@@ -38,11 +38,11 @@ static void mpu_queue_create(void);
 
 static uint16_t mpu_id = 0xFFFF; /* (mpu_id >> 8) = 0x71 */
 /*
- * configure the MPU9250 registers.
+ * configure the icm20602 registers.
  */
-uint8_t mpu9250_init(void)
+uint8_t icm20602_init(void)
 {
-  mpu9250_configured = 0;
+  icm20602_configured = 0;
   /* initialize spi bus. */
   imu_spi_init();
   /* initialize int pin */
@@ -149,7 +149,7 @@ static void IMU_INT_Callback(void)
 #if FREERTOS_ENABLED
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 #endif /* FREERTOS_ENABLED */
-  if(mpu9250_configured == 1) {
+  if(icm20602_configured == 1) {
     TS = _Get_Micros();
     mpu_read_reg_dma(0x3B, 14, mpu_rx_buffer);
 

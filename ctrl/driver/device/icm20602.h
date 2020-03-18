@@ -12,11 +12,7 @@
 
 #if BOARD_IMU_ENABLE
 
-#if FREERTOS_ENABLED
-#define mpu_delay                      osDelay
-#else
-#define mpu_delay                      _delay_ms
-#endif
+#define mpu_delay                      delay
 
 #if !FREERTOS_ENABLED
 #define MPU_DATA_UPDATE_HOOK_ENABLE    (1)
