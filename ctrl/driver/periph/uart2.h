@@ -5,8 +5,8 @@
  *      Author: kychu
  */
 
-#ifndef UART2_H_
-#define UART2_H_
+#ifndef __UART2_H_
+#define __UART2_H_
 
 #include "SysConfig.h"
 
@@ -25,6 +25,16 @@
 /* #define UART2_IRQn                          USART2_IRQn */
 
 #if UART2_DMA_ENABLE
+#if CONFIG_USE_BOARD_IMU
+#define UART2_TX_DMA                        DMA1_Channel6
+#define UART2_RX_DMA                        DMA1_Channel7
+#define UART2_DMA_CLK                       RCC_AHBPeriph_DMA1
+#define UART2_DMA_CLK_CMD                   RCC_AHBPeriphClockCmd
+#define UART2_TX_DMA_IT_TC_FLAG             DMA1_IT_TC6
+#define UART2_RX_DMA_IT_HT_FLAG             DMA1_IT_HT7
+#define UART2_RX_DMA_IT_TC_FLAG             DMA1_IT_TC7
+/* #define UART2_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn */ /*!< DMA1 Channel 6, Channel 7 Interrupts */
+#else
 #define UART2_TX_DMA                        DMA1_Channel4
 #define UART2_RX_DMA                        DMA1_Channel5
 #define UART2_DMA_CLK                       RCC_AHBPeriph_DMA1
@@ -33,6 +43,7 @@
 #define UART2_RX_DMA_IT_HT_FLAG             DMA1_IT_HT5
 #define UART2_RX_DMA_IT_TC_FLAG             DMA1_IT_TC5
 /* #define UART2_DMA_IRQn                      DMA1_Channel4_5_6_7_IRQn */ /*!< DMA1 Channel 4, Channel 5 Interrupts */
+#endif /* CONFIG_USE_BOARD_IMU */
 #endif /* UART2_DMA_ENABLE */
 
 #define UART2_RX_CACHE_SIZE                 88
@@ -61,4 +72,4 @@ void uart2_set_callback(PortRecvByteCallback p);
 void uart2_irq_handler(void);
 void uart2_dma_irq_handler(void);
 
-#endif /* UART2_H_ */
+#endif /* __UART2_H_ */

@@ -122,55 +122,59 @@ status_t uart2_init(
 static void dma_config(void)
 {
   DMA_InitTypeDef DMA_InitStructure;
-/*	NVIC_InitTypeDef NVIC_InitStructure; */
+/*  NVIC_InitTypeDef NVIC_InitStructure; */
 
-	/* Enable UART2_DMA Clock */
-	UART2_DMA_CLK_CMD(UART2_DMA_CLK, ENABLE);
+#if CONFIG_USE_BOARD_IMU
+  SYSCFG_DMAChannelRemapConfig(SYSCFG_DMARemap_USART2, ENABLE);
+#endif /* CONFIG_USE_BOARD_IMU */
 
-	DMA_DeInit(UART2_TX_DMA);
-	DMA_Cmd(UART2_TX_DMA, DISABLE);
-	DMA_DeInit(UART2_RX_DMA);
-	DMA_Cmd(UART2_RX_DMA, DISABLE);
+  /* Enable UART2_DMA Clock */
+  UART2_DMA_CLK_CMD(UART2_DMA_CLK, ENABLE);
 
-	/* UART2_RX_DMA configuration */
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+  DMA_DeInit(UART2_TX_DMA);
+  DMA_Cmd(UART2_TX_DMA, DISABLE);
+  DMA_DeInit(UART2_RX_DMA);
+  DMA_Cmd(UART2_RX_DMA, DISABLE);
 
-	DMA_InitStructure.DMA_BufferSize = UART2_RX_CACHE_SIZE;
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)UART2_RX_CACHE;
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(UART2->RDR);
-	DMA_Init(UART2_RX_DMA, &DMA_InitStructure);
+  /* UART2_RX_DMA configuration */
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
 
-	/* UART2_TX_DMA configuration */
-	DMA_InitStructure.DMA_BufferSize = 0;
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-	DMA_InitStructure.DMA_MemoryBaseAddr = 0;
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-	DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(UART2->TDR);
-	DMA_Init(UART2_TX_DMA, &DMA_InitStructure);
+  DMA_InitStructure.DMA_BufferSize = UART2_RX_CACHE_SIZE;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)UART2_RX_CACHE;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(UART2->RDR);
+  DMA_Init(UART2_RX_DMA, &DMA_InitStructure);
 
-	/* Enable the UART2_TX_DMA TC Interrupt */
-	DMA_ITConfig(UART2_TX_DMA, DMA_IT_TC, ENABLE);
-	/* Enable the UART2_RX_DMA HT/TC Interrupt */
-	DMA_ITConfig(UART2_RX_DMA, DMA_IT_HT, ENABLE);
-	DMA_ITConfig(UART2_RX_DMA, DMA_IT_TC, ENABLE);
+  /* UART2_TX_DMA configuration */
+  DMA_InitStructure.DMA_BufferSize = 0;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_MemoryBaseAddr = 0;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(UART2->TDR);
+  DMA_Init(UART2_TX_DMA, &DMA_InitStructure);
 
-/*	NVIC_InitStructure.NVIC_IRQChannel = UART2_DMA_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPriority = UART2_DMA_INT_PRIORITY;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure); */
+  /* Enable the UART2_TX_DMA TC Interrupt */
+  DMA_ITConfig(UART2_TX_DMA, DMA_IT_TC, ENABLE);
+  /* Enable the UART2_RX_DMA HT/TC Interrupt */
+  DMA_ITConfig(UART2_RX_DMA, DMA_IT_HT, ENABLE);
+  DMA_ITConfig(UART2_RX_DMA, DMA_IT_TC, ENABLE);
 
-	/* Enable the UART2_TX_DMA channels */
-//	DMA_Cmd(UART2_TX_DMA, ENABLE);
-	/* Enable the UART2_RX_DMA channels */
-	DMA_Cmd(UART2_RX_DMA, ENABLE);
+/*  NVIC_InitStructure.NVIC_IRQChannel = UART2_DMA_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = UART2_DMA_INT_PRIORITY;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure); */
+
+  /* Enable the UART2_TX_DMA channels */
+//  DMA_Cmd(UART2_TX_DMA, ENABLE);
+  /* Enable the UART2_RX_DMA channels */
+  DMA_Cmd(UART2_RX_DMA, ENABLE);
 }
 #endif /* UART2_DMA_ENABLE */
 void uart2_TxByte(uint8_t c)
