@@ -9,13 +9,42 @@
 
 #include "parameter.h"
 
+#if CONFIG_LOG_ENABLE
+static const char* TAG = "SINS";
+#endif /* CONFIG_LOG_ENABLE */
+
 #if CONFIG_USE_BOARD_IMU
 #include "icm20602.h"
 
 void sins_task(void const *arg)
 {
+  IMU_RAW_6DOF *raw;
+  IMU_UNIT_6DOF *unit;
+  uint32_t time_now, log_ts = 0;
+
+  raw = kmm_alloc(sizeof(IMU_RAW_6DOF));
+  unit = kmm_alloc(sizeof(IMU_UNIT_6DOF));
+  if(raw == NULL || unit == NULL) {
+    ky_err(TAG, "no memory to drive IMU");
+    kmm_free(raw);
+    kmm_free(unit);
+    vTaskDelete(NULL);
+  }
+
+  if(icm20602_init() != status_ok) {
+    ky_err(TAG, "IMU init failed");
+    vTaskDelete(NULL);
+  }
   for(;;) {
-    delay(1000);
+    if(icm20602_read(raw, unit, osWaitForever) == status_ok) {
+      // ...
+    }
+    time_now = xTaskGetTickCountFromISR();
+    if(time_now - log_ts >= 1000) {
+      log_ts = time_now;
+      ky_info(TAG, "gx: %d, gy: %d, gz: %d, ax: %d, ay: %d, az: %d", \
+             raw->Gyr.X, raw->Gyr.Y, raw->Gyr.Z, raw->Acc.X, raw->Acc.Y, raw->Acc.Z);
+    }
   }
 }
 #else
@@ -41,6 +70,7 @@ void sins_task(void const *arg)
   kylink_sins = kmm_alloc(sizeof(KYLINK_CORE_HANDLE));
   sins_decoder_cache = kmm_alloc(SINS_DECODER_CACHE_SIZE);
   if(cfg == NULL || kylink_sins == NULL || sins_decoder_cache == NULL) {
+    ky_err(TAG, "no memory to read IMU");
     kmm_free(cfg);
     kmm_free(kylink_sins);
     kmm_free(sins_decoder_cache);
