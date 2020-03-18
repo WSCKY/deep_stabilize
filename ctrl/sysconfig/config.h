@@ -36,16 +36,16 @@
 #define CONFIG_RS485_2_ENABLE               (0)
 
 #if FREERTOS_ENABLED
-#define SYSTICK_ENABLE                      (1)
+  #define SYSTICK_ENABLE                    (1)
 #else
-#define SYSTICK_ENABLE                      (0)
+  #define SYSTICK_ENABLE                    (0)
 #endif /* FREERTOS_ENABLED */
 
 #if FREERTOS_ENABLED
 #if CONFIG_USB_IF_ENABLE
-#define FREERTOS_HEAP_SIZE                  (8 * 1024)
+  #define FREERTOS_HEAP_SIZE                (8 * 1024)
 #else
-#define FREERTOS_HEAP_SIZE                  (12 * 1024)
+  #define FREERTOS_HEAP_SIZE                (12 * 1024)
 #endif /* CONFIG_USB_IF_ENABLE */
 
 #define START_TASK_STACK_SIZE               (256)
@@ -55,17 +55,20 @@
 #define SYSTEM_TIMER_INT_PRIORITY           (0)
 
 #if CONFIG_USB_IF_ENABLE
-#define USB_DEVICE_INT_PRIORITY             (3)
+  #define USB_DEVICE_INT_PRIORITY           (3)
 #endif /* CONFIG_USB_IF_ENABLE */
 #if CONFIG_USE_BOARD_IMU
-#define IMU_SPI_DMA_INT_PRIORITY            (0)
-#define IMU_UPDATE_INT_PRIORITY             (1)
+  #define EXTI4_15_INT_PRIORITY             (0)
+  #define DMA_CHAN2_3_INT_PRIORITY          (0)
+  #define DMA_CHAN4_5_6_7_INT_PRIORITY      (2)
+  #define USART3_4_RX_INT_PRIORITY          (3)
+#else
+  #define DMA_CHAN2_3_INT_PRIORITY          (2)
+  #define DMA_CHAN4_5_6_7_INT_PRIORITY      (0)
+  #define USART3_4_RX_INT_PRIORITY          (0)
 #endif /* CONFIG_USE_BOARD_IMU */
 #define USART1_RX_INT_PRIORITY              (1)
 #define USART2_RX_INT_PRIORITY              (2)
-#define USART3_4_RX_INT_PRIORITY            (0)
-#define DMA_CHAN4_5_6_7_INT_PRIORITY        (0)
-#define DMA_CHAN2_3_INT_PRIORITY            (1)
 #define CONTROL_TIMER_INT_PRIORITY          (1)
 #if SYSTICK_ENABLE
 #define SYSTICK_INT_PRIORITY                (3)
