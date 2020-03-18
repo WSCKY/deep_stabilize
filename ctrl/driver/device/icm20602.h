@@ -1,50 +1,67 @@
 /*
- * mpu9250.h
+ * icm20602.h
  *
  *  Created on: Feb 27, 2019
  *      Author: kychu
  */
 
-#ifndef __MPU9250_H
-#define __MPU9250_H
+#ifndef __ICM20602_H
+#define __ICM20602_H
 
 #include "ifconfig.h"
 
-#if BOARD_IMU_ENABLE
+#if CONFIG_USE_BOARD_IMU
 
-#define mpu_delay                      delay
+#define imu_delay                      delay
 
 #if !FREERTOS_ENABLED
 #define MPU_DATA_UPDATE_HOOK_ENABLE    (1)
 #endif /* !FREERTOS_ENABLED */
 
-#define imu_spi_init              spi1_init
-#define imu_int_init              intio_init
-#define imu_int_setcallback       intio_set_irq_handler
-#define imu_spi_config_rate       spi1_configrate
-#define spi_rx_tx_dma             spi1_rx_tx_dma
-#define spi_rx_tx_dma_util        spi1_rx_tx_dma_util
+#define imuif_init                     spi1_init
+#define imuif_int_init                 intio_init
+#define imuif_int_setcallback          intio_set_irq_handler
+#define imuif_config_rate              spi1_configrate
+#define imuif_txrx_bytes               spi1_rx_tx
+#define imuif_txrx_bytes_dma           spi1_rx_tx_dma
 
-#define IMU_SPI_SLOW_RATE         SPI_BaudRatePrescaler_128 /* 48 / 64 = 0.75MHz */
-#define IMU_SPI_FAST_RATE         SPI_BaudRatePrescaler_8   /* 48 / 8 = 6MHz */
+#define IMU_SPI_SLOW_RATE              SPI_BaudRatePrescaler_128 /* 48 / 64 = 0.75MHz */
+#define IMU_SPI_FAST_RATE              SPI_BaudRatePrescaler_8   /* 48 / 8 = 6MHz */
 
-#define MPU_DATA_DEPTH            (1 << 1)
-#define MPU_BUFF_MASK             (MPU_DATA_DEPTH - 1)
+//#define MPU_DATA_DEPTH            (1 << 1)
+//#define MPU_BUFF_MASK             (MPU_DATA_DEPTH - 1)
 
-uint8_t mpu9250_init(void);
-#if FREERTOS_ENABLED
-QueueHandle_t* mpu_queue_get(void);
-#else
-#if MPU_DATA_UPDATE_HOOK_ENABLE
-void mpu_update_hook(IMU_RAW *pRaw);
-#else
-uint8_t mpu_push_new(IMU_RAW *pRaw);
-uint8_t mpu_pull_new(IMU_RAW *pRaw);
-#endif /* MPU_DATA_UPDATE_HOOK_ENABLE */
-#endif /* FREERTOS_ENABLED */
-void mpu_raw2unit(IMU_RAW *raw, IMU_UNIT *unit);
-void mpu_set_gyr_off(int16_t x, int16_t y, int16_t z);
+__PACK_BEGIN typedef struct {
+  int16_t X;
+  int16_t Y;
+  int16_t Z;
+} __PACK_END _3AxisRaw;
 
-#endif /* BOARD_IMU_ENABLE */
+__PACK_BEGIN typedef struct {
+  float X;
+  float Y;
+  float Z;
+} __PACK_END _3AxisUnit;
 
-#endif /* __MPU9250_H */
+__PACK_BEGIN typedef struct {
+  _3AxisRaw Acc;
+  _3AxisRaw Gyr;
+  int16_t Temp;
+  uint32_t TS;
+} __PACK_END IMU_RAW_6DOF;
+
+__PACK_BEGIN typedef struct {
+  _3AxisUnit Acc;
+  _3AxisUnit Gyr;
+  float Temp;
+  uint32_t TS;
+} __PACK_END IMU_UNIT_6DOF;
+
+#define ICM20602_WHOAMI_ID        (0x12)
+
+status_t icm20602_init(void);
+status_t icm20602_read(IMU_RAW_6DOF *raw, IMU_UNIT_6DOF *unit, uint32_t timeout);
+
+#endif /* CONFIG_USE_BOARD_IMU */
+
+#endif /* __ICM20602_H */
