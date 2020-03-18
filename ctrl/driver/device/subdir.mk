@@ -20,11 +20,11 @@ $(BuildPath)/driver/device/servo.d \
 $(BuildPath)/driver/device/encoder.d
 
 ifeq ($(CONFIG_USE_BOARD_IMU),y)
-C_SRCS += ./driver/device/mpu9250.c
+C_SRCS += ./driver/device/icm20602.c
 
-OBJS += $(BuildPath)/driver/device/mpu9250.o
+OBJS += $(BuildPath)/driver/device/icm20602.o
 
-C_DEPS += $(BuildPath)/driver/device/mpu9250.d
+C_DEPS += $(BuildPath)/driver/device/icm20602.d
 endif
 
 OBJ_DIRS = $(sort $(dir $(OBJS)))
@@ -32,4 +32,4 @@ OBJ_DIRS = $(sort $(dir $(OBJS)))
 # Each subdirectory must supply rules for building sources it contributes
 $(BuildPath)/driver/device/%.o: ./driver/device/%.c | $(OBJ_DIRS)
 	@echo ' CC $<'
-	$(CC) -mcpu=cortex-m0 -mthumb -mfloat-abi=soft $(DEFS) $(INCS) $(CFGS) -Os $(DBGS) -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	$(CC) $(PLATFORM) $(DEFS) $(INCS) $(CFGS) -Os $(DBGS) -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
