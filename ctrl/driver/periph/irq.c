@@ -153,7 +153,9 @@ void USART2_IRQHandler(void)
   */
 void USART3_4_IRQHandler(void)
 {
+#if !CONFIG_USE_BOARD_IMU
   uart3_irq_handler();
+#endif /* !CONFIG_USE_BOARD_IMU */
   uart4_irq_handler();
 }
 
