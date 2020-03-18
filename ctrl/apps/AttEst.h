@@ -8,7 +8,7 @@
 #ifndef __ATTEST_H
 #define __ATTEST_H
 
-#include "mpu9250.h"
+#include "icm20602.h"
 
 #include "maths.h"
 
