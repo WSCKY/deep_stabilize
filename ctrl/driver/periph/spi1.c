@@ -7,6 +7,8 @@
 
 #include "spi1.h"
 
+#if CONFIG_USE_BOARD_IMU
+
 #if SPI1_DMA_ENABLE
 static uint32_t _tx_comp_flag = 1;
 static DMA_InitTypeDef DMA_InitStructure;
@@ -18,9 +20,9 @@ static uint8_t MCU_SPI_WriteRead(uint8_t Data);
 
 /**
   * @brief  Configure SPI1 peripheral.
-	* @param  None
-	* @retval None
-	*/
+  * @param  None
+  * @retval None
+  */
 void spi1_init(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -63,7 +65,7 @@ void spi1_init(void)
   SPI1_NSS_DISABLE();
 
 #if SPI1_DMA_ENABLE
-	dma_config();
+  dma_config();
 #endif /* SPI1_DMA_ENABLE */
 
   /* SPI configuration -------------------------------------------------------*/
@@ -92,45 +94,46 @@ void spi1_init(void)
 #if SPI1_DMA_ENABLE
 static void dma_config(void)
 {
-	NVIC_InitTypeDef NVIC_InitStructure;
+/*  NVIC_InitTypeDef NVIC_InitStructure; */
 
-	/* Enable SPI1_DMA Clock */
-	SPI1_DMA_CLK_CMD(SPI1_DMA_CLK, ENABLE);
+  /* Enable SPI1_DMA Clock */
+  SPI1_DMA_CLK_CMD(SPI1_DMA_CLK, ENABLE);
 
-	DMA_DeInit(SPI1_RX_DMA);
-	DMA_Cmd(SPI1_RX_DMA, DISABLE);
-	DMA_DeInit(SPI1_TX_DMA);
-	DMA_Cmd(SPI1_TX_DMA, DISABLE);
+  DMA_DeInit(SPI1_RX_DMA);
+  DMA_Cmd(SPI1_RX_DMA, DISABLE);
+  DMA_DeInit(SPI1_TX_DMA);
+  DMA_Cmd(SPI1_TX_DMA, DISABLE);
 
-	/* SPI1_DMA configuration */
-	DMA_InitStructure.DMA_BufferSize = 0;
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)0;
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-	DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(SPI1->DR);
-	DMA_Init(SPI1_TX_DMA, &DMA_InitStructure);
+  /* SPI1_DMA configuration */
+  DMA_InitStructure.DMA_BufferSize = 0;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)0;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(SPI1->DR);
+  DMA_Init(SPI1_TX_DMA, &DMA_InitStructure);
 
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_Init(SPI1_RX_DMA, &DMA_InitStructure);
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+  DMA_Init(SPI1_RX_DMA, &DMA_InitStructure);
 
-	DMA_ITConfig(SPI1_TX_DMA, DMA_IT_TC, ENABLE);
-	DMA_ITConfig(SPI1_RX_DMA, DMA_IT_TC, ENABLE);
+  DMA_ITConfig(SPI1_TX_DMA, DMA_IT_TC, ENABLE);
+  DMA_ITConfig(SPI1_RX_DMA, DMA_IT_TC, ENABLE);
 
-	/* Enable the SPI1_DMA Interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = SPI1_DMA_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPriority = IMU_SPI_DMA_INT_PRIORITY;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
+  /* ##### ALREADY INITIALIZED IN irq.c ##### */
+  /* Enable the SPI1_DMA Interrupt */
+/*  NVIC_InitStructure.NVIC_IRQChannel = SPI1_DMA_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = IMU_SPI_DMA_INT_PRIORITY;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure); */
 
-	/* Enable the SPI1_DMA channels */
-//	DMA_Cmd(SPI1_RX_DMA, ENABLE);
-//	DMA_Cmd(SPI1_TX_DMA, ENABLE);
+  /* Enable the SPI1_DMA channels */
+//  DMA_Cmd(SPI1_RX_DMA, ENABLE);
+//  DMA_Cmd(SPI1_TX_DMA, ENABLE);
 }
 #endif /* SPI1_DMA_ENABLE */
 
@@ -139,12 +142,12 @@ static void dma_config(void)
  */
 void spi1_rx_tx(uint8_t *w, uint8_t *r, uint16_t l)
 {
-	uint32_t i = 0;
-	SPI1_NSS_ENABLE();
-	for(i = 0; i < l; i ++) {
-		r[i] = MCU_SPI_WriteRead(w[i]);
-	}
-	SPI1_NSS_DISABLE();
+  uint32_t i = 0;
+  SPI1_NSS_ENABLE();
+  for(i = 0; i < l; i ++) {
+    r[i] = MCU_SPI_WriteRead(w[i]);
+  }
+  SPI1_NSS_DISABLE();
 }
 
 #if SPI1_DMA_ENABLE
@@ -152,44 +155,44 @@ void spi1_rx_tx(uint8_t *w, uint8_t *r, uint16_t l)
 #pragma GCC optimize ("O0")
 void spi1_rx_tx_dma(uint8_t *w, uint8_t *r, uint16_t l)
 {
-	while (_tx_comp_flag == 0) {}
-	_tx_comp_flag = 0;
-	SPI1_NSS_ENABLE();
-	DMA_InitStructure.DMA_BufferSize = l;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)r;
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_Init(SPI1_RX_DMA, &DMA_InitStructure);
-	DMA_Cmd(SPI1_RX_DMA, ENABLE);
+  while (_tx_comp_flag == 0) {}
+  _tx_comp_flag = 0;
+  SPI1_NSS_ENABLE();
+  DMA_InitStructure.DMA_BufferSize = l;
+  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)r;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+  DMA_Init(SPI1_RX_DMA, &DMA_InitStructure);
+  DMA_Cmd(SPI1_RX_DMA, ENABLE);
 
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)w;
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-	DMA_Init(SPI1_TX_DMA, &DMA_InitStructure);
-	DMA_Cmd(SPI1_TX_DMA, ENABLE);
+  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)w;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+  DMA_Init(SPI1_TX_DMA, &DMA_InitStructure);
+  DMA_Cmd(SPI1_TX_DMA, ENABLE);
 }
 
 void spi1_rx_tx_dma_util(uint8_t *w, uint8_t *r, uint16_t l)
 {
-	spi1_rx_tx_dma(w, r, l);
-	while (_tx_comp_flag == 0) {}
+  spi1_rx_tx_dma(w, r, l);
+  while (_tx_comp_flag == 0) {}
 }
 #pragma GCC pop_options
 #endif /* SPI1_DMA_ENABLE */
 
 void spi1_configrate(uint32_t scalingfactor)
 {
-	uint16_t tmpreg = 0;
-	/* Disable the selected SPI peripheral */
-	SPI1->CR1 &= 0xFFBF;
-	/* Get the SPIx CR1 value */
-	tmpreg = SPI1->CR1;
-	/* Clear BR[2:0] bits */
-	tmpreg &= 0xFFC7;
-	/* Set the scaling bits */
-	tmpreg |= scalingfactor;
-	/* Write to SPIx CR1 */
-	SPI1->CR1 = tmpreg;
-	/* Enable the selected SPI peripheral */
-	SPI1->CR1 |= 0x0040;
+  uint16_t tmpreg = 0;
+  /* Disable the selected SPI peripheral */
+  SPI1->CR1 &= 0xFFBF;
+  /* Get the SPIx CR1 value */
+  tmpreg = SPI1->CR1;
+  /* Clear BR[2:0] bits */
+  tmpreg &= 0xFFC7;
+  /* Set the scaling bits */
+  tmpreg |= scalingfactor;
+  /* Write to SPIx CR1 */
+  SPI1->CR1 = tmpreg;
+  /* Enable the selected SPI peripheral */
+  SPI1->CR1 |= 0x0040;
 }
 
 /**
@@ -220,18 +223,20 @@ static uint8_t MCU_SPI_WriteRead(uint8_t Data)
 }
 
 #if SPI1_DMA_ENABLE
-void SPI1_DMA_IRQHandler(void)
+void spi1_dma_irq_handler(void)
 {
-	/* check if transfer complete flag is set. */
-	if(DMA_GetITStatus(SPI1_TX_DMA_IT_TC_FLAG)) {
-		DMA_Cmd(SPI1_TX_DMA, DISABLE);
-		DMA_ClearITPendingBit(SPI1_TX_DMA_IT_TC_FLAG);
-	}
-	if(DMA_GetITStatus(SPI1_RX_DMA_IT_TC_FLAG)) {
-		DMA_Cmd(SPI1_RX_DMA, DISABLE);
-		SPI1_NSS_DISABLE();
-		_tx_comp_flag = 1;
-		DMA_ClearITPendingBit(SPI1_RX_DMA_IT_TC_FLAG);
-	}
+  /* check if transfer complete flag is set. */
+  if(DMA_GetITStatus(SPI1_TX_DMA_IT_TC_FLAG)) {
+    DMA_Cmd(SPI1_TX_DMA, DISABLE);
+    DMA_ClearITPendingBit(SPI1_TX_DMA_IT_TC_FLAG);
+  }
+  if(DMA_GetITStatus(SPI1_RX_DMA_IT_TC_FLAG)) {
+    DMA_Cmd(SPI1_RX_DMA, DISABLE);
+    SPI1_NSS_DISABLE();
+    _tx_comp_flag = 1;
+    DMA_ClearITPendingBit(SPI1_RX_DMA_IT_TC_FLAG);
+  }
 }
 #endif /* SPI1_DMA_ENABLE */
+
+#endif /* CONFIG_USE_BOARD_IMU */

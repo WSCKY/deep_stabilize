@@ -43,7 +43,7 @@
 #define SPI1_RX_DMA_IT_TC_FLAG           DMA1_IT_TC2
 #define SPI1_TX_DMA_IT_TC_FLAG           DMA1_IT_TC3
 #define SPI1_DMA_IRQn                    DMA1_Channel2_3_IRQn
-#define SPI1_DMA_IRQHandler              DMA1_Channel2_3_IRQHandler
+/* #define SPI1_DMA_IRQHandler              DMA1_Channel2_3_IRQHandler */
 #endif /* SPI1_DMA_ENABLE */
 
 #define SPI1_NSS_ENABLE()                (SPI1_NSS_GPIO_PORT->BRR = SPI1_NSS_PIN)
@@ -61,6 +61,10 @@ void spi1_rx_tx_dma_util(uint8_t *w, uint8_t *r, uint16_t l);
 #else
 #define spi1_rx_tx_dma spi1_rx_tx
 #define spi1_rx_tx_dma_util spi1_rx_tx
+#endif /* SPI1_DMA_ENABLE */
+
+#if SPI1_DMA_ENABLE
+void spi1_dma_irq_handler(void);
 #endif /* SPI1_DMA_ENABLE */
 
 #endif /* DRIVER_PERIPH_SPI1_H_ */
