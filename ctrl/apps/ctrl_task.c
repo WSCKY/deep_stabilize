@@ -188,6 +188,28 @@ void ctrl_task(void const *arg)
     if(xTaskNotifyWait(0xFFFFFFFF, 0xFFFFFFFF, NULL, 100) == pdTRUE) {
       // update control parameter
       param_get_param(params);
+
+      // pitch axis control
+      // limit angle rate
+      step_change(&exp_pitch, params->exp_pitch, PITCH_ADJ_STEP_DEG, PITCH_ADJ_STEP_DEG);
+      cur_pitch = ENCODER_INT2DEG(params->encoder[PITCH_MOTOR_ENCODER_ID]);
+      if(cur_pitch > 180) cur_pitch -= 360; // (-180, 180]
+      // simple PID controller
+      if(ABS(params->exp_pitch - cur_pitch) > PITCH_ADJ_ANGLE_DEADBAND)
+        control_output = (exp_pitch - cur_pitch) * 300; // err * kp
+      else
+        control_output = 0; // we got the position
+      // limit PID output
+      control_output = LIMIT(control_output, PITCH_MOTOR_OUTPUT_LIMIT, -PITCH_MOTOR_OUTPUT_LIMIT);
+      //drive pitch motor
+      pwm16_period((uint32_t)ABS(control_output));
+      // set direction
+      if(control_output < 0) {
+        output_port_clear(IO_OUTPUT1);
+      } else {
+        output_port_set(IO_OUTPUT1);
+      }
+
       // yaw axis control
       // limit angle rate
       step_change(&exp_yaw, params->exp_yaw, YAW_ADJ_STEP_DEG, YAW_ADJ_STEP_DEG);
