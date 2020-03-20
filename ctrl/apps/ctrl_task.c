@@ -177,12 +177,20 @@ void ctrl_task(void const *arg)
   }
   ctrlThread = xTaskGetCurrentTaskHandle();
 
-  /* initialize task sync timer */
-  tim7_init(CTRL_LOOP_PERIOD_MS, ctrl_task_notify);
-
   pwm16_init();
   pwm17_init();
   delay(1000); // wait motor driver ready.
+
+  /* initialize expect angle as current angle to avoid controller over-current */
+  cur_pitch = ENCODER_INT2DEG(params->encoder[PITCH_MOTOR_ENCODER_ID]);
+  if(cur_pitch > 180) cur_pitch -= 360; // (-180, 180]
+  exp_pitch = cur_pitch;
+  cur_yaw = ENCODER_INT2DEG(params->encoder[YAW_MOTOR_ENCODER_ID]);
+  if(cur_yaw > 180) cur_yaw -= 360; // (-180, 180]
+  exp_yaw = cur_yaw;
+
+  /* initialize task sync timer */
+  tim7_init(CTRL_LOOP_PERIOD_MS, ctrl_task_notify);
 
   for(;;) {
     if(xTaskNotifyWait(0xFFFFFFFF, 0xFFFFFFFF, NULL, 100) == pdTRUE) {
