@@ -73,8 +73,8 @@ status_t icm20602_init(void)
   imu_write_reg(0x6B, 0x00);
   imu_delay(10);
 
-  /* Set sample rate to max(internal sample rate) */
-  imu_write_reg(0x19, 0x00);
+  /* Set sample rate to 500Hz */
+  imu_write_reg(0x19, 0x01);
   /*
     1, The logic level for INT pin is active high. (bit7 -> 0)
     2, INT pin is configured as push-pull. (bit6 -> 0)
