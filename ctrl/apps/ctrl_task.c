@@ -37,7 +37,7 @@ static void ctrl_task_notify(void);
 #define YAW_ADJ_ANGLE_RATE         (60)          /* 60deg/s */
 /* deadband for controller */
 #define PITCH_ADJ_ANGLE_DEADBAND   (0.5f)        /* +/- 0.5deg */
-#define YAW_ADJ_ANGLE_DEADBAND     (0.5f)        /* +/- 0.5deg */
+#define YAW_ADJ_ANGLE_DEADBAND     (1.0f)        /* +/- 1.0deg */
 /* adjustment step in degree */
 #define PITCH_ADJ_STEP_DEG         (PITCH_ADJ_ANGLE_RATE * CTRL_LOOP_PERIOD_MS * 0.001f)
 #define YAW_ADJ_STEP_DEG           (YAW_ADJ_ANGLE_RATE * CTRL_LOOP_PERIOD_MS * 0.001f)
@@ -163,6 +163,10 @@ void ctrl_task(void const *arg)
 void ctrl_task(void const *arg)
 {
   Params_t *params;
+  float cur_yaw, exp_yaw = 0;
+  float cur_pitch, exp_pitch = 0;
+  float control_output;
+
   params = kmm_alloc(sizeof(Params_t));
   if(params == NULL) {
     kmm_free(params);
@@ -182,7 +186,28 @@ void ctrl_task(void const *arg)
 
   for(;;) {
     if(xTaskNotifyWait(0xFFFFFFFF, 0xFFFFFFFF, NULL, 100) == pdTRUE) {
-      // ...
+      // update control parameter
+      param_get_param(params);
+      // yaw axis control
+      // limit angle rate
+      step_change(&exp_yaw, params->exp_yaw, YAW_ADJ_STEP_DEG, YAW_ADJ_STEP_DEG);
+      cur_yaw = ENCODER_INT2DEG(params->encoder[YAW_MOTOR_ENCODER_ID]);
+      if(cur_yaw > 180) cur_yaw -= 360; // (-180, 180]
+      // simple PID controller
+      if(ABS(params->exp_yaw - cur_yaw) > YAW_ADJ_ANGLE_DEADBAND)
+        control_output = (exp_yaw - cur_yaw) * 100; // err * kp
+      else
+	control_output = 0; // we got the position
+      // limit PID output
+      control_output = LIMIT(control_output, YAW_MOTOR_OUTPUT_LIMIT, -YAW_MOTOR_OUTPUT_LIMIT);
+      //drive yaw motor
+      pwm17_period((uint32_t)ABS(control_output));
+      // set direction
+      if(control_output < 0) {
+        output_port_set(IO_OUTPUT2);
+      } else {
+        output_port_clear(IO_OUTPUT2);
+      }
     }
   }
 }
