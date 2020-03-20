@@ -24,6 +24,8 @@
 
 #define ENCODER_NUMBER       2
 
+#define SINS_TASK_MODULE_ENABLE                  (0)
+
 void com_task(void const *arg);
 void sins_task(void const *arg);
 void ctrl_task(void const *arg);

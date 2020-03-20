@@ -87,6 +87,7 @@ void StartThread(void const * arg)
     error_handler(1);
   }
 
+#if SINS_TASK_MODULE_ENABLE
   osThreadDef(T_SINS, sins_task, osPriorityNormal, 0, 256); // 8% usage
   if(osThreadCreate (osThread(T_SINS), NULL) == NULL) {
 #if CONFIG_LOG_ENABLE
@@ -94,6 +95,7 @@ void StartThread(void const * arg)
 #endif /* CONFIG_LOG_ENABLE */
     error_handler(2);
   }
+#endif /* SINS_TASK_MODULE_ENABLE */
 
   osThreadDef(T_CTRL, ctrl_task, osPriorityNormal, 0, 256); // 50% usage
   if(osThreadCreate (osThread(T_CTRL), NULL) == NULL) {
