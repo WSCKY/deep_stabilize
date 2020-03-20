@@ -32,6 +32,15 @@ static void ctrl_task_notify(void);
 /* yaw angle limitation */
 #define YAW_ANGLE_LIMIT_MIN        (-90.0f)      /* right: -90deg */
 #define YAW_ANGLE_LIMIT_MAX        (90.0f)       /* left: 90deg */
+/* angle rate limitation */
+#define PITCH_ADJ_ANGLE_RATE       (10)          /* 10deg/s */
+#define YAW_ADJ_ANGLE_RATE         (60)          /* 60deg/s */
+/* deadband for controller */
+#define PITCH_ADJ_ANGLE_DEADBAND   (0.5f)        /* +/- 0.5deg */
+#define YAW_ADJ_ANGLE_DEADBAND     (0.5f)        /* +/- 0.5deg */
+/* adjustment step in degree */
+#define PITCH_ADJ_STEP_DEG         (PITCH_ADJ_ANGLE_RATE * CTRL_LOOP_PERIOD_MS * 0.001f)
+#define YAW_ADJ_STEP_DEG           (YAW_ADJ_ANGLE_RATE * CTRL_LOOP_PERIOD_MS * 0.001f)
 /* encoder ID */
 #define PITCH_MOTOR_ENCODER_ID     (0)           /* encoder 0 */
 #define YAW_MOTOR_ENCODER_ID       (1)           /* encoder 1 */
@@ -44,14 +53,6 @@ static void ctrl_task_notify(void);
 #if CTRL_STABILIZE_MODE_ENABLE
 
 #define CTRL_LOOP_PERIOD_MS        (2)           /* 2ms */
-
-#define PITCH_ADJ_ANGLE_RATE       (10)          /* 10deg/s */
-#define PITCH_ADJ_ANGLE_DEADBAND   (0.5f)        /* +/- 0.5deg */
-
-#define YAW_ADJ_ANGLE_RATE         (60)          /* 60deg/s */
-
-#define PITCH_ADJ_STEP_DEG         (PITCH_ADJ_ANGLE_RATE * CTRL_LOOP_PERIOD_MS * 0.001f)
-#define YAW_ADJ_STEP_DEG           (YAW_ADJ_ANGLE_RATE * CTRL_LOOP_PERIOD_MS * 0.001f)
 
 void ctrl_task(void const *arg)
 {
