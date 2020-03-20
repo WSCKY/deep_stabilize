@@ -70,15 +70,15 @@ void com_task(void const *arg)
   kmm_free(cfg);
 
   for(;;) {
-    delay(10);
-	while((rx_len = uart2_pullBytes(rcache, 16)) > 0) {
+    delay(50);
+    while((rx_len = uart2_pullBytes(rcache, 16)) > 0) {
       for(cnt = 0; cnt < rx_len; cnt ++) {
         kylink_decode(kylink_uart, rcache[cnt]);
       }
-	}
+    }
 #if (USER_LOG_PORT != 2)
-	tx_period_div ++;
-	if(tx_period_div == 5) {
+    tx_period_div ++;
+    if(tx_period_div == 1) {
       tx_period_div = 0;
 
       // prepare data
@@ -86,7 +86,7 @@ void com_task(void const *arg)
       // send message
       kylink_send(kylink_uart, param, MSG_BOARD_STATE, sizeof(Params_t));
       com_cache_flush();
-	}
+    }
 #endif /* (USER_LOG_PORT != 2) */
   }
 }
