@@ -70,12 +70,12 @@ void stat_task(void const *arg)
 #endif /* CONFIG_LOG_ENABLE */
     } else {
       param_set_encval(encoder_val, encoder->addr - 1);
-#if CONFIG_LOG_ENABLE
+//#if CONFIG_LOG_ENABLE
 //      ky_info(TAG, "e1: %05d", val);
-#endif /* CONFIG_LOG_ENABLE */
+//#endif /* CONFIG_LOG_ENABLE */
     }
     if(encoder->addr >= ENCODER_NUMBER) encoder->addr = 0;
-    delay(10);
+//    delay(10);
     // read GPIO input
     gpio_in = 0;
     gpio_msk = 1;
