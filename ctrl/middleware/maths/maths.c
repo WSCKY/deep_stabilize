@@ -120,7 +120,19 @@ uint8_t ComputeCRC8(uint8_t *pchMessage, uint32_t dwLength, uint8_t ucCRC8)
 	return (ucCRC8);
 }
 
-void fusionQ_6dot(IMU_UNIT *unit, Quat_T *q, float prop_gain, float intg_gain, float dt)
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+static float fast_inverse_sqrt(float x) {
+	float half = 0.5f * x;
+	int i = *((int *)&x);
+	i = 0x5f3759df - (i >> 1);
+	x = *((float *)&i);
+	x = x * (1.5f - (half * x * x));
+	return x;
+}
+#pragma GCC pop_options
+
+void fusionQ_6dot(IMU_6DOF_T *unit, Quat_T *q, float prop_gain, float intg_gain, float dt)
 {
 	float recipNorm;
 	float halfvx, halfvy, halfvz;
@@ -145,13 +157,13 @@ void fusionQ_6dot(IMU_UNIT *unit, Quat_T *q, float prop_gain, float intg_gain, f
 	qy = q->qy;
 	qz = q->qz;
 
-	gx = unit->GyrData.gyrX;
-	gy = unit->GyrData.gyrY;
-	gz = unit->GyrData.gyrZ;
+	gx = unit->gx;
+	gy = unit->gy;
+	gz = unit->gz;
 
-	ax = unit->AccData.accX;
-	ay = unit->AccData.accY;
-	az = unit->AccData.accZ;
+	ax = unit->ax;
+	ay = unit->ay;
+	az = unit->az;
 
 	gx *= DEG_TO_RAD;
 	gy *= DEG_TO_RAD;
@@ -161,7 +173,7 @@ void fusionQ_6dot(IMU_UNIT *unit, Quat_T *q, float prop_gain, float intg_gain, f
 	if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f)))
 	{
 		// Normalise accelerometer measurement
-		recipNorm = 1.0f/sqrtf(ax * ax + ay * ay + az * az);
+		recipNorm = fast_inverse_sqrt(ax * ax + ay * ay + az * az);
 		ax *= recipNorm;
 		ay *= recipNorm;
 		az *= recipNorm;
@@ -204,7 +216,7 @@ void fusionQ_6dot(IMU_UNIT *unit, Quat_T *q, float prop_gain, float intg_gain, f
 	qz = qz_last*(1.0f-delta2*0.125f) + (qw_last*gz + qx_last*gy - qy_last*gx)*0.5f * dt;
 
 	// Normalise quaternion
-	recipNorm = 1.0f/sqrtf(qw * qw + qx * qx + qy * qy + qz * qz);
+	recipNorm = fast_inverse_sqrt(qw * qw + qx * qx + qy * qy + qz * qz);
 	qw *= recipNorm;
 	qx *= recipNorm;
 	qy *= recipNorm;
@@ -230,6 +242,62 @@ void Quat2Euler(Quat_T* q, Euler_T* eur)
 	eur->roll    = atan2f(2 * (qw * qx + qy * qz) , 1 - 2 * (qx * qx + qy * qy))*RAD_TO_DEG;  //+-90      
 	eur->pitch   = asinf(2 * (qw * qy - qz * qx))*RAD_TO_DEG;                                 //+-180   
 	eur->yaw     = atan2f(2 * (qw * qz + qx * qy) , 1 - 2 * (qy * qy + qz * qz))*RAD_TO_DEG;  //+-180   
+}
+
+void kalman_filter_init(kf_handle_t *hkf, float Q_ang, float Q_gyr, float R_ang, float dt)
+{
+  hkf->PP[0][0] = 1;
+  hkf->PP[0][1] = 0;
+  hkf->PP[1][0] = 0;
+  hkf->PP[1][1] = 1;
+  hkf->Q_bias = 0;
+  hkf->angle = 0;
+  hkf->angle_dot = 0;
+  hkf->Q_angle = Q_ang;
+  hkf->Q_gyro = Q_gyr;
+  hkf->R_angle = R_ang;
+  hkf->dt = dt;
+}
+
+void kalman_filter_fusion(kf_handle_t *hkf, float AccAng, float Gyro)
+{
+  float Angle_err;
+  float PCt_0, PCt_1, E;
+  float K_0, K_1, t_0, t_1;
+  float Pdot[4] ={0,0,0,0};
+
+  hkf->angle += (Gyro - hkf->Q_bias) * hkf->dt;
+  Pdot[0] = hkf->Q_angle - hkf->PP[0][1] - hkf->PP[1][0];
+
+  Pdot[1] = -hkf->PP[1][1];
+  Pdot[2] = -hkf->PP[1][1];
+  Pdot[3] = hkf->Q_gyro;
+  hkf->PP[0][0] += Pdot[0] * hkf->dt;
+  hkf->PP[0][1] += Pdot[1] * hkf->dt;
+  hkf->PP[1][0] += Pdot[2] * hkf->dt;
+  hkf->PP[1][1] += Pdot[3] * hkf->dt;
+
+  Angle_err = AccAng - hkf->angle;
+
+  PCt_0 = 1 * hkf->PP[0][0];
+  PCt_1 = 1 * hkf->PP[1][0];
+
+  E = hkf->R_angle + 1 * PCt_0;
+
+  K_0 = PCt_0 / E;
+  K_1 = PCt_1 / E;
+
+  t_0 = PCt_0;
+  t_1 = 1 * hkf->PP[0][1];
+
+  hkf->PP[0][0] -= K_0 * t_0;
+  hkf->PP[0][1] -= K_0 * t_1;
+  hkf->PP[1][0] -= K_1 * t_0;
+  hkf->PP[1][1] -= K_1 * t_1;
+
+  hkf->angle += K_0 * Angle_err;
+  hkf->Q_bias += K_1 * Angle_err;
+  hkf->angle_dot = Gyro - hkf->Q_bias;
 }
 
 /**
