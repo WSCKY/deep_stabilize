@@ -11,6 +11,7 @@ C_SRCS += \
 ./apps/stat_task.c \
 ./apps/parameter.c \
 ./apps/com_task.c \
+./apps/cpu_utils.c \
 ./apps/printHardFault.c
 
 OBJS += \
@@ -20,6 +21,7 @@ $(BuildPath)/apps/ctrl_task.o \
 $(BuildPath)/apps/stat_task.o \
 $(BuildPath)/apps/parameter.o \
 $(BuildPath)/apps/com_task.o \
+$(BuildPath)/apps/cpu_utils.o \
 $(BuildPath)/apps/printHardFault.o
 
 C_DEPS += \
@@ -28,6 +30,7 @@ $(BuildPath)/apps/sins_task.d \
 $(BuildPath)/apps/ctrl_task.d \
 $(BuildPath)/apps/stat_task.d \
 $(BuildPath)/apps/com_task.d \
+$(BuildPath)/apps/cpu_utils.d \
 $(BuildPath)/apps/printHardFault.d
 
 OBJ_DIRS = $(sort $(dir $(OBJS)))
