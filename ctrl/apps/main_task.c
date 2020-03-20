@@ -8,6 +8,7 @@
 #include "main_task.h"
 
 #include "parameter.h"
+#include "cpu_utils.h"
 
 #if CONFIG_USB_IF_ENABLE
 #include "usbd_cdc_core.h"
