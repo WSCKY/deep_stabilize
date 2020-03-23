@@ -33,8 +33,8 @@ static void ctrl_task_notify(void);
 #define YAW_ANGLE_LIMIT_MIN        (-90.0f)      /* right: -90deg */
 #define YAW_ANGLE_LIMIT_MAX        (90.0f)       /* left: 90deg */
 /* angle rate limitation */
-#define PITCH_ADJ_ANGLE_RATE       (10)          /* 10deg/s */
-#define YAW_ADJ_ANGLE_RATE         (60)          /* 60deg/s */
+#define PITCH_ADJ_ANGLE_RATE       (30)          /* 30deg/s */
+#define YAW_ADJ_ANGLE_RATE         (20)          /* 20deg/s */
 /* deadband for controller */
 #define PITCH_ADJ_ANGLE_DEADBAND   (0.5f)        /* +/- 0.5deg */
 #define YAW_ADJ_ANGLE_DEADBAND     (1.0f)        /* +/- 1.0deg */
@@ -158,7 +158,7 @@ void ctrl_task(void const *arg)
 }
 #else
 
-#define CTRL_LOOP_PERIOD_MS        (20)           /* 20ms */
+#define CTRL_LOOP_PERIOD_MS        (50)           /* 50ms */
 
 void ctrl_task(void const *arg)
 {
@@ -182,8 +182,11 @@ void ctrl_task(void const *arg)
   delay(1000); // wait motor driver ready.
 
   /* initialize expect angle as current angle to avoid controller over-current */
+  // update control parameter
+  param_get_param(params);
   cur_pitch = ENCODER_INT2DEG(params->encoder[PITCH_MOTOR_ENCODER_ID]);
   if(cur_pitch > 180) cur_pitch -= 360; // (-180, 180]
+  cur_pitch = -cur_pitch;
   exp_pitch = cur_pitch;
   cur_yaw = ENCODER_INT2DEG(params->encoder[YAW_MOTOR_ENCODER_ID]);
   if(cur_yaw > 180) cur_yaw -= 360; // (-180, 180]
@@ -202,6 +205,7 @@ void ctrl_task(void const *arg)
       step_change(&exp_pitch, params->exp_pitch, PITCH_ADJ_STEP_DEG, PITCH_ADJ_STEP_DEG);
       cur_pitch = ENCODER_INT2DEG(params->encoder[PITCH_MOTOR_ENCODER_ID]);
       if(cur_pitch > 180) cur_pitch -= 360; // (-180, 180]
+      cur_pitch = -cur_pitch;
       // simple PID controller
       if(ABS(params->exp_pitch - cur_pitch) > PITCH_ADJ_ANGLE_DEADBAND)
         control_output = (exp_pitch - cur_pitch) * 300; // err * kp
