@@ -82,6 +82,10 @@ void StartThread(void const * arg)
   }
   USBD_Init(USB_Device_dev, &USR_desc, &USBD_CDC_cb, &USR_cb);
   delay(50);
+#else
+#if CONFIG_LOG_ENABLE
+  ky_warn(TAG, "usb interface disabled.");
+#endif /* CONFIG_LOG_ENABLE */
 #endif /* CONFIG_USB_IF_ENABLE */
 
   if(param_init() != status_ok) {
@@ -96,6 +100,10 @@ void StartThread(void const * arg)
 #endif /* CONFIG_LOG_ENABLE */
     error_handler(2);
   }
+#else
+#if CONFIG_LOG_ENABLE
+  ky_warn(TAG, "sins task disabled.");
+#endif /* CONFIG_LOG_ENABLE */
 #endif /* SINS_TASK_MODULE_ENABLE */
 
   osThreadDef(T_CTRL, ctrl_task, osPriorityNormal, 0, 256); // 50% usage
@@ -131,7 +139,7 @@ void StartThread(void const * arg)
   for(;;) {
     delay(200);
     USER_LED_TOG();
-    ky_info(TAG, "usage %u%%", osGetCPUUsage());
+    ky_info(TAG, "CPU load %u%%", osGetCPUUsage());
   }
 }
 
