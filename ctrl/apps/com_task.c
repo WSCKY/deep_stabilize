@@ -3,6 +3,10 @@
 
 #include <string.h>
 
+#if CONFIG_LOG_ENABLE
+static const char* TAG = "MESG";
+#endif /* CONFIG_LOG_ENABLE */
+
 static KYLINK_CORE_HANDLE *kylink_uart;
 //static KYLINK_CORE_HANDLE *CDC_PortHandle;
 
@@ -40,6 +44,9 @@ void com_task(void const *arg)
 #endif /* (USER_LOG_PORT != 2) */
 
   if(uart2_init() != status_ok) {
+#if CONFIG_LOG_ENABLE
+    ky_err(TAG, "uart2 init fail");
+#endif /* CONFIG_LOG_ENABLE */
     vTaskDelete(NULL);
   }
 
@@ -58,6 +65,9 @@ void com_task(void const *arg)
     kmm_free(kylink_uart);
     kmm_free(kylink_tx_cache);
     kmm_free(uart_decoder_cache);
+#if CONFIG_LOG_ENABLE
+    ky_err(TAG, "no enough memory");
+#endif /* CONFIG_LOG_ENABLE */
     vTaskDelete(NULL);
   }
 
@@ -68,6 +78,10 @@ void com_task(void const *arg)
   kylink_init(kylink_uart, cfg);
 
   kmm_free(cfg);
+
+#if CONFIG_LOG_ENABLE
+  ky_info(TAG, "MESG task start");
+#endif /* CONFIG_LOG_ENABLE */
 
   for(;;) {
     delay(50);
@@ -85,7 +99,11 @@ void com_task(void const *arg)
       param_get_param(param);
       // send message
       kylink_send(kylink_uart, param, MSG_BOARD_STATE, sizeof(Params_t));
-      com_cache_flush();
+      if(com_cache_flush() != status_ok) {
+#if CONFIG_LOG_ENABLE
+        ky_err(TAG, "mesg send failed!");
+#endif /* CONFIG_LOG_ENABLE */
+      }
     }
 #endif /* (USER_LOG_PORT != 2) */
   }
