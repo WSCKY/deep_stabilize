@@ -148,7 +148,7 @@ static void dma_config(void)
   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)UART2_RX_CACHE;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
   DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(UART2->RDR);
+  DMA_InitStructure.DMA_PeripheralBaseAddr = UART2_RDR_ADDRESS;
   DMA_Init(UART2_RX_DMA, &DMA_InitStructure);
 
   /* UART2_TX_DMA configuration */
@@ -157,7 +157,7 @@ static void dma_config(void)
   DMA_InitStructure.DMA_MemoryBaseAddr = 0;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
   DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(UART2->TDR);
+  DMA_InitStructure.DMA_PeripheralBaseAddr = UART2_TDR_ADDRESS;
   DMA_Init(UART2_TX_DMA, &DMA_InitStructure);
 
   /* Enable the UART2_TX_DMA TC Interrupt */
