@@ -99,7 +99,7 @@ int SprinklerCtrl_enable_stabilize(int e)
 int SprinklerCtrl_set_pitch(float pitch)
 {
   int ret = 0;
-  if(pitch < -15 || pitch > 30) return -1;
+  if(pitch < -15 || pitch > 60) return -1;
   pthread_mutex_lock(&ctrlInfo_mtx);
   ctrlInfo.pitch = pitch;
   if(update_config() != status_ok) ret = -2;
@@ -111,7 +111,7 @@ int SprinklerCtrl_set_pitch(float pitch)
 int SprinklerCtrl_set_yaw(float yaw)
 {
   int ret = 0;
-  if(yaw < -180 || yaw > 180) return -1; // invalid parameter
+  if(yaw < -90 || yaw > 90) return -1; // invalid parameter
 
   pthread_mutex_lock(&ctrlInfo_mtx);
   ctrlInfo.yaw = yaw;
@@ -126,8 +126,8 @@ int SprinklerCtrl_set_yaw(float yaw)
 int SprinklerCtrl_set_exp(float pitch, float yaw)
 {
   int ret = 0;
-  if(pitch < -15 || pitch > 30) return -1;
-  if(yaw < -180 || yaw > 180) return -1;
+  if(pitch < -15 || pitch > 60) return -1;
+  if(yaw < -90 || yaw > 90) return -1;
   pthread_mutex_lock(&ctrlInfo_mtx);
   ctrlInfo.pitch = pitch;
   ctrlInfo.yaw = yaw;
