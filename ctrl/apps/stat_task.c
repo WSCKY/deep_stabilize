@@ -68,6 +68,7 @@ void stat_task(void const *arg)
 #if CONFIG_LOG_ENABLE
       ky_warn(TAG, "e%d read fail", encoder->addr);
 #endif /* CONFIG_LOG_ENABLE */
+      param_set_flag_bit(1 << (encoder->addr - 1 + ENCODER_ERROR_BIT_OFF));
     } else {
       param_set_encval(encoder_val, encoder->addr - 1);
 //#if CONFIG_LOG_ENABLE
