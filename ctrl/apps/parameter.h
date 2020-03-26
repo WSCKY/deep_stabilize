@@ -43,11 +43,13 @@ __PACK_BEGIN typedef struct {
 #define IO_OUTPUT_7_BIT        0x00400000
 #define IO_OUTPUT_8_BIT        0x00800000
 
-#define CTRL_LOOP_ENABLE_BIT   0x01000000
+#define CTRL_LOST_BIT_OFF      24
+#define CTRL_LOST_PIT_BIT      0x01000000
+#define CTRL_LOST_YAW_BIT      0x02000000
 
-#define ENCODER_ERROR_BIT_OFF  25
-#define ENCODER_ERROR_BIT_1    0x02000000
-#define ENCODER_ERROR_BIT_2    0x04000000
+#define ENCODER_ERROR_BIT_OFF  26
+#define ENCODER_ERROR_BIT_1    0x04000000
+#define ENCODER_ERROR_BIT_2    0x08000000
 
 status_t param_init(void);
 
