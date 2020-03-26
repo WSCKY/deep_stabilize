@@ -85,8 +85,10 @@ void param_get_expyaw(float *ang)
 void param_set_encval(uint16_t val, uint8_t id)
 {
   param_req_grant();
-  if(id < ENCODER_NUMBER)
+  if(id < ENCODER_NUMBER) {
     params->encoder[id] = val;
+    params->flags &= ~(0x1 << (ENCODER_ERROR_BIT_OFF + id));
+  }
   param_rel_grant();
 }
 
