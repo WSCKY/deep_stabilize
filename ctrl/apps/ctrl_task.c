@@ -201,45 +201,57 @@ void ctrl_task(void const *arg)
       param_get_param(params);
 
       // pitch axis control
-      // limit angle rate
-      step_change(&exp_pitch, params->exp_pitch, PITCH_ADJ_STEP_DEG, PITCH_ADJ_STEP_DEG);
-      cur_pitch = ENCODER_INT2DEG(params->encoder[PITCH_MOTOR_ENCODER_ID]);
-      if(cur_pitch > 180) cur_pitch -= 360; // (-180, 180]
-      cur_pitch = -cur_pitch;
-      // simple PID controller
-      if(ABS(params->exp_pitch - cur_pitch) > PITCH_ADJ_ANGLE_DEADBAND)
-        control_output = (exp_pitch - cur_pitch) * 300; // err * kp
-      else
-        control_output = 0; // we got the position
-      // limit PID output
-      control_output = LIMIT(control_output, PITCH_MOTOR_OUTPUT_LIMIT, -PITCH_MOTOR_OUTPUT_LIMIT);
-      //drive pitch motor
-      pwm16_period((uint32_t)ABS(control_output));
-      // set direction
-      if(control_output < 0) {
-        output_port_clear(IO_OUTPUT1);
+      if((params->flags & (1 << (PITCH_MOTOR_ENCODER_ID + ENCODER_ERROR_BIT_OFF))) == 0) {
+        // limit angle rate
+        step_change(&exp_pitch, params->exp_pitch, PITCH_ADJ_STEP_DEG, PITCH_ADJ_STEP_DEG);
+        cur_pitch = ENCODER_INT2DEG(params->encoder[PITCH_MOTOR_ENCODER_ID]);
+        if(cur_pitch > 180) cur_pitch -= 360; // (-180, 180]
+        cur_pitch = -cur_pitch;
+        // simple PID controller
+        if(ABS(params->exp_pitch - cur_pitch) > PITCH_ADJ_ANGLE_DEADBAND)
+          control_output = (exp_pitch - cur_pitch) * 300; // err * kp
+        else
+          control_output = 0; // we got the position
+        // limit PID output
+        control_output = LIMIT(control_output, PITCH_MOTOR_OUTPUT_LIMIT, -PITCH_MOTOR_OUTPUT_LIMIT);
+        //drive pitch motor
+        pwm16_period((uint32_t)ABS(control_output));
+        // set direction
+        if(control_output < 0) {
+          output_port_clear(IO_OUTPUT1);
+        } else {
+          output_port_set(IO_OUTPUT1);
+        }
       } else {
-        output_port_set(IO_OUTPUT1);
+        // encoder error ...
+        pwm16_period(0);
+        output_port_clear(IO_OUTPUT1);
       }
 
       // yaw axis control
-      // limit angle rate
-      step_change(&exp_yaw, params->exp_yaw, YAW_ADJ_STEP_DEG, YAW_ADJ_STEP_DEG);
-      cur_yaw = ENCODER_INT2DEG(params->encoder[YAW_MOTOR_ENCODER_ID]);
-      if(cur_yaw > 180) cur_yaw -= 360; // (-180, 180]
-      // simple PID controller
-      if(ABS(params->exp_yaw - cur_yaw) > YAW_ADJ_ANGLE_DEADBAND)
-        control_output = (exp_yaw - cur_yaw) * 100; // err * kp
-      else
-	control_output = 0; // we got the position
-      // limit PID output
-      control_output = LIMIT(control_output, YAW_MOTOR_OUTPUT_LIMIT, -YAW_MOTOR_OUTPUT_LIMIT);
-      //drive yaw motor
-      pwm17_period((uint32_t)ABS(control_output));
-      // set direction
-      if(control_output < 0) {
-        output_port_set(IO_OUTPUT2);
+      if((params->flags & (1 << (YAW_MOTOR_ENCODER_ID + ENCODER_ERROR_BIT_OFF))) == 0) {
+        // limit angle rate
+        step_change(&exp_yaw, params->exp_yaw, YAW_ADJ_STEP_DEG, YAW_ADJ_STEP_DEG);
+        cur_yaw = ENCODER_INT2DEG(params->encoder[YAW_MOTOR_ENCODER_ID]);
+        if(cur_yaw > 180) cur_yaw -= 360; // (-180, 180]
+        // simple PID controller
+        if(ABS(params->exp_yaw - cur_yaw) > YAW_ADJ_ANGLE_DEADBAND)
+          control_output = (exp_yaw - cur_yaw) * 100; // err * kp
+        else
+          control_output = 0; // we got the position
+        // limit PID output
+        control_output = LIMIT(control_output, YAW_MOTOR_OUTPUT_LIMIT, -YAW_MOTOR_OUTPUT_LIMIT);
+        //drive yaw motor
+        pwm17_period((uint32_t)ABS(control_output));
+        // set direction
+        if(control_output < 0) {
+          output_port_set(IO_OUTPUT2);
+        } else {
+          output_port_clear(IO_OUTPUT2);
+        }
       } else {
+        // encoder error ...
+        pwm17_period(0);
         output_port_clear(IO_OUTPUT2);
       }
     }
