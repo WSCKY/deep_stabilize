@@ -45,6 +45,10 @@ __PACK_BEGIN typedef struct {
 
 #define CTRL_LOOP_ENABLE_BIT   0x01000000
 
+#define ENCODER_ERROR_BIT_OFF  25
+#define ENCODER_ERROR_BIT_1    0x02000000
+#define ENCODER_ERROR_BIT_2    0x04000000
+
 status_t param_init(void);
 
 void param_get_param(Params_t *param);
