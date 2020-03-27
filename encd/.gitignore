@@ -1,0 +1,9 @@
+build/
+output/
+
+#eclipse project files
+*.xml
+.project
+.cproject
+.settings
+
