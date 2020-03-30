@@ -5,7 +5,7 @@
  *      Author: kychu
  */
 
-#include "encd.h"
+#include "enc3.h"
 
 void encoder3_init(void)
 {
@@ -22,6 +22,9 @@ void encoder3_init(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_1);
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_1);
 
   /* Configure Timer as Encoder Interface */
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
