@@ -122,6 +122,14 @@ void StartThread(void const * arg)
 //    error_handler(5);
 //  }
 
+  osThreadDef(T_ENCD, encd_task, osPriorityNormal, 0, 256); // ?% usage
+  if(osThreadCreate (osThread(T_ENCD), NULL) == NULL) {
+#if CONFIG_LOG_ENABLE
+    ky_err(TAG, "encd task create failed.");
+#endif /* CONFIG_LOG_ENABLE */
+    error_handler(5);
+  }
+
   osThreadDef(T_COM, com_task, osPriorityNormal, 0, 256); // 2% usage
   if(osThreadCreate (osThread(T_COM), NULL) == NULL) {
 #if CONFIG_LOG_ENABLE
@@ -139,7 +147,7 @@ void StartThread(void const * arg)
   for(;;) {
     delay(200);
     USER_LED_TOG();
-    ky_info(TAG, "CPU load %u%%", osGetCPUUsage());
+//    ky_info(TAG, "CPU load %u%%", osGetCPUUsage());
   }
 }
 
