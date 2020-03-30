@@ -9,6 +9,7 @@ C_SRCS += \
 ./apps/sins_task.c \
 ./apps/ctrl_task.c \
 ./apps/stat_task.c \
+./apps/encd_task.c \
 ./apps/parameter.c \
 ./apps/com_task.c \
 ./apps/cpu_utils.c \
@@ -19,6 +20,7 @@ $(BuildPath)/apps/main_task.o \
 $(BuildPath)/apps/sins_task.o \
 $(BuildPath)/apps/ctrl_task.o \
 $(BuildPath)/apps/stat_task.o \
+$(BuildPath)/apps/encd_task.o \
 $(BuildPath)/apps/parameter.o \
 $(BuildPath)/apps/com_task.o \
 $(BuildPath)/apps/cpu_utils.o \
@@ -29,6 +31,7 @@ $(BuildPath)/apps/main_task.d \
 $(BuildPath)/apps/sins_task.d \
 $(BuildPath)/apps/ctrl_task.d \
 $(BuildPath)/apps/stat_task.d \
+$(BuildPath)/apps/encd_task.d \
 $(BuildPath)/apps/com_task.d \
 $(BuildPath)/apps/cpu_utils.d \
 $(BuildPath)/apps/printHardFault.d
