@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet file="IMU.pdesc" type="text/xsl"?>
+
+<Packages MaxSize="80Bytes">
+  <!--Package type catalog-->
+  <fType name="Pitch Data" id="0x13">
+    <member type="float">encoder</member>
+  </fType>
+</Packages>
