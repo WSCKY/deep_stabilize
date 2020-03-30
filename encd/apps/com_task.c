@@ -24,6 +24,8 @@ __PACK_BEGIN typedef struct {
   uint32_t flag;
 } __PACK_END CtrlInfoDef;
 
+extern float encoder_value;
+
 static uint8_t *kylink_tx_cache = NULL;
 static uint32_t cache_available = 0;
 
@@ -98,7 +100,8 @@ void com_task(void const *arg)
       // prepare data
       param_get_param(param);
       // send message
-      kylink_send(kylink_uart, param, MSG_BOARD_STATE, sizeof(Params_t));
+//      kylink_send(kylink_uart, param, MSG_BOARD_STATE, sizeof(Params_t));
+      kylink_send(kylink_uart, &encoder_value, 0x13, sizeof(float));
       if(com_cache_flush() != status_ok) {
 #if CONFIG_LOG_ENABLE
         ky_err(TAG, "mesg send failed!");
