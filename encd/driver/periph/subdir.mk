@@ -12,6 +12,7 @@ C_SRCS += \
 ./driver/periph/uart2.c \
 ./driver/periph/uart4.c \
 ./driver/periph/tim7.c \
+./driver/periph/enc3.c \
 ./driver/periph/gpio.c \
 ./driver/periph/irq.c
 
@@ -23,6 +24,7 @@ $(BuildPath)/driver/periph/uart1.o \
 $(BuildPath)/driver/periph/uart2.o \
 $(BuildPath)/driver/periph/uart4.o \
 $(BuildPath)/driver/periph/tim7.o \
+$(BuildPath)/driver/periph/enc3.o \
 $(BuildPath)/driver/periph/gpio.o \
 $(BuildPath)/driver/periph/irq.o
 
@@ -34,6 +36,7 @@ $(BuildPath)/driver/periph/uart1.d \
 $(BuildPath)/driver/periph/uart2.d \
 $(BuildPath)/driver/periph/uart4.d \
 $(BuildPath)/driver/periph/tim7.d \
+$(BuildPath)/driver/periph/enc3.d \
 $(BuildPath)/driver/periph/gpio.d \
 $(BuildPath)/driver/periph/irq.d
 
