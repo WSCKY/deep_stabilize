@@ -158,19 +158,23 @@ void ctrl_task(void const *arg)
 }
 #else
 
-#define CTRL_LOOP_PERIOD_MS        (50)           /* 50ms */
-
-#define CTRL_LOST_ERROR_LEVEL      (15)           /* 15deg */
+#define CTRL_LOOP_PERIOD_MS        (10)           /* 10ms */
+//
+//#define CTRL_LOST_ERROR_LEVEL      (15)           /* 15deg */
 
 void ctrl_task(void const *arg)
 {
+  PID *pid;
   Params_t *params;
-  float cur_yaw, exp_yaw = 0;
-  float cur_pitch, exp_pitch = 0;
-  float control_output;
+  int16_t m2_vel, m2_exp = 0;
+//  float cur_pitch, exp_pitch = 0;
+  float control_output = 0;
+  uint32_t time_now, time_ts = 0;
 
+  pid = kmm_alloc(sizeof(PID));
   params = kmm_alloc(sizeof(Params_t));
-  if(params == NULL) {
+  if(pid == NULL || params == NULL) {
+    kmm_free(pid);
     kmm_free(params);
 #if CONFIG_LOG_ENABLE
     ky_err(TAG, "no enough memory");
@@ -179,100 +183,124 @@ void ctrl_task(void const *arg)
   }
   ctrlThread = xTaskGetCurrentTaskHandle();
 
+  pid->kp = 0.02;
+  pid->ki = 0.001;
+  pid->kd = 0;
+  pid->I_max = 10;
+  pid->I_sum = 0;
+  pid->dt = CTRL_LOOP_PERIOD_MS * 0.001f;
+  pid->D_max = 100;
+
   pwm16_init();
   pwm17_init();
   delay(1000); // wait motor driver ready.
 
   /* initialize expect angle as current angle to avoid controller over-current */
   // update control parameter
-  param_get_param(params);
-  cur_pitch = ENCODER_INT2DEG(params->encoder[PITCH_MOTOR_ENCODER_ID]);
-  if(cur_pitch > 180) cur_pitch -= 360; // (-180, 180]
-  cur_pitch = -cur_pitch;
-  exp_pitch = cur_pitch;
-  cur_yaw = ENCODER_INT2DEG(params->encoder[YAW_MOTOR_ENCODER_ID]);
-  if(cur_yaw > 180) cur_yaw -= 360; // (-180, 180]
-  exp_yaw = cur_yaw;
+//  param_get_param(params);
+//  cur_pitch = ENCODER_INT2DEG(params->encoder[PITCH_MOTOR_ENCODER_ID]);
+//  if(cur_pitch > 180) cur_pitch -= 360; // (-180, 180]
+//  cur_pitch = -cur_pitch;
+//  exp_pitch = cur_pitch;
+//  cur_yaw = ENCODER_INT2DEG(params->encoder[YAW_MOTOR_ENCODER_ID]);
+//  if(cur_yaw > 180) cur_yaw -= 360; // (-180, 180]
+//  exp_yaw = cur_yaw;
 
+  encoder3_init();
   /* initialize task sync timer */
   tim7_init(CTRL_LOOP_PERIOD_MS, ctrl_task_notify);
 
   for(;;) {
     if(xTaskNotifyWait(0xFFFFFFFF, 0xFFFFFFFF, NULL, 100) == pdTRUE) {
       // update control parameter
-      param_get_param(params);
+//      param_get_param(params);
 
+      m2_vel = encoder3_read();
+      param_set_encval(m2_vel, 0);
+      param_set_expval(m2_exp, 0);
+
+      time_now = xTaskGetTickCountFromISR();
+      if((time_now - time_ts) >= 3000) {
+        time_ts = time_now;
+        if(m2_exp < 1500)
+          m2_exp = 2000;
+        else
+          m2_exp = 1000;
+      }
+
+      // PID control
+      pid_loop(pid, m2_exp, m2_vel);
+
+      if(ABS(m2_exp) < 1) m2_exp = 0;
+      if(m2_exp == 0) {
+        control_output = 0;
+        pid->I_sum = 0;
+        pid->preErr = 0;
+      } else {
+        control_output += pid->Output;
+      }
+      pwm17_period(ABS(control_output));
+      if(control_output < 0) output_port_set(IO_OUTPUT2);
+      else output_port_clear(IO_OUTPUT2);
       // pitch axis control
-      if((params->flags & (1 << (PITCH_MOTOR_ENCODER_ID + ENCODER_ERROR_BIT_OFF))) == 0) {
-        if(ABS(exp_pitch - cur_pitch) > CTRL_LOST_ERROR_LEVEL) {
-          // lost control ...
-          pwm16_period(0);
-          output_port_clear(IO_OUTPUT1);
-          param_set_flag_bit(CTRL_LOST_PIT_BIT); // report we lost control.
-        } else {
-          // limit angle rate
-          step_change(&exp_pitch, params->exp_pitch, PITCH_ADJ_STEP_DEG, PITCH_ADJ_STEP_DEG);
-          cur_pitch = ENCODER_INT2DEG(params->encoder[PITCH_MOTOR_ENCODER_ID]);
-          if(cur_pitch > 180) cur_pitch -= 360; // (-180, 180]
-          cur_pitch = -cur_pitch;
-          // simple PID controller
-          if(ABS(params->exp_pitch - cur_pitch) > PITCH_ADJ_ANGLE_DEADBAND)
-            control_output = (exp_pitch - cur_pitch) * 300; // err * kp
-          else
-            control_output = 0; // we got the position
-          // limit PID output
-          control_output = LIMIT(control_output, PITCH_MOTOR_OUTPUT_LIMIT, -PITCH_MOTOR_OUTPUT_LIMIT);
-          //drive pitch motor
-          pwm16_period((uint32_t)ABS(control_output));
-          // set direction
-          if(control_output < 0) {
-            output_port_clear(IO_OUTPUT1);
-          } else {
-            output_port_set(IO_OUTPUT1);
-          }
-        }
-      } else {
-        // encoder error ...
-        pwm16_period(0);
-        output_port_clear(IO_OUTPUT1);
-      }
-
-      // yaw axis control
-      if((params->flags & (1 << (YAW_MOTOR_ENCODER_ID + ENCODER_ERROR_BIT_OFF))) == 0) {
-        if(ABS(exp_yaw - cur_yaw) > CTRL_LOST_ERROR_LEVEL) {
-          // lost control ...
-          pwm17_period(0);
-          output_port_clear(IO_OUTPUT2);
-          param_set_flag_bit(CTRL_LOST_YAW_BIT); // report we lost control.
-        } else {
-          // limit angle rate
-          step_change(&exp_yaw, params->exp_yaw, YAW_ADJ_STEP_DEG, YAW_ADJ_STEP_DEG);
-          cur_yaw = ENCODER_INT2DEG(params->encoder[YAW_MOTOR_ENCODER_ID]);
-          if(cur_yaw > 180) cur_yaw -= 360; // (-180, 180]
-          // simple PID controller
-          if(ABS(params->exp_yaw - cur_yaw) > YAW_ADJ_ANGLE_DEADBAND)
-            control_output = (exp_yaw - cur_yaw) * 100; // err * kp
-          else
-            control_output = 0; // we got the position
-          // limit PID output
-          control_output = LIMIT(control_output, YAW_MOTOR_OUTPUT_LIMIT, -YAW_MOTOR_OUTPUT_LIMIT);
-          //drive yaw motor
-          pwm17_period((uint32_t)ABS(control_output));
-          // set direction
-          if(control_output < 0) {
-            output_port_set(IO_OUTPUT2);
-          } else {
-            output_port_clear(IO_OUTPUT2);
-          }
-        }
-      } else {
-        // encoder error ...
-        pwm17_period(0);
-        output_port_clear(IO_OUTPUT2);
-      }
+//      if((params->flags & (1 << (PITCH_MOTOR_ENCODER_ID + ENCODER_ERROR_BIT_OFF))) == 0) {
+//        if(ABS(exp_pitch - cur_pitch) > CTRL_LOST_ERROR_LEVEL) {
+//          // lost control ...
+//          pwm16_period(0);
+//          output_port_clear(IO_OUTPUT1);
+//          param_set_flag_bit(CTRL_LOST_PIT_BIT); // report we lost control.
+//        } else {
+//          // limit angle rate
+//          step_change(&exp_pitch, params->exp_pitch, PITCH_ADJ_STEP_DEG, PITCH_ADJ_STEP_DEG);
+//          cur_pitch = ENCODER_INT2DEG(params->encoder[PITCH_MOTOR_ENCODER_ID]);
+//          if(cur_pitch > 180) cur_pitch -= 360; // (-180, 180]
+//          cur_pitch = -cur_pitch;
+//          // simple PID controller
+//          if(ABS(params->exp_pitch - cur_pitch) > PITCH_ADJ_ANGLE_DEADBAND)
+//            control_output = (exp_pitch - cur_pitch) * 300; // err * kp
+//          else
+//            control_output = 0; // we got the position
+//          // limit PID output
+//          control_output = LIMIT(control_output, PITCH_MOTOR_OUTPUT_LIMIT, -PITCH_MOTOR_OUTPUT_LIMIT);
+//          //drive pitch motor
+//          pwm16_period((uint32_t)ABS(control_output));
+//          // set direction
+//          if(control_output < 0) {
+//            output_port_clear(IO_OUTPUT1);
+//          } else {
+//            output_port_set(IO_OUTPUT1);
+//          }
+//        }
+//      } else {
+//        // encoder error ...
+//        pwm16_period(0);
+//        output_port_clear(IO_OUTPUT1);
+//      }
     }
   }
 }
+
+//void ctrl_task(void const *arg)
+//{
+//  int dir = 5;
+//  int vel = 0;
+//
+//  pwm17_init();
+//  delay(1000); // wait motor driver ready.
+//  for(;;) {
+//    delay(20);
+//    vel += dir;
+//    if(vel >= 3000) dir = -5;
+//    if(vel <= -3000) dir = 5;
+////    if(vel > 1000) vel = 1000;
+//    pwm17_period(ABS(vel));
+//    if(vel < 0)
+//      output_port_set(IO_OUTPUT2);
+//    else
+//      output_port_clear(IO_OUTPUT2);
+//  }
+//}
+
 #endif /* CTRL_STABILIZE_MODE_ENABLE */
 
 static void ctrl_task_notify(void)
