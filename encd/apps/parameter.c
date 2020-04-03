@@ -40,49 +40,67 @@ void param_get_param(Params_t *param)
   param_rel_grant();
 }
 
-void param_set_anginfo(AngleInfo_t *info)
+//void param_set_anginfo(AngleInfo_t *info)
+//{
+//  param_req_grant();
+//  params->angInfo = *info;
+//  param_rel_grant();
+//}
+
+//void param_get_anginfo(AngleInfo_t *info)
+//{
+//  param_req_grant();
+//  *info = params->angInfo;
+//  param_rel_grant();
+//}
+
+//void param_set_exppit(float ang)
+//{
+//  param_req_grant();
+//  params->exp_pitch = ang;
+//  param_rel_grant();
+//}
+//
+//void param_get_exppit(float *ang)
+//{
+//  param_req_grant();
+//  *ang = params->exp_pitch;
+//  param_rel_grant();
+//}
+
+//void param_set_expyaw(float ang)
+//{
+//  param_req_grant();
+//  params->exp_yaw = ang;
+//  param_rel_grant();
+//}
+//
+//void param_get_expyaw(float *ang)
+//{
+//  param_req_grant();
+//  *ang = params->exp_yaw;
+//  param_rel_grant();
+//}
+
+void param_set_expval(float exp, uint8_t id)
 {
   param_req_grant();
-  params->angInfo = *info;
+  if(id < ENCODER_NUMBER) {
+    params->motor_exp[id] = exp;
+  }
   param_rel_grant();
 }
 
-void param_get_anginfo(AngleInfo_t *info)
+void param_get_expval(float *exp, uint8_t id)
 {
   param_req_grant();
-  *info = params->angInfo;
+  if(id < ENCODER_NUMBER) {
+    *exp = params->motor_exp[id];
+  }
   param_rel_grant();
 }
 
-void param_set_exppit(float ang)
-{
-  param_req_grant();
-  params->exp_pitch = ang;
-  param_rel_grant();
-}
-
-void param_get_exppit(float *ang)
-{
-  param_req_grant();
-  *ang = params->exp_pitch;
-  param_rel_grant();
-}
-
-void param_set_expyaw(float ang)
-{
-  param_req_grant();
-  params->exp_yaw = ang;
-  param_rel_grant();
-}
-
-void param_get_expyaw(float *ang)
-{
-  param_req_grant();
-  *ang = params->exp_yaw;
-  param_rel_grant();
-}
-
-void param_set_encval(uint16_t val, uint8_t id)
+void param_set_encval(int16_t val, uint8_t id)
 {
   param_req_grant();
   if(id < ENCODER_NUMBER) {
@@ -92,7 +110,7 @@ void param_set_encval(uint16_t val, uint8_t id)
   param_rel_grant();
 }
 
-void param_get_encval(uint16_t *val, uint8_t id)
+void param_get_encval(int16_t *val, uint8_t id)
 {
   param_req_grant();
   if(id < ENCODER_NUMBER)

@@ -18,10 +18,9 @@ typedef struct {
 } AngleInfo_t;
 
 __PACK_BEGIN typedef struct {
-	AngleInfo_t angInfo;
-	uint16_t encoder[ENCODER_NUMBER];
-	float exp_pitch;
-	float exp_yaw;
+//	AngleInfo_t angInfo;
+	float encoder[ENCODER_NUMBER];
+	float motor_exp[2];
 	uint32_t flags;
 } __PACK_END Params_t;
 
@@ -55,17 +54,20 @@ status_t param_init(void);
 
 void param_get_param(Params_t *param);
 
-void param_set_anginfo(AngleInfo_t *info);
-void param_get_anginfo(AngleInfo_t *info);
+//void param_set_anginfo(AngleInfo_t *info);
+//void param_get_anginfo(AngleInfo_t *info);
 
-void param_set_exppit(float ang);
-void param_get_exppit(float *ang);
+//void param_set_exppit(float ang);
+//void param_get_exppit(float *ang);
+//
+//void param_set_expyaw(float ang);
+//void param_get_expyaw(float *ang);
 
-void param_set_expyaw(float ang);
-void param_get_expyaw(float *ang);
+void param_set_expval(float exp, uint8_t id);
+void param_get_expval(float *exp, uint8_t id);
 
-void param_set_encval(uint16_t val, uint8_t id);
-void param_get_encval(uint16_t *val, uint8_t id);
+void param_set_encval(int16_t val, uint8_t id);
+void param_get_encval(int16_t *val, uint8_t id);
 
 void param_set_flag(uint32_t flag);
 void param_get_flag(uint32_t *flag);
