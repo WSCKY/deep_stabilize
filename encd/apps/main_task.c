@@ -106,13 +106,13 @@ void StartThread(void const * arg)
 #endif /* CONFIG_LOG_ENABLE */
 #endif /* SINS_TASK_MODULE_ENABLE */
 
-//  osThreadDef(T_CTRL, ctrl_task, osPriorityNormal, 0, 256); // 50% usage
-//  if(osThreadCreate (osThread(T_CTRL), NULL) == NULL) {
-//#if CONFIG_LOG_ENABLE
-//    ky_err(TAG, "ctrl task create failed.");
-//#endif /* CONFIG_LOG_ENABLE */
-//    error_handler(3);
-//  }
+  osThreadDef(T_CTRL, ctrl_task, osPriorityNormal, 0, 256); // 50% usage
+  if(osThreadCreate (osThread(T_CTRL), NULL) == NULL) {
+#if CONFIG_LOG_ENABLE
+    ky_err(TAG, "ctrl task create failed.");
+#endif /* CONFIG_LOG_ENABLE */
+    error_handler(3);
+  }
 
 //  osThreadDef(T_STAT, stat_task, osPriorityNormal, 0, 256); // 2% usage
 //  if(osThreadCreate (osThread(T_STAT), NULL) == NULL) {
@@ -122,13 +122,13 @@ void StartThread(void const * arg)
 //    error_handler(5);
 //  }
 
-  osThreadDef(T_ENCD, encd_task, osPriorityNormal, 0, 256); // ?% usage
-  if(osThreadCreate (osThread(T_ENCD), NULL) == NULL) {
-#if CONFIG_LOG_ENABLE
-    ky_err(TAG, "encd task create failed.");
-#endif /* CONFIG_LOG_ENABLE */
-    error_handler(5);
-  }
+//  osThreadDef(T_ENCD, encd_task, osPriorityNormal, 0, 256); // ?% usage
+//  if(osThreadCreate (osThread(T_ENCD), NULL) == NULL) {
+//#if CONFIG_LOG_ENABLE
+//    ky_err(TAG, "encd task create failed.");
+//#endif /* CONFIG_LOG_ENABLE */
+//    error_handler(5);
+//  }
 
   osThreadDef(T_COM, com_task, osPriorityNormal, 0, 256); // 2% usage
   if(osThreadCreate (osThread(T_COM), NULL) == NULL) {
