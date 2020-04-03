@@ -3,7 +3,11 @@
 
 <Packages MaxSize="80Bytes">
   <!--Package type catalog-->
-  <fType name="Pitch Data" id="0x13">
-    <member type="float">encoder</member>
+  <fType name="Pitch Data" id="0x60">
+	  <member type="float">encoder1</member>
+	  <member type="float">encoder2</member>
+	  <member type="float">m1_exp</member>
+	  <member type="float">m2_exp</member>
+	  <member type="uint32_t">flags</member>
   </fType>
 </Packages>
