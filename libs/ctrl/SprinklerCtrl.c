@@ -47,21 +47,28 @@ static Params_t devState;
 static CtrlInfoDef ctrlInfo;
 static KYLINK_CORE_HANDLE kylink_tool;
 
+static SprinklerCtrl_event_callback event_callback = 0;
+
 static pthread_t decode_thread;
+static pthread_t event_proc_thread;
 static bool_t _should_exit = false;
 
+//static bool_t _msg_updated_flag = 0;
 static pthread_mutex_t ctrlInfo_mtx = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t devState_mtx = PTHREAD_MUTEX_INITIALIZER;
 
 static void decode_task(void);
+static void event_proc_task(void);
 static status_t update_config(void);
 static void kylink_decode_callback(kyLinkBlockDef *pRx);
 
 static int kylink_setup(void);
 static status_t kylink_tx_bytes(uint8_t *p, uint32_t l);
 
-int SprinklerCtrl_start(const char *dev)
+int SprinklerCtrl_start(const char *dev, SprinklerCtrl_event_callback callback)
 {
+  if(callback == 0) return -1;
+  event_callback = callback;
   if(uart_open(dev, (const char *)"115200") != EXIT_SUCCESS) {
     printf("\e[0;31mfailed to open uart %s.\e[0m\n", dev);
     return -1;
@@ -76,13 +83,9 @@ int SprinklerCtrl_start(const char *dev)
   ctrlInfo.flag |= CTRL_LOOP_ENABLE_BIT;
   if(pthread_create(&decode_thread, NULL, (void *)decode_task, NULL) != 0)
     return -3;
+  if(pthread_create(&event_proc_thread, NULL, (void *)event_proc_task, NULL) != 0)
+    return -3;
   return 0;
-}
-
-int SprinklerCtrl_config_callback(SprinklerCtrl_adj_done_callback callback)
-{
-//  printf("this function unsupported yet.");
-  return -1;
 }
 
 int SprinklerCtrl_enable_stabilize(int e)
@@ -107,7 +110,7 @@ int SprinklerCtrl_set_pitch(float pitch)
   return ret;
 }
 
-/* from -180 to +180 */
+/* from -90 to +90 */
 int SprinklerCtrl_set_yaw(float yaw)
 {
   int ret = 0;
@@ -123,7 +126,7 @@ int SprinklerCtrl_set_yaw(float yaw)
   return ret;
 }
 
-int SprinklerCtrl_set_exp(float pitch, float yaw)
+int SprinklerCtrl_set_angle(float pitch, float yaw)
 {
   int ret = 0;
   if(pitch < -15 || pitch > 60) return -1;
@@ -140,26 +143,37 @@ float SprinklerCtrl_get_pitch(void)
 {
   float ret;
   pthread_mutex_lock(&devState_mtx);
-  ret = devState.angInfo.AngleVal;
+  ret = devState.encoder[0] * 0.02197265625f;
   pthread_mutex_unlock(&devState_mtx);
+  if(ret > 180) ret -= 360;
+  ret = -ret;
   return ret;
 }
 
-float SprinklerCtrl_get_pitchrate(void)
+float SprinklerCtrl_get_yaw(void)
 {
   float ret;
   pthread_mutex_lock(&devState_mtx);
-  ret = devState.angInfo.AngleRateVal;
+  ret = devState.encoder[1] * 0.02197265625f;
   pthread_mutex_unlock(&devState_mtx);
+  if(ret > 180) ret -= 360;
+  ret = -ret;
   return ret;
 }
 
 int SprinklerCtrl_get_angle(float *pitch, float *yaw)
 {
+  float v1, v2;
   pthread_mutex_lock(&devState_mtx);
-  *pitch = devState.angInfo.AngleVal;
-  *yaw = devState.encoder[1] * 0.02197265625f;
+  v1 = devState.encoder[0] * 0.02197265625f;
+  v2 = devState.encoder[1] * 0.02197265625f;
   pthread_mutex_unlock(&devState_mtx);
+  if(v1 > 180) v1 -= 360; // (-180, 180]
+  v1 = -v1;
+  *pitch = v1;
+  if(v2 > 180) v2 -= 360; // (-180, 180]
+  v2 = -v2;
+  *yaw = v2;
   return 0;
 }
 
@@ -185,6 +199,7 @@ int SprinklerCtrl_stop(void)
 {
   _should_exit = 1;
   pthread_join(decode_thread, NULL);
+  pthread_join(event_proc_thread, NULL);
   uart_close();
   return 0;
 }
@@ -217,6 +232,54 @@ static void kylink_decode_callback(kyLinkBlockDef *pRx)
     pthread_mutex_lock(&devState_mtx);
     devState = *(Params_t *)pRx->buffer;
     pthread_mutex_unlock(&devState_mtx);
+//    _msg_updated_flag = 1;
+  }
+}
+
+#define CTRL_LOST_BIT_OFF      24
+#define CTRL_LOST_PIT_BIT      0x01000000
+#define CTRL_LOST_YAW_BIT      0x02000000
+
+#define ENCODER_ERROR_BIT_OFF  26
+#define ENCODER_ERROR_BIT_1    0x04000000
+#define ENCODER_ERROR_BIT_2    0x08000000
+
+#define CTRL_ADJ_RUN_BIT_OFF   28
+#define CTRL_ADJ_RUN_PIT_BIT   0x10000000
+#define CTRL_ADJ_RUN_YAW_BIT   0x20000000
+#define CTRL_ADJ_RUN_ALL_BIT   0x30000000
+
+static void event_proc_task(void)
+{
+  uint32_t last_flag = 0, current_flag = 0;
+  printf("\e[0;31mevent proc task start.\e[0m\n");
+  if(event_callback == 0) return;
+  printf("\e[0;31mevent process start.\e[0m\n");
+  while(_should_exit != 1) {
+    usleep(10000);
+//    if(_msg_updated_flag == 1) {
+//      _msg_updated_flag = 0;
+      pthread_mutex_lock(&devState_mtx);
+      current_flag = devState.flags;
+      pthread_mutex_unlock(&devState_mtx);
+      if((current_flag & CTRL_LOST_PIT_BIT) == CTRL_LOST_PIT_BIT) {
+        event_callback(pitch_lost_control);
+      }
+      if((current_flag & CTRL_LOST_YAW_BIT) == CTRL_LOST_YAW_BIT) {
+        event_callback(yaw_lost_control);
+      }
+      if((current_flag & ENCODER_ERROR_BIT_1) == ENCODER_ERROR_BIT_1) {
+        event_callback(pitch_encoder_error);
+      }
+      if((current_flag & ENCODER_ERROR_BIT_2) == ENCODER_ERROR_BIT_2) {
+        event_callback(yaw_encoder_error);
+      }
+      if(((last_flag & CTRL_ADJ_RUN_ALL_BIT) != 0) && ((current_flag & CTRL_ADJ_RUN_ALL_BIT) == 0)) {
+        printf("\e[0;31madj done event trig\e[0m\n");
+        event_callback(sprinkler_adj_done);
+      }
+      last_flag = current_flag;
+//    }
   }
 }
 

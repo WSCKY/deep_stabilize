@@ -13,24 +13,27 @@
 extern "C" {
 #endif
 
+typedef enum {
+  sprinkler_adj_done = 0,
+  pitch_encoder_error = 1,
+  yaw_encoder_error = 2,
+  pitch_lost_control = 3,
+  yaw_lost_control = 4,
+  invalid_error_occured = 0xF,
+} event_type_t;
+
 /*
  * input argument: reserved.
  */
-typedef void (*SprinklerCtrl_adj_done_callback)(unsigned int);
+typedef void (*SprinklerCtrl_event_callback)(event_type_t);
 
 /*
  * @brief  communication start.
  * @param  dev: device node, e.g. "/dev/ttyUSB0".
+ * @param  callback: event callback handler.
  * @retval 0 is OK, or negative value means error.
  */
-int SprinklerCtrl_start(const char *dev);
-
-/*
- * @brief  set controller event callback.
- * @param  callback: callback handler.
- * @retval 0 is OK, or -1 is error.
- */
-int SprinklerCtrl_config_callback(SprinklerCtrl_adj_done_callback callback);
+int SprinklerCtrl_start(const char *dev, SprinklerCtrl_event_callback callback);
 
 /*
  * @brief  enable or disable stability augmentation control.
@@ -39,7 +42,7 @@ int SprinklerCtrl_config_callback(SprinklerCtrl_adj_done_callback callback);
  */
 int SprinklerCtrl_enable_stabilize(int e);
 /*
- * @brief  set pitch angle. (based on water level)
+ * @brief  set pitch angle. (based on vehicle level)
  * @param  pitch: angle value (unit: deg)
  * @retval 0 is OK, or negative value means error.
  */
@@ -53,18 +56,18 @@ int SprinklerCtrl_set_pitch(float pitch);
 int SprinklerCtrl_set_yaw(float yaw);
 
 /*
- * @brief  get pitch angle. (based on water level)
+ * @brief  get pitch angle. (based on vehicle level)
  * @param  none
  * @retval angle of pitch. (unit: deg)
  */
 float SprinklerCtrl_get_pitch(void);
 
 /*
- * @brief  get pitch angle rate.
+ * @brief  get yaw angle. (based on vehicle heading)
  * @param  none
- * @retval angle rate of pitch. (unit: deg/s)
+ * @retval angle of yaw. (unit: deg)
  */
-float SprinklerCtrl_get_pitchrate(void);
+float SprinklerCtrl_get_yaw(void);
 
 /*
  * @brief  get the measurements of encoder which mounted on pitch axis.
@@ -80,7 +83,7 @@ int SprinklerCtrl_get_pitchencoder(void);
  */
 int SprinklerCtrl_get_yawencoder(void);
 
-int SprinklerCtrl_set_exp(float pitch, float yaw);
+int SprinklerCtrl_set_angle(float pitch, float yaw);
 int SprinklerCtrl_get_angle(float *pitch, float *yaw);
 
 /*
