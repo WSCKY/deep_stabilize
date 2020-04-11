@@ -118,6 +118,15 @@ void param_get_encval(int16_t *val, uint8_t id)
   param_rel_grant();
 }
 
+void param_set_ctrval(float val, uint8_t id)
+{
+  param_req_grant();
+  if(id < ENCODER_NUMBER) {
+    params->motor_ctr[id] = val;
+  }
+  param_rel_grant();
+}
+
 void param_set_flag(uint32_t flag)
 {
   param_req_grant();
