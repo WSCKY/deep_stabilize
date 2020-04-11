@@ -8,6 +8,8 @@
 	  <member type="float">encoder2</member>
 	  <member type="float">m1_exp</member>
 	  <member type="float">m2_exp</member>
+	  <member type="float">m1_ctr</member>
+	  <member type="float">m2_ctr</member>
 	  <member type="uint32_t">flags</member>
   </fType>
 </Packages>
