@@ -51,6 +51,10 @@ __PACK_BEGIN typedef struct {
 #define ENCODER_ERROR_BIT_1    0x04000000
 #define ENCODER_ERROR_BIT_2    0x08000000
 
+#define CTRL_ADJ_RUN_BIT_OFF   28
+#define CTRL_ADJ_RUN_PIT_BIT   0x10000000
+#define CTRL_ADJ_RUN_YAW_BIT   0x20000000
+
 status_t param_init(void);
 
 void param_get_param(Params_t *param);
