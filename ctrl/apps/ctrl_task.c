@@ -33,8 +33,8 @@ static void ctrl_task_notify(void);
 #define YAW_ANGLE_LIMIT_MIN        (-90.0f)      /* right: -90deg */
 #define YAW_ANGLE_LIMIT_MAX        (90.0f)       /* left: 90deg */
 /* angle rate limitation */
-#define PITCH_ADJ_ANGLE_RATE       (30)          /* 30deg/s */
-#define YAW_ADJ_ANGLE_RATE         (20)          /* 20deg/s */
+#define PITCH_ADJ_ANGLE_RATE       (15)          /* 15deg/s */
+#define YAW_ADJ_ANGLE_RATE         (12)          /* 12deg/s */
 /* deadband for controller */
 #define PITCH_ADJ_ANGLE_DEADBAND   (0.5f)        /* +/- 0.5deg */
 #define YAW_ADJ_ANGLE_DEADBAND     (1.0f)        /* +/- 1.0deg */
@@ -46,7 +46,7 @@ static void ctrl_task_notify(void);
 #define YAW_MOTOR_ENCODER_ID       (1)           /* encoder 1 */
 /* motor output limitation */
 #define PITCH_MOTOR_OUTPUT_LIMIT   (8000)        /* 8KHz */
-#define YAW_MOTOR_OUTPUT_LIMIT     (8000)        /* 8KHz */
+#define YAW_MOTOR_OUTPUT_LIMIT     (6500)        /* 6.5KHz */
 
 #define CTRL_STABILIZE_MODE_ENABLE (0)           /* enable(1) / disable(0) stabilize control mode */
 
@@ -165,6 +165,7 @@ void ctrl_task(void const *arg)
 void ctrl_task(void const *arg)
 {
   Params_t *params;
+  uint32_t report_flag_bit;
   float cur_yaw, exp_yaw = 0;
   float cur_pitch, exp_pitch = 0;
   float control_output;
@@ -192,6 +193,7 @@ void ctrl_task(void const *arg)
   exp_pitch = cur_pitch;
   cur_yaw = ENCODER_INT2DEG(params->encoder[YAW_MOTOR_ENCODER_ID]);
   if(cur_yaw > 180) cur_yaw -= 360; // (-180, 180]
+  cur_yaw = -cur_yaw;
   exp_yaw = cur_yaw;
 
   /* initialize task sync timer */
@@ -201,6 +203,7 @@ void ctrl_task(void const *arg)
     if(xTaskNotifyWait(0xFFFFFFFF, 0xFFFFFFFF, NULL, 100) == pdTRUE) {
       // update control parameter
       param_get_param(params);
+      report_flag_bit = 0;
 
       // pitch axis control
       if((params->flags & (1 << (PITCH_MOTOR_ENCODER_ID + ENCODER_ERROR_BIT_OFF))) == 0) {
@@ -208,7 +211,7 @@ void ctrl_task(void const *arg)
           // lost control ...
           pwm16_period(0);
           output_port_clear(IO_OUTPUT1);
-          param_set_flag_bit(CTRL_LOST_PIT_BIT); // report we lost control.
+          report_flag_bit |= CTRL_LOST_PIT_BIT; // report we lost control.
         } else {
           // limit angle rate
           step_change(&exp_pitch, params->exp_pitch, PITCH_ADJ_STEP_DEG, PITCH_ADJ_STEP_DEG);
@@ -243,15 +246,16 @@ void ctrl_task(void const *arg)
           // lost control ...
           pwm17_period(0);
           output_port_clear(IO_OUTPUT2);
-          param_set_flag_bit(CTRL_LOST_YAW_BIT); // report we lost control.
+          report_flag_bit |= CTRL_LOST_YAW_BIT; // report we lost control.
         } else {
           // limit angle rate
           step_change(&exp_yaw, params->exp_yaw, YAW_ADJ_STEP_DEG, YAW_ADJ_STEP_DEG);
           cur_yaw = ENCODER_INT2DEG(params->encoder[YAW_MOTOR_ENCODER_ID]);
           if(cur_yaw > 180) cur_yaw -= 360; // (-180, 180]
+          cur_yaw = -cur_yaw;
           // simple PID controller
           if(ABS(params->exp_yaw - cur_yaw) > YAW_ADJ_ANGLE_DEADBAND)
-            control_output = (exp_yaw - cur_yaw) * 100; // err * kp
+            control_output = (exp_yaw - cur_yaw) * 800; // err * kp
           else
             control_output = 0; // we got the position
           // limit PID output
@@ -270,6 +274,12 @@ void ctrl_task(void const *arg)
         pwm17_period(0);
         output_port_clear(IO_OUTPUT2);
       }
+
+      if(exp_pitch != params->exp_pitch)
+        report_flag_bit |= CTRL_ADJ_RUN_PIT_BIT;
+      if(exp_yaw != params->exp_yaw)
+        report_flag_bit |= CTRL_ADJ_RUN_YAW_BIT;
+      param_cfg_flag_bits(0x00FFFFFF, report_flag_bit); // save flag
     }
   }
 }
