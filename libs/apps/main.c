@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 		goto exit;
 	}
 
-	if(SprinklerCtrl_start(dev) != 0) {
+	if(SprinklerCtrl_start(dev, 0) != 0) {
       printf("\e[0;31mfailed to start Sprinkler Control.\e[0m\n");
       _should_exit = 1;
       SprinklerCtrl_stop();
