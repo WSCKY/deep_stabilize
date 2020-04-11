@@ -21,6 +21,7 @@ __PACK_BEGIN typedef struct {
 //	AngleInfo_t angInfo;
 	float encoder[ENCODER_NUMBER];
 	float motor_exp[2];
+	float motor_ctr[2];
 	uint32_t flags;
 } __PACK_END Params_t;
 
@@ -68,6 +69,8 @@ void param_get_expval(float *exp, uint8_t id);
 
 void param_set_encval(int16_t val, uint8_t id);
 void param_get_encval(int16_t *val, uint8_t id);
+
+void param_set_ctrval(float val, uint8_t id);
 
 void param_set_flag(uint32_t flag);
 void param_get_flag(uint32_t *flag);
