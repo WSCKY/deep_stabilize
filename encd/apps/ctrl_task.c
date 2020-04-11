@@ -183,8 +183,8 @@ void ctrl_task(void const *arg)
   }
   ctrlThread = xTaskGetCurrentTaskHandle();
 
-  pid->kp = 0.02;
-  pid->ki = 0.001;
+  pid->kp = 0.022;
+  pid->ki = 0.002;
   pid->kd = 0;
   pid->I_max = 10;
   pid->I_sum = 0;
@@ -216,16 +216,16 @@ void ctrl_task(void const *arg)
 //      param_get_param(params);
 
       m2_vel = encoder3_read();
-      param_set_encval(m2_vel, 0);
-      param_set_expval(m2_exp, 0);
+      param_set_encval(m2_vel, 1);
+      param_set_expval(m2_exp, 1);
 
       time_now = xTaskGetTickCountFromISR();
       if((time_now - time_ts) >= 3000) {
         time_ts = time_now;
-        if(m2_exp < 1500)
-          m2_exp = 2000;
+        if(m2_exp < 2500)
+          m2_exp = 3000;
         else
-          m2_exp = 1000;
+          m2_exp = 600;
       }
 
       // PID control
@@ -238,7 +238,11 @@ void ctrl_task(void const *arg)
         pid->preErr = 0;
       } else {
         control_output += pid->Output;
+        if(control_output < 500) control_output = 500;
       }
+      control_output = m2_exp;
+      param_set_ctrval(ABS(control_output), 1);
+
       pwm17_period(ABS(control_output));
       if(control_output < 0) output_port_set(IO_OUTPUT2);
       else output_port_clear(IO_OUTPUT2);
