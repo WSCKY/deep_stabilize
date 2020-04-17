@@ -41,6 +41,15 @@ int SprinklerCtrl_start(const char *dev, SprinklerCtrl_event_callback callback);
  * @retval 0 is OK, or negative value means error.
  */
 int SprinklerCtrl_enable_stabilize(int e);
+
+/*
+ * @brief  power on/off external device.
+ * @param  id: device id, from 0 to 1.
+ * @param  cmd: 0 to power-off, 1 to power-on.
+ * @retval operation state
+ */
+int SprinklerCtrl_device_ctrl(int id, int cmd);
+
 /*
  * @brief  set pitch angle. (based on vehicle level)
  * @param  pitch: angle value (unit: deg)

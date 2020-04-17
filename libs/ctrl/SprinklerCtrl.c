@@ -23,6 +23,11 @@
 
 #define CTRL_LOOP_ENABLE_BIT   0x01000000
 
+#define IO_OUTPUT_3_BIT        0x00040000
+#define IO_OUTPUT_4_BIT        0x00080000
+#define IO_OUTPUT_5_BIT        0x00100000
+#define IO_OUTPUT_6_BIT        0x00200000
+
 typedef struct {
   float AngleRateVal;
   float AngleVal;
@@ -53,7 +58,9 @@ static pthread_t decode_thread;
 static pthread_t event_proc_thread;
 static bool_t _should_exit = false;
 
-//static bool_t _msg_updated_flag = 0;
+#define ANGLE_CHANGED_CALLBACK_DELAY             4
+static bool_t _angle_change_flag = 0;
+static bool_t _msg_updated_flag = 0;
 static pthread_mutex_t ctrlInfo_mtx = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t devState_mtx = PTHREAD_MUTEX_INITIALIZER;
 
@@ -99,6 +106,21 @@ int SprinklerCtrl_enable_stabilize(int e)
   return ret;
 }
 
+int SprinklerCtrl_device_ctrl(int id, int cmd)
+{
+  int ret = 0;
+  if(id > 1) return -1; // invalid id
+  if(cmd > 1) return -2; // invalid command
+  pthread_mutex_lock(&ctrlInfo_mtx);
+  if(cmd)
+    ctrlInfo.flag |= IO_OUTPUT_3_BIT << id;
+  else
+    ctrlInfo.flag &= ~(IO_OUTPUT_3_BIT << id);
+  if(update_config() != status_ok) ret = -3;
+  pthread_mutex_unlock(&ctrlInfo_mtx);
+  return ret;
+}
+
 int SprinklerCtrl_set_pitch(float pitch)
 {
   int ret = 0;
@@ -107,6 +129,7 @@ int SprinklerCtrl_set_pitch(float pitch)
   ctrlInfo.pitch = pitch;
   if(update_config() != status_ok) ret = -2;
   pthread_mutex_unlock(&ctrlInfo_mtx);
+  _angle_change_flag = ANGLE_CHANGED_CALLBACK_DELAY;
   return ret;
 }
 
@@ -122,19 +145,27 @@ int SprinklerCtrl_set_yaw(float yaw)
     ret = -2;
   }
   pthread_mutex_unlock(&ctrlInfo_mtx);
-
+  _angle_change_flag = ANGLE_CHANGED_CALLBACK_DELAY;
   return ret;
 }
 
 int SprinklerCtrl_set_angle(float pitch, float yaw)
 {
   int ret = 0;
-  if(pitch < -15 || pitch > 60) return -1;
-  if(yaw < -90 || yaw > 90) return -1;
+  if(pitch < -15 || pitch > 60) {
+    printf("ERROR: pitch out of bounds!!!!!\n");
+    return -1;
+  }
+  if(yaw < -90 || yaw > 90) {
+    printf("ERROR: yaw out of bounds!!!!!\n");
+    return -1;
+  }
   pthread_mutex_lock(&ctrlInfo_mtx);
   ctrlInfo.pitch = pitch;
   ctrlInfo.yaw = yaw;
+  printf("set pitch: %2.2f, yaw: %2.2f\n", pitch, yaw);
   if(update_config() != status_ok) ret = -2;
+  _angle_change_flag = ANGLE_CHANGED_CALLBACK_DELAY;
   pthread_mutex_unlock(&ctrlInfo_mtx);
   return ret;
 }
@@ -232,7 +263,7 @@ static void kylink_decode_callback(kyLinkBlockDef *pRx)
     pthread_mutex_lock(&devState_mtx);
     devState = *(Params_t *)pRx->buffer;
     pthread_mutex_unlock(&devState_mtx);
-//    _msg_updated_flag = 1;
+    _msg_updated_flag = 1;
   }
 }
 
@@ -251,14 +282,15 @@ static void kylink_decode_callback(kyLinkBlockDef *pRx)
 
 static void event_proc_task(void)
 {
-  uint32_t last_flag = 0, current_flag = 0;
+//  uint32_t last_flag = 0;
+  uint32_t current_flag = 0;
   printf("\e[0;31mevent proc task start.\e[0m\n");
   if(event_callback == 0) return;
   printf("\e[0;31mevent process start.\e[0m\n");
   while(_should_exit != 1) {
     usleep(10000);
-//    if(_msg_updated_flag == 1) {
-//      _msg_updated_flag = 0;
+    if(_msg_updated_flag == 1) {
+      _msg_updated_flag = 0;
       pthread_mutex_lock(&devState_mtx);
       current_flag = devState.flags;
       pthread_mutex_unlock(&devState_mtx);
@@ -274,12 +306,19 @@ static void event_proc_task(void)
       if((current_flag & ENCODER_ERROR_BIT_2) == ENCODER_ERROR_BIT_2) {
         event_callback(yaw_encoder_error);
       }
-      if(((last_flag & CTRL_ADJ_RUN_ALL_BIT) != 0) && ((current_flag & CTRL_ADJ_RUN_ALL_BIT) == 0)) {
-        printf("\e[0;31madj done event trig\e[0m\n");
+
+      if(_angle_change_flag > 1) _angle_change_flag --; // wait 3 messages
+      if((_angle_change_flag == 1) && ((current_flag & CTRL_ADJ_RUN_ALL_BIT) == 0)) {
+        _angle_change_flag = 0;
+        printf("\e[0;31madj done event trigger\e[0m\n");
         event_callback(sprinkler_adj_done);
       }
-      last_flag = current_flag;
-//    }
+//      if(((last_flag & CTRL_ADJ_RUN_ALL_BIT) != 0) && ((current_flag & CTRL_ADJ_RUN_ALL_BIT) == 0)) {
+//        printf("\e[0;31madj done event trig\e[0m\n");
+//        event_callback(sprinkler_adj_done);
+//      }
+//      last_flag = current_flag;
+    }
   }
 }
 
