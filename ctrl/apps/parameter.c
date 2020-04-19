@@ -18,17 +18,27 @@ static osMutexId paramMutex;
 
 osMutexDef(PARAMMutex);
 
+#define PARAMETER_SAVE_FLASH_ADDR                0x0801F800
+
+#define PARAMETER_SAVE_FLASH_FLAG                0x5AA5A55A
+
 static void param_req_grant(void);
 static void param_rel_grant(void);
 
 status_t param_init(void)
 {
+  uint32_t temp, addr;
   /* create the MUTEX object */
   paramMutex = osMutexCreate(osMutex(PARAMMutex));
   if(paramMutex == NULL) return status_error;
   params = kmm_alloc(sizeof(Params_t));
   if(params == NULL) return status_nomem;
   memset(params, 0, sizeof(Params_t));
+  addr = PARAMETER_SAVE_FLASH_ADDR;
+  temp = *(__IO uint32_t *)addr;
+  if(temp != PARAMETER_SAVE_FLASH_FLAG) {
+    params->flags |= ENCODER_CAL_BIT; // need calibrate.
+  }
 
   return status_ok;
 }
@@ -143,6 +153,24 @@ void param_cfg_flag_bits(uint32_t mask, uint32_t bits)
   params->flags &= mask;
   params->flags |= (~mask & bits);
   param_rel_grant();
+}
+
+void param_clr_flash(void)
+{
+  FLASH_Unlock();
+  FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPERR);
+  FLASH_ErasePage(PARAMETER_SAVE_FLASH_ADDR);
+  FLASH_Lock();
+}
+
+void param_sav_flash(void)
+{
+  FLASH_Unlock();
+  FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPERR);
+  if(*(__IO uint32_t *)PARAMETER_SAVE_FLASH_ADDR != 0xFFFFFFFF)
+    FLASH_ErasePage(PARAMETER_SAVE_FLASH_ADDR);
+  FLASH_ProgramWord(PARAMETER_SAVE_FLASH_ADDR, PARAMETER_SAVE_FLASH_FLAG);
+  FLASH_Lock();
 }
 
 static void param_req_grant(void)

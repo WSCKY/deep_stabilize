@@ -61,22 +61,42 @@ void stat_task(void const *arg)
   encoder->hrtu = rtu_rs485_1;
 
   for(;;) {
-    delay(10);
-    // read encoder
-    encoder->addr ++;
-    if(encoder_read(encoder, &encoder_val) != status_ok) {
+    if(param_get_flag_bit(ENCODER_CAL_BIT) == false) {
+      delay(10);
+      // read encoder
+      encoder->addr ++;
+      if(encoder_read(encoder, &encoder_val) != status_ok) {
 #if CONFIG_LOG_ENABLE
-      ky_warn(TAG, "e%d read fail", encoder->addr);
+        ky_warn(TAG, "e%d read fail", encoder->addr);
 #endif /* CONFIG_LOG_ENABLE */
-      param_set_flag_bit(1 << (encoder->addr - 1 + ENCODER_ERROR_BIT_OFF));
-    } else {
-      param_set_encval(encoder_val, encoder->addr - 1);
+        param_set_flag_bit(1 << (encoder->addr - 1 + ENCODER_ERROR_BIT_OFF));
+      } else {
+        param_set_encval(encoder_val, encoder->addr - 1);
 //#if CONFIG_LOG_ENABLE
 //      ky_info(TAG, "e1: %05d", val);
 //#endif /* CONFIG_LOG_ENABLE */
+      }
+      if(encoder->addr >= ENCODER_NUMBER) encoder->addr = 0;
+    } else { // origin reset
+#if CONFIG_LOG_ENABLE
+      ky_warn(TAG, "encoder calibrate start!");
+#endif /* CONFIG_LOG_ENABLE */
+      for(int i = 0; i < ENCODER_NUMBER; i ++) {
+        delay(10);
+        encoder->addr = i + 1;
+        encoder_origin(encoder);
+#if CONFIG_LOG_ENABLE
+        ky_warn(TAG, "e%d RESET DONE!", encoder->addr);
+#endif /* CONFIG_LOG_ENABLE */
+        param_set_encval(0, encoder->addr - 1);
+      }
+      param_set_exppit(0);
+      param_set_expyaw(0);
+      param_sav_flash();
+      encoder->addr = 0x00;
+      param_clr_flag_bit(ENCODER_CAL_BIT);
     }
-    if(encoder->addr >= ENCODER_NUMBER) encoder->addr = 0;
-//    delay(10);
+
     // read GPIO input
     gpio_in = 0;
     gpio_msk = 1;
