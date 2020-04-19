@@ -35,7 +35,7 @@ __PACK_BEGIN typedef struct {
 #define IO_INPUT_8_BIT         0x00000080
 
 #define ENCODER_CAL_BIT        0x00000100 /* encoder calibrate bit */
-#define ENCODER_CLR_BIT        0x00000200 /* encoder calibration clear bit */
+//#define ENCODER_CLR_BIT        0x00000200 /* encoder calibration clear bit */
 
 #define IO_OUTPUT_1_BIT        0x00010000
 #define IO_OUTPUT_2_BIT        0x00020000

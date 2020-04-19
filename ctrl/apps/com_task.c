@@ -165,7 +165,7 @@ static void com_decode_callback(kyLinkBlockDef *pRx)
       if(pRx->buffer[0] == 0x23) {
         param_set_flag_bit(ENCODER_CAL_BIT); // reset encoder origin
       } else if(pRx->buffer[0] == 0x45) {
-        param_set_flag_bit(ENCODER_CLR_BIT);
+//        param_set_flag_bit(ENCODER_CLR_BIT);
         param_clr_flash();
       }
     break;
