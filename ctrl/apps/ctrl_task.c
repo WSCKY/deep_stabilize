@@ -38,6 +38,9 @@ static void ctrl_task_notify(void);
 /* deadband for controller */
 #define PITCH_ADJ_ANGLE_DEADBAND   (0.5f)        /* +/- 0.5deg */
 #define YAW_ADJ_ANGLE_DEADBAND     (1.0f)        /* +/- 1.0deg */
+/* PID kp parameter */
+#define PITCH_ADJ_CTRL_KP          (300)         /* kp = 300 #first version: 300# */
+#define YAW_ADJ_CTRL_KP            (260)         /* kp = 260 #first version: 800# */
 /* adjustment step in degree */
 #define PITCH_ADJ_STEP_DEG         (PITCH_ADJ_ANGLE_RATE * CTRL_LOOP_PERIOD_MS * 0.001f)
 #define YAW_ADJ_STEP_DEG           (YAW_ADJ_ANGLE_RATE * CTRL_LOOP_PERIOD_MS * 0.001f)
@@ -220,7 +223,7 @@ void ctrl_task(void const *arg)
           cur_pitch = -cur_pitch;
           // simple PID controller
           if(ABS(params->exp_pitch - cur_pitch) > PITCH_ADJ_ANGLE_DEADBAND)
-            control_output = (exp_pitch - cur_pitch) * 300; // err * kp
+            control_output = (exp_pitch - cur_pitch) * PITCH_ADJ_CTRL_KP; // err * kp
           else
             control_output = 0; // we got the position
           // limit PID output
@@ -255,7 +258,7 @@ void ctrl_task(void const *arg)
           cur_yaw = -cur_yaw;
           // simple PID controller
           if(ABS(params->exp_yaw - cur_yaw) > YAW_ADJ_ANGLE_DEADBAND)
-            control_output = (exp_yaw - cur_yaw) * 800; // err * kp
+            control_output = (exp_yaw - cur_yaw) * YAW_ADJ_CTRL_KP; // err * kp
           else
             control_output = 0; // we got the position
           // limit PID output
@@ -264,9 +267,9 @@ void ctrl_task(void const *arg)
           pwm17_period((uint32_t)ABS(control_output));
           // set direction
           if(control_output < 0) {
-            output_port_set(IO_OUTPUT2);
-          } else {
             output_port_clear(IO_OUTPUT2);
+          } else {
+            output_port_set(IO_OUTPUT2);
           }
         }
       } else {
